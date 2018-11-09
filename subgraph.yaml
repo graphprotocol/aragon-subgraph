@@ -2,3 +2,24 @@ specVersion: 0.0.1
 schema:
   file: ./schema.graphql
 dataSources:
+- kind: ethereum/contract
+  name: DAOFactory
+  source:
+    address: " 0x595B34C93aA2c2ba0A38daEEdE629a0DfBDcc559" # Mainnet: 0x595B34C93aA2c2ba0A38daEEdE629a0DfBDcc559
+    abi: DAOFactory
+  mapping:
+    kind: ethereum/events
+    apiVersion: 0.0.1
+    language: wasm/assemblyscript
+    entities:
+    - DAO
+    - EVMScriptRegistry
+    abis:
+    - name: DAOFactory
+      file: ./abis/DAOFactory.json
+    eventHandlers:
+    - event: DeployDAO(address)
+      handler: handleDeployDAO
+    - event: DeployEVMScriptRegistry(address)
+      handler: handleDeployScriptRegistry
+    file: ./mappings/DAOFactory.ts
