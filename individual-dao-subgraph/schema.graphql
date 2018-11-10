@@ -1,0 +1,7 @@
+#type DAO @entity {
+#    id: ID! # dao address
+#}
+#
+#type EVMScriptRegistry @entity {
+#    id: ID! # reg address
+#}
