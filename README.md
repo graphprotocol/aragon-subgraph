@@ -4,6 +4,10 @@ This is a subgraph for the [Aragon Project](https://github.com/aragon).
 
 TODO: fiture out what testnet(s) they use and update doc to reflect
 
+new notes
+- abis for apps were truffle compiled in the reposity
+- they only include events for the specific contract, not inherited contracts 
+
 ## Brief Description of The Graph Node Setup
 
 A Graph Node can run multiple subgraphs, and in this case it can have a subgraph for Mainnet and testnets. The subgraph ingests event data by calling to Infura through http. It can also connect to any geth node or parity node that accepts RPC calls. Fast synced geth nodes work. To use parity, the `--no-warp` flag must be used. Setting up a local Ethereum node is more reliable and faster, but Infura is the easiest way to get started. 

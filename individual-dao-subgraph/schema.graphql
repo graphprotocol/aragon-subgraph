@@ -1,7 +1,27 @@
-#type DAO @entity {
-#    id: ID! # dao address
-#}
-#
-#type EVMScriptRegistry @entity {
-#    id: ID! # reg address
-#}
+type ACL @entity {
+    id: ID! # acl address
+}
+
+type EVMScriptRegistry @entity {
+    id: ID! # evm script reg address
+}
+
+type Kernel @entity {
+    id: ID! # kernel address
+}
+
+type TokenManager @entity {
+    id: ID! # tokenManager address
+}
+
+type Voting @entity {
+    id: ID! # voting address
+}
+
+type Finance @entity {
+    id: ID! # finance address
+}
+
+type Vault @entity {
+    id: ID! # vault address
+}
