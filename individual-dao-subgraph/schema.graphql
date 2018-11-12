@@ -1,5 +1,21 @@
+type App @entity {
+    id: ID! # appID from SetApp (Ikernal.sol)
+    namespace: [Bytes!]
+    appName: String
+    appAddress: [Bytes!]
+    proxyAddress: [Bytes!]
+    upgradeable: Boolean
+
+
+    entity: [Bytes!]
+#    role: [Bytes!]
+#    allowed: [Boolean!]
+#    params: [Bytes!]
+}
+
 type ACL @entity {
     id: ID! # acl address
+
 }
 
 type EVMScriptRegistry @entity {

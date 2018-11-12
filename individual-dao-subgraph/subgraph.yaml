@@ -5,7 +5,7 @@ dataSources:
 - kind: ethereum/contract
   name: ACL
   source:
-    address: "0x1B6131Ae95629E7e5Dbf0a3a8a17E3fEa648aF46"
+    address: "0x1B6131Ae95629E7e5Dbf0a3a8a17E3fEa648aF46" # NOTE - ALL THESE ADDRESSES ARE RINKEBY
     abi: ACL
   mapping:
     kind: ethereum/events
@@ -63,7 +63,7 @@ dataSources:
     eventHandlers:
     - event: SetApp(bytes32,bytes32,address)
       handler: handleSetApp
-    - event: NewProxyApp(address,bool,bytes32)
+    - event: NewAppProxy(address,bool,bytes32)
       handler: handleNewProxyApp
     file: ./mappings/Kernel.ts
 - kind: ethereum/contract
