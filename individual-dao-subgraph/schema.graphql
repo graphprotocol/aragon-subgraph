@@ -1,43 +1,45 @@
-type App @entity {
-    id: ID! # appID from SetApp (Ikernal.sol)
-    namespace: [Bytes!]
-    appName: String
-    appAddress: [Bytes!]
-    proxyAddress: [Bytes!]
+# every app should have a proxy app
+# gets filled when NewAppProxy() event is emitted
+# ProxyApp entity implies we are in the KERNEL_APP_ADDR_NAMESPACE
+type ProxyApp @entity {
+    id: ID! # is the proxy address. this is because the proxy address never changes. the base app address can change
+    appName: String!
+    appID: Bytes!
     upgradeable: Boolean
-
-
-    entity: [Bytes!]
-#    role: [Bytes!]
-#    allowed: [Boolean!]
-#    params: [Bytes!]
+    # params: [Bytes!] # maybe needed
 }
 
-type ACL @entity {
-    id: ID! # acl address
-
+#  gets filled when namespace is 0xd6f028ca0e8edb4a8c9757ca4fdccab25fa1e0317da1188108f7d2dee14902fb - KERNEL_APP_ADDR_NAMESPACE from event SetApp()
+# KERNEL_APP_ADDR_NAMESPACE is only for references to default apps, which are vault, acl, and evm script registry so far. note here the proxy address gets set, and not the base address.
+# This never ever update
+type DefaultApp @entity {
+    id: ID! #id is app id
+    appName: String!
+    proxyAddress: Bytes! # note here we set the proxy Address of the default app, rather than the base address. NOT an array, since proxy address doesnt change
 }
 
-type EVMScriptRegistry @entity {
-    id: ID! # evm script reg address
+# Upon launch through aragon dapp, all similar contracts (i.e. all voting contracts) will point to the same BaseApp, and we get this info from the first event SetApp() emitted
+# gets filled when namespace is 0xf1f3eb40f5bc1ad1344716ced8b8a0431d840b5783aea1fd01786bc26f35ac0f - KERNEL_APP_BASES_NAMESPACE
+type BaseApp @entity {
+    id: ID! # we make the ID the appID, because the address could change for VOTING app, but the hash of VOTING app will always be the same. note this wouldn't work on a global dao
+    appName: String # I include both appID and Name for clarity, but they are really the same information in different form
+    baseAddress: Bytes! # could be an array, to keep history of all base apps
+    # TODO: need to relate this entity to app entity
 }
 
+# The kernel is unique, it is not an app. It houses all the other apps. not sure how this works yet
 type Kernel @entity {
     id: ID! # kernel address
 }
 
-type TokenManager @entity {
-    id: ID! # tokenManager address
+# We get this from the ACL contract
+type AppPermissions @entity {
+    id: ID! # must be the app Address
+    appName: String
+    roles: [String!] # this will look like "MINT_ROLE: 0xasf32534nnjkrejk324jl234"
 }
 
-type Voting @entity {
-    id: ID! # voting address
-}
 
 type Finance @entity {
-    id: ID! # finance address
-}
-
-type Vault @entity {
-    id: ID! # vault address
+    id: ID!
 }

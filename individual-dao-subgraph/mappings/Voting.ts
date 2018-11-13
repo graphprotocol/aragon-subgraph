@@ -8,7 +8,7 @@ import { store } from '@graphprotocol/graph-ts'
 import {StartVote, CastVote, ExecuteVote, ChangeSupportRequired, ChangeMinQuorum} from '../types/Voting/Voting'
 
 // Import entity types from the schema
-import {Voting} from '../types/schema'
+import {} from '../types/schema'
 
 
 export function handleStartVote(event: StartVote): void {

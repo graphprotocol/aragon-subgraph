@@ -8,7 +8,7 @@ import { store } from '@graphprotocol/graph-ts'
 import {NewVesting, RevokeVesting} from '../types/TokenManager/TokenManager'
 
 // Import entity types from the schema
-import {TokenManager} from '../types/schema'
+import {} from '../types/schema'
 
 
 export function handleNewVesting(event: NewVesting): void {

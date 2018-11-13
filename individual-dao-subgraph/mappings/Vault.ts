@@ -8,7 +8,7 @@ import { store } from '@graphprotocol/graph-ts'
 import {VaultTransfer, VaultDeposit} from '../types/Vault/Vault'
 
 // Import entity types from the schema
-import {EVMScriptRegistry} from '../types/schema'
+import {} from '../types/schema'
 
 
 export function handleVaultTransfer(event: VaultTransfer): void {

@@ -8,7 +8,7 @@ import { store } from '@graphprotocol/graph-ts'
 import {NewPeriod, SetBudget, NewPayment, NewTransaction, ChangePaymentState, PaymentFailure} from '../types/Finance/Finance'
 
 // Import entity types from the schema
-import {Finance} from '../types/schema'
+import {} from '../types/schema'
 
 
 export function handleNewPeriod(event: NewPeriod): void {

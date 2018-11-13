@@ -17,11 +17,11 @@ dataSources:
     - name: ACL
       file: ./abis/ACL.json
     eventHandlers:
-    - event: SetPermission(address,address,bytes32,bool)
+    - event: SetPermission(address,address,bytes32,bool) # yes emitted
       handler: handleSetPermission
     - event: SetPermissionParams(address,address,bytes32,bytes32)
       handler: handleSetPermissionParams
-    - event: ChangePermissionManager(address,bytes32,address)
+    - event: ChangePermissionManager(address,bytes32,address) # yes emitted
       handler: handleChangePermissionManager
     - event: ScriptResult(address,bytes,bytes,bytes) # is bytes an alias?
       handler: handleScriptResult

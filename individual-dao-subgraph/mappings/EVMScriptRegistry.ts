@@ -8,7 +8,7 @@ import { store } from '@graphprotocol/graph-ts'
 import {EnableExecutor, DisableExecutor} from '../types/EVMScriptRegistry/EVMScriptRegistry'
 
 // Import entity types from the schema
-import {EVMScriptRegistry} from '../types/schema'
+ import {} from '../types/schema'
 
 
 export function handleEnable(event: EnableExecutor): void {
