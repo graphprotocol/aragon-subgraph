@@ -9,7 +9,7 @@ type ProxyApp @entity {
     # params: [Bytes!] # maybe needed
 }
 
-#  gets filled when namespace is 0xd6f028ca0e8edb4a8c9757ca4fdccab25fa1e0317da1188108f7d2dee14902fb - KERNEL_APP_ADDR_NAMESPACE from event SetApp()
+# gets filled when namespace is 0xd6f028ca0e8edb4a8c9757ca4fdccab25fa1e0317da1188108f7d2dee14902fb - KERNEL_APP_ADDR_NAMESPACE from event SetApp()
 # KERNEL_APP_ADDR_NAMESPACE is only for references to default apps, which are vault, acl, and evm script registry so far. note here the proxy address gets set, and not the base address.
 # This never ever update
 type DefaultApp @entity {
@@ -27,19 +27,32 @@ type BaseApp @entity {
     # TODO: need to relate this entity to app entity
 }
 
+type Finance @entity {
+    id: ID!
+}
+
 # The kernel is unique, it is not an app. It houses all the other apps. not sure how this works yet
 type Kernel @entity {
     id: ID! # kernel address
 }
 
 # We get this from the ACL contract
-type AppPermissions @entity {
+type AppPermission @entity {
     id: ID! # must be the app Address
     appName: String
-    roles: [String!] # this will look like "MINT_ROLE: 0xasf32534nnjkrejk324jl234"
+    permissionOwner: [AppRole!] @derivedFrom(field: "id") # this will look like "MINT_ROLE: 0xasf32534nnjkrejk324jl234"
+    permissionManagers: [AppRole!] @derivedFrom(field: "id") # this could be an array to keep history of all permission managers
 }
 
 
-type Finance @entity {
-    id: ID!
+# Here I include all roles in one entity. It acts like an object holding all roles
+# We will only query the ones we need, when we need them, so that it can look clean across all apps
+type AppRole @entity {
+    id: ID! # must end up being the app address, so there will be 7 of these
+    manage_payments_role: String
+    CHANGE_BUDGET_ROLE: String
+    CHANGE_PERIOD_ROLE: String
+    CREATE_PAYMENTS_ROLE: String
+    EXECUTE_PAYMENTS_ROLE: String
 }
+

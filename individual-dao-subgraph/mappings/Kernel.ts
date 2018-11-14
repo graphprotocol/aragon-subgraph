@@ -11,7 +11,15 @@ import {SetApp, NewAppProxy} from '../types/Kernel/Kernel'
 // Import entity types from the schema
 import {DefaultApp, BaseApp, ProxyApp} from '../types/schema'
 
-import {kernalConstants}  from './constants'
+import {
+  APP_DEFAULT_VOTING_APP_ID,
+  APP_DEFAULT_TOKENMANGER_APP_ID,
+  APP_DEFAULT_FINANCE_APP_ID,
+  KERNEL_DEFAULT_VAULT_APP_ID,
+  KERNEL_DEFAULT_ACL_APP_ID,
+  KERNEL_DEFAULT_EVM_SCRIPT_REGISTRY_ID,
+  KERNEL_APP_ADDR_NAMESPACE,
+} from './constants'
 
 
 export function handleSetApp(event: SetApp): void {
@@ -24,7 +32,7 @@ export function handleSetApp(event: SetApp): void {
 
 
   // this if statement should only ever be emitted once, so we don't need store.get
-  if (namespaceHash == kernalConstants.KERNEL_APP_ADDR_NAMESPACE) {
+  if (namespaceHash == KERNEL_APP_ADDR_NAMESPACE) {
     let da = new DefaultApp()
     da.proxyAddress = event.params.app
     da.appName = appName
@@ -62,20 +70,20 @@ export function handleNewProxyApp(event: NewAppProxy): void {
 
 ////////////////////////Helpers Below
 
-function appNameResolver (hash: string): string {
-  let appName:string
+function appNameResolver(hash: string): string {
+  let appName: string
 
-  if (hash == kernalConstants.KERNEL_DEFAULT_VAULT_APP_ID) {
+  if (hash == KERNEL_DEFAULT_VAULT_APP_ID) {
     appName = "VAULT"
-  } else if (hash == kernalConstants.KERNEL_DEFAULT_ACL_APP_ID) {
+  } else if (hash == KERNEL_DEFAULT_ACL_APP_ID) {
     appName = "ACL"
-  } else if (hash == kernalConstants.KERNEL_DEFAULT_EVM_SCRIPT_REGISTRY_ID) {
+  } else if (hash == KERNEL_DEFAULT_EVM_SCRIPT_REGISTRY_ID) {
     appName = "EVM_SCRIPT_REGISTRY"
-  } else if (hash == kernalConstants.APP_DEFAULT_TOKENMANGER_APP_ID) {
+  } else if (hash == APP_DEFAULT_TOKENMANGER_APP_ID) {
     appName = "TOKEN_MANAGER"
-  } else if (hash == kernalConstants.APP_DEFAULT_VOTING_APP_ID) {
+  } else if (hash == APP_DEFAULT_VOTING_APP_ID) {
     appName = "VOTING"
-  } else if (hash == kernalConstants.APP_DEFAULT_FINANCE_APP_ID) {
+  } else if (hash == APP_DEFAULT_FINANCE_APP_ID) {
     appName = "FINANCE"
   } else {
     appName = "UNKNOWN"

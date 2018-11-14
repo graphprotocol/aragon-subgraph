@@ -9,9 +9,35 @@ import {store} from '@graphprotocol/graph-ts'
 import {SetPermission, SetPermissionParams, ChangePermissionManager, ScriptResult} from '../types/ACL/ACL'
 
 // Import entity types from the schema
-import {AppPermissions, ProxyApp} from '../types/schema'
+import {AppPermission, ProxyApp, AppRole} from '../types/schema'
 
-import {kernalConstants, aclConstants} from './constants'
+import {
+  FINANCE_CHANGE_BUDGETS_ROLE_HASH,
+  FINANCE_CHANGE_PERIOD_ROLE_HASH_HASH,
+  FINANCE_CREATE_PAYMENTS_ROLE_HASH,
+  FINANCE_MANAGE_PAYMENTS_ROLE_HASH,
+  FINANCE_EXECUTE_PAYMENTS_ROLE_HASH,
+  TOKEN_MANAGER_ASSIGN_ROLE_HASH,
+  TOKEN_MANAGER_BURN_ROLE_HASH,
+  TOKEN_MANAGER_ISSUE_ROLE_HASH,
+  TOKEN_MANAGER_MINT_ROLE_HASH,
+  TOKEN_MANAGER_REVOKE_VESTINGS_ROLE_HASH,
+  VOTING_CREATE_VOTES_ROLE_HASH,
+  VOTING_MODIFY_QUORUM_ROLE_HASH,
+  VOTING_MODIFY_SUPPORT_ROLE_HASH,
+  EVM_SCRIPT_REGISTY_REGISTRY_ADD_EXECUTOR_ROLE_HASH,
+  EVM_SCRIPT_REGISTY_REGISTRY_MANAGER_ROLE_HASH,
+  VAULT_TRANSFER_ROLE_HASH,
+  ACL_CREATE_PERMISSIONS_ROLE_HASH,
+  KERNEL_APP_MANAGER_ROLE_HASH,
+  APP_DEFAULT_VOTING_APP_ID,
+  APP_DEFAULT_TOKENMANGER_APP_ID,
+  APP_DEFAULT_FINANCE_APP_ID,
+  KERNEL_DEFAULT_VAULT_APP_ID,
+  KERNEL_DEFAULT_ACL_APP_ID,
+  KERNEL_DEFAULT_EVM_SCRIPT_REGISTRY_ID,
+} from './constants'
+
 
 // -     event SetPermission(address indexed entity, address indexed app, bytes32 indexed role, bool allowed); 759b9a74d
 // -     event SetPermissionParams(address indexed entity, address indexed app, bytes32 indexed role, bytes32 paramsHash);
@@ -22,42 +48,137 @@ import {kernalConstants, aclConstants} from './constants'
 // okay, ultimately I gotta figure out how to pop out stuff from arrays, so i should learn now
 export function handleSetPermission(event: SetPermission): void {
   let id = event.params.app.toHex()
-  let ap = store.get("AppPermissions", id) as AppPermissions | null
+  let ap = store.get("AppPermission", id) as AppPermission | null
+  // let allowed:string
+  //
+  //
+  // if (event.params.allowed == true) {
+  //    allowed = "true"
+  // } else {
+  //    allowed = "false"
+  // }
 
   if (ap == null) {
-    ap = new AppPermissions()
+    ap = new AppPermission()
 
     let app = store.get("ProxyApp", id) as ProxyApp
     ap.appName = app.appName
+    // let entity:string = event.params.entity.toHex()
+    //
+    // let roleName = roleResolver(event.params.role.toHex(), id)
+    //
+    // ap[roleName] = entity
+    // let roles = new Array<string>()
+    // let roleString = "Entity: " + entity + " Role: " + roleName+  " Allowed: " + allowed
+    //
+    // roles.push(roleString)
+    // let ar = roleResolver(event.params.role.toHex(), id, event.params.entity)
 
-    let roleName = roleResolver(event.params.role.toHex(), id)
-    let roles = new Array()
-    let roleString = `Entity: ${event.params.entity}  Role: ${roleName}  Allowed: ${event.params.allowed}`
-    roles.push(roleString)
-    ap.roles = roles
+    // ap.roles = roles
 
-    store.set("AppPermissions", id, ap as AppPermissions)
+    store.set("AppPermission", id, ap as AppPermission)
 
   } else {
-    let roleName = roleResolver(event.params.role.toHex(), id)
-    let roles = ap.roles
-    let roleString = `Entity: ${event.params.entity}  Role: ${roleName}  Allowed: ${event.params.allowed}`
-    roles.push(roleString)
-    ap.roles = roles
-
-    store.set("AppPermissions", id, ap as AppPermissions)
+    // let roleName = roleResolver(event.params.role.toHex(), id)
+    // let entity:string = event.params.entity.toHex()
+    // let roles = ap.roles
+    // let roleString = "Entity: " + entity + " Role: " + roleName+  " Allowed: " + allowed
+    // roles.push(roleString)
+    // ap.roles = roles
+    //
+    // store.set("AppPermission", id, ap as AppPermission)
   }
+
+  // if (ar == null){
+  //   ar = new AppRoles()
+  //   let entity:string = event.params.entity.toHex()
+
+  // let ar = store.get("AppRoles", id) as AppRole | null
+
+  let ar = roleResolver(event.params.role.toHex(), id, event.params.entity.toHex())
+
+  store.set("AppRole", id, ar)
+
+    // ar[roleName] = entity
+
+}
+
+//
+// export function handleSetPermission(event: SetPermission): void {
+//   let id = event.params.app.toHex()
+//   let ap = store.get("AppPermission", id) as AppPermission | null
+//   let allowed:string
+//
+//   if (event.params.allowed == true) {
+//     allowed = "true"
+//   } else {
+//     allowed = "false"
+//   }
+//
+//   if (ap == null) {
+//     ap = new AppPermission()
+//
+//     let app = store.get("ProxyApp", id) as ProxyApp
+//     ap.appName = app.appName
+//     let entity:string = event.params.entity.toHex()
+//
+//     let roleName = roleResolver(event.params.role.toHex(), id)
+//     let roles = new Array<string>()
+//     let roleString = "Entity: " + entity + " Role: " + roleName+  " Allowed: " + allowed
+//
+//     roles.push(roleString)
+//     ap.roles = roles
+//
+//     store.set("AppPermission", id, ap as AppPermission)
+//
+//   } else {
+//     let roleName = roleResolver(event.params.role.toHex(), id)
+//     let entity:string = event.params.entity.toHex()
+//     let roles = ap.roles
+//     let roleString = "Entity: " + entity + " Role: " + roleName+  " Allowed: " + allowed
+//     roles.push(roleString)
+//     ap.roles = roles
+//
+//     store.set("AppPermission", id, ap as AppPermission)
+//   }
+// }
+
+
+
+export function handleChangePermissionManager(event: ChangePermissionManager): void {
+  // let id = event.params.app.toHex()
+  // let ap = store.get("AppPermission", id) as AppPermission | null
+  //
+  // if (ap == null) {
+  //   ap = new AppPermission()
+  //
+  //   let app = store.get("ProxyApp", id) as ProxyApp
+  //   ap.appName = app.appName
+  //   let manager:string = event.params.manager.toHex()
+  //
+  //   let roleName = roleResolver(event.params.role.toHex(), id)
+  //   let pms = new Array<string>()
+  //   let roleString = "Manager: " + manager + " Role: " + roleName
+  //
+  //   pms.push(roleString)
+  //   ap.permissionManagers = pms
+  //
+  //   store.set("AppPermission", id, ap as AppPermission)
+  //
+  // } else {
+  //   let roleName = roleResolver(event.params.role.toHex(), id)
+  //   let manager:string = event.params.manager.toHex()
+  //   let pms = ap.permissionManagers
+  //   let roleString = "Manager: " + manager + " Role: " + roleName
+  //   pms.push(roleString)
+  //   ap.permissionManagers = pms
+  //
+  //   store.set("AppPermission", id, ap as AppPermission)
+  // }
 }
 
 // hasnt been called on my app, but it will be
 export function handleSetPermissionParams(event: SetPermissionParams): void {
-  // let id = event.params.reg.toHex()
-  // let reg = new EVMScriptRegistry()
-  // store.set("EVMScriptRegistry", id, reg)
-}
-
-//f3addc8b8
-export function handleChangePermissionManager(event: ChangePermissionManager): void {
   // let id = event.params.reg.toHex()
   // let reg = new EVMScriptRegistry()
   // store.set("EVMScriptRegistry", id, reg)
@@ -68,50 +189,66 @@ export function handleScriptResult(event: ScriptResult): void {
 
 }
 
-function roleResolver(roleHash: string, appAddress: string): string {
+function roleResolver(roleHash: string, appAddress: string, entity: string): AppRole {
 
   let app = store.get("ProxyApp", appAddress) as ProxyApp
   let appID = app.appID.toHex()
 
+  let appRole = store.get("AppRole", appAddress) as AppRole
+  if (appRole == null) {
+    appRole = new AppRole()
+  }
+
   let roleName: string
 
   // Finance roles
-  if (appID == kernalConstants.APP_DEFAULT_FINANCE_APP_ID) {
-    if (roleHash == aclConstants.FINANCE_MANAGE_PAYMENTS_ROLE_HASH) {
-      roleName = "MANAGE PAYMENTS ROLE"
+  if (appID == APP_DEFAULT_FINANCE_APP_ID) {
+    if (roleHash == FINANCE_MANAGE_PAYMENTS_ROLE_HASH) {
+      roleName = "manage_payments_role"
+      appRole.manage_payments_role = entity
     }
-    else if (roleHash == aclConstants.FINANCE_CHANGE_BUDGETS_ROLE_HASH) {
-      roleName = "CHANGE BUDGET ROLE"
+    else if (roleHash == FINANCE_CHANGE_BUDGETS_ROLE_HASH) {
+      roleName = "CHANGE_BUDGET_ROLE"
+      appRole.CHANGE_BUDGET_ROLE = entity
+
     }
-    else if (roleHash == aclConstants.FINANCE_CHANGE_PERIOD_ROLE_HASH_HASH) {
-      roleName = "CHANGE PERIOD ROLE"
+    else if (roleHash == FINANCE_CHANGE_PERIOD_ROLE_HASH_HASH) {
+      roleName = "CHANGE_PERIOD_ROLE"
+      appRole.CHANGE_PERIOD_ROLE = entity
+
     }
-    else if (roleHash == aclConstants.FINANCE_CREATE_PAYMENTS_ROLE_HASH) {
-      roleName = "CREATE PAYMENTS ROLE"
+    else if (roleHash == FINANCE_CREATE_PAYMENTS_ROLE_HASH) {
+      roleName = "CREATE_PAYMENTS_ROLE"
+      appRole.CREATE_PAYMENTS_ROLE = entity
+
     }
-    else if (roleHash == aclConstants.FINANCE_EXECUTE_PAYMENTS_ROLE_HASH) {
-      roleName = "EXECUTE PAYMENTS ROLE"
+    else if (roleHash == FINANCE_EXECUTE_PAYMENTS_ROLE_HASH) {
+      roleName = "EXECUTE_PAYMENTS_ROLE"
+      appRole.EXECUTE_PAYMENTS_ROLE = entity
+
     }
     else {
-      roleName = "UNKNOWN FINANCE ROLE"
+      roleName = "UNKNOWN_FINANCE_ROLE"
+      appRole.manage_payments_role = entity
+
     }
   }
 
   // Token Manager roles
-  else if (appID == kernalConstants.APP_DEFAULT_TOKENMANGER_APP_ID) {
-    if (roleHash == aclConstants.TOKEN_MANAGER_ASSIGN_ROLE_HASH) {
+  else if (appID == APP_DEFAULT_TOKENMANGER_APP_ID) {
+    if (roleHash == TOKEN_MANAGER_ASSIGN_ROLE_HASH) {
       roleName = "ASSIGN ROLE"
     }
-    else if (roleHash == aclConstants.TOKEN_MANAGER_BURN_ROLE_HASH) {
+    else if (roleHash == TOKEN_MANAGER_BURN_ROLE_HASH) {
       roleName = "BURN ROLE"
     }
-    else if (roleHash == aclConstants.TOKEN_MANAGER_ISSUE_ROLE_HASH) {
+    else if (roleHash == TOKEN_MANAGER_ISSUE_ROLE_HASH) {
       roleName = "ISSUE ROLE"
     }
-    else if (roleHash == aclConstants.TOKEN_MANAGER_MINT_ROLE_HASH) {
+    else if (roleHash == TOKEN_MANAGER_MINT_ROLE_HASH) {
       roleName = "MINT ROLE"
     }
-    else if (roleHash == aclConstants.TOKEN_MANAGER_REVOKE_VESTINGS_ROLE_HASH) {
+    else if (roleHash == TOKEN_MANAGER_REVOKE_VESTINGS_ROLE_HASH) {
       roleName = "REVOKE VESTINGS ROLE"
     }
     else {
@@ -120,14 +257,14 @@ function roleResolver(roleHash: string, appAddress: string): string {
   }
 
   // Voting Roles
-  else if (appID == kernalConstants.APP_DEFAULT_VOTING_APP_ID) {
-    if (roleHash == aclConstants.VOTING_CREATE_VOTES_ROLE_HASH) {
+  else if (appID == APP_DEFAULT_VOTING_APP_ID) {
+    if (roleHash == VOTING_CREATE_VOTES_ROLE_HASH) {
       roleName = "CREATE VOTES ROLE"
     }
-    else if (roleHash == aclConstants.VOTING_MODIFY_QUORUM_ROLE_HASH) {
+    else if (roleHash == VOTING_MODIFY_QUORUM_ROLE_HASH) {
       roleName = "MODIFY QUORUM ROLE"
     }
-    else if (roleHash == aclConstants.VOTING_MODIFY_SUPPORT_ROLE_HASH) {
+    else if (roleHash == VOTING_MODIFY_SUPPORT_ROLE_HASH) {
       roleName = "MODIFY SUPPORT ROLE"
     }
     else {
@@ -136,11 +273,11 @@ function roleResolver(roleHash: string, appAddress: string): string {
   }
 
   // EVM Script Roles
-  else if (appID == kernalConstants.KERNEL_DEFAULT_EVM_SCRIPT_REGISTRY_ID) {
-    if (roleHash == aclConstants.EVM_SCRIPT_REGISTY_REGISTRY_ADD_EXECUTOR_ROLE_HASH) {
+  else if (appID == KERNEL_DEFAULT_EVM_SCRIPT_REGISTRY_ID) {
+    if (roleHash == EVM_SCRIPT_REGISTY_REGISTRY_ADD_EXECUTOR_ROLE_HASH) {
       roleName = "CREATE VOTES ROLE"
     }
-    else if (roleHash == aclConstants.EVM_SCRIPT_REGISTY_REGISTRY_MANAGER_ROLE_HASH) {
+    else if (roleHash == EVM_SCRIPT_REGISTY_REGISTRY_MANAGER_ROLE_HASH) {
       roleName = "MODIFY QUORUM ROLE"
     }
     else {
@@ -149,8 +286,8 @@ function roleResolver(roleHash: string, appAddress: string): string {
   }
 
   // Vault Role
-  else if (appID == kernalConstants.KERNEL_DEFAULT_VAULT_APP_ID) {
-    if (roleHash == aclConstants.VAULT_TRANSFER_ROLE_HASH) {
+  else if (appID == KERNEL_DEFAULT_VAULT_APP_ID) {
+    if (roleHash == VAULT_TRANSFER_ROLE_HASH) {
       roleName = "TRANSFER ROLE"
     }
     else {
@@ -159,8 +296,8 @@ function roleResolver(roleHash: string, appAddress: string): string {
   }
 
   // ACL Role
-  else if (appID == kernalConstants.KERNEL_DEFAULT_ACL_APP_ID) {
-    if (roleHash == aclConstants.ACL_CREATE_PERMISSIONS_ROLE_HASH) {
+  else if (appID == KERNEL_DEFAULT_ACL_APP_ID) {
+    if (roleHash == ACL_CREATE_PERMISSIONS_ROLE_HASH) {
       roleName = "CREATE PERMISSIONS ROLE"
     }
     else {
@@ -173,5 +310,5 @@ function roleResolver(roleHash: string, appAddress: string): string {
     roleName = "APP MANAGER ROLE"
   }
 
-  return roleName
+  return appRole
 }
