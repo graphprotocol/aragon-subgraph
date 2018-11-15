@@ -9,7 +9,7 @@ import {store} from '@graphprotocol/graph-ts'
 import {SetPermission, SetPermissionParams, ChangePermissionManager, ScriptResult} from '../types/ACL/ACL'
 
 // Import entity types from the schema
-import {AppPermission, ProxyApp, AppRole} from '../types/schema'
+import {AppRole} from '../types/schema'
 
 import {
   FINANCE_CHANGE_BUDGETS_ROLE_HASH,
@@ -48,58 +48,63 @@ import {
 // okay, ultimately I gotta figure out how to pop out stuff from arrays, so i should learn now
 export function handleSetPermission(event: SetPermission): void {
   let id = event.params.app.toHex()
-  let ap = store.get("AppPermission", id) as AppPermission | null
-  // let allowed:string
-  //
-  //
-  // if (event.params.allowed == true) {
-  //    allowed = "true"
-  // } else {
-  //    allowed = "false"
+
+  // if (store.get("Vault", id) != null){
+  //   let vault = store.get("Vault", id)
+  //   let vaultAddress = vault.proxyAddress
   // }
-
-  if (ap == null) {
-    ap = new AppPermission()
-
-    let app = store.get("ProxyApp", id) as ProxyApp
-    ap.appName = app.appName
-    // let entity:string = event.params.entity.toHex()
-    //
-    // let roleName = roleResolver(event.params.role.toHex(), id)
-    //
-    // ap[roleName] = entity
-    // let roles = new Array<string>()
-    // let roleString = "Entity: " + entity + " Role: " + roleName+  " Allowed: " + allowed
-    //
-    // roles.push(roleString)
-    // let ar = roleResolver(event.params.role.toHex(), id, event.params.entity)
-
-    // ap.roles = roles
-
-    store.set("AppPermission", id, ap as AppPermission)
-
-  } else {
-    // let roleName = roleResolver(event.params.role.toHex(), id)
-    // let entity:string = event.params.entity.toHex()
-    // let roles = ap.roles
-    // let roleString = "Entity: " + entity + " Role: " + roleName+  " Allowed: " + allowed
-    // roles.push(roleString)
-    // ap.roles = roles
-    //
-    // store.set("AppPermission", id, ap as AppPermission)
-  }
-
-  // if (ar == null){
-  //   ar = new AppRoles()
-  //   let entity:string = event.params.entity.toHex()
-
-  // let ar = store.get("AppRoles", id) as AppRole | null
-
-  let ar = roleResolver(event.params.role.toHex(), id, event.params.entity.toHex())
-
-  store.set("AppRole", id, ar)
-
-    // ar[roleName] = entity
+  // let ap = store.get("AppPermission", id) as AppPermission | null
+  // // let allowed:string
+  // //
+  // //
+  // // if (event.params.allowed == true) {
+  // //    allowed = "true"
+  // // } else {
+  // //    allowed = "false"
+  // // }
+  //
+  // if (ap == null) {
+  //   ap = new AppPermission()
+  //
+  //   let app = store.get("ProxyApp", id) as ProxyApp
+  //   ap.appName = app.appName
+  //   // let entity:string = event.params.entity.toHex()
+  //   //
+  //   // let roleName = roleResolver(event.params.role.toHex(), id)
+  //   //
+  //   // ap[roleName] = entity
+  //   // let roles = new Array<string>()
+  //   // let roleString = "Entity: " + entity + " Role: " + roleName+  " Allowed: " + allowed
+  //   //
+  //   // roles.push(roleString)
+  //   // let ar = roleResolver(event.params.role.toHex(), id, event.params.entity)
+  //
+  //   // ap.roles = roles
+  //
+  //   store.set("AppPermission", id, ap as AppPermission)
+  //
+  // } else {
+  //   // let roleName = roleResolver(event.params.role.toHex(), id)
+  //   // let entity:string = event.params.entity.toHex()
+  //   // let roles = ap.roles
+  //   // let roleString = "Entity: " + entity + " Role: " + roleName+  " Allowed: " + allowed
+  //   // roles.push(roleString)
+  //   // ap.roles = roles
+  //   //
+  //   // store.set("AppPermission", id, ap as AppPermission)
+  // }
+  //
+  // // if (ar == null){
+  // //   ar = new AppRoles()
+  // //   let entity:string = event.params.entity.toHex()
+  //
+  // // let ar = store.get("AppRoles", id) as AppRole | null
+  //
+  // let ar = roleResolver(event.params.role.toHex(), id, event.params.entity.toHex())
+  //
+  // store.set("AppRole", id, ar)
+  //
+  //   // ar[roleName] = entity
 
 }
 
@@ -179,9 +184,7 @@ export function handleChangePermissionManager(event: ChangePermissionManager): v
 
 // hasnt been called on my app, but it will be
 export function handleSetPermissionParams(event: SetPermissionParams): void {
-  // let id = event.params.reg.toHex()
-  // let reg = new EVMScriptRegistry()
-  // store.set("EVMScriptRegistry", id, reg)
+
 }
 
 // 99% sure we dont need
