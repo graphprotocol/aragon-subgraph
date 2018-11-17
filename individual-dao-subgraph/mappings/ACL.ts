@@ -61,22 +61,30 @@ export function handleSetPermission(event: SetPermission): void {
   let role = event.params.role.toHex()
   let entity = event.params.entity
 
-
+// VAULT //////////////////////
   if (store.get("Vault", id) != null) {
-    let vault = store.get("Vault", id)
-    // let appRole = store.get("AppRole", id) as AppRole | null
-    // if (appRole == null) {
-    //   appRole = new AppRole()
-
-    if (event.params.allowed == true) {
-
-      //todo
-
-
+    let vp = store.get("VaultPermission", id) as VaultPermission | null
+    if (vp == null) {
+      vp = new VaultPermission()
+      vp.canTransfer = new Array<Bytes>()
     }
+    if (event.params.allowed == true) {
+      let canTransfer = vp.canTransfer
+      canTransfer.push(entity)
+      vp.canTransfer = canTransfer
+      store.set("VaultPermission", id, vp as VaultPermission)
+    } else {
+      let canTransfer = vp.canTransfer
+      let i = canTransfer.indexOf(entity)
+      canTransfer.splice(i, 1)
+      vp.canTransfer = canTransfer
+      store.set("VaultPermission", id, vp as VaultPermission)
+    }
+
   }
+  // TOKEN MANAGER //////////////////////
+
   else if (store.get("TokenManager", id) != null) {
-    let tm = store.get("TokenManager", id)
     let tmp = store.get("TokenManagerPermission", id) as TokenManagerPermission | null
     if (tmp == null) {
       tmp = new TokenManagerPermission()
@@ -89,163 +97,164 @@ export function handleSetPermission(event: SetPermission): void {
     if (event.params.allowed == true) {
       if (role == TOKEN_MANAGER_REVOKE_VESTINGS_ROLE_HASH) {
         let revokeVestings = tmp.canRevokeVestings
-        revokeVestings.push(entity)
+        if (revokeVestings.indexOf(entity) == -1) {
+          revokeVestings.push(entity)
+          tmp.canRevokeVestings = revokeVestings
+          store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
+        }
+      } else if (role == TOKEN_MANAGER_MINT_ROLE_HASH) {
+        let minters = tmp.canMint
+        if (minters.indexOf(entity) == -1) { //todo , some reason this isn't working, it still pushes duplicate values. need to fix
+          minters.push(entity)
+          tmp.canMint = minters
+          store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
+        }
+      } else if (role == TOKEN_MANAGER_ISSUE_ROLE_HASH) {
+        let issuers = tmp.canIssue
+        if (issuers.indexOf(entity) == -1) {
+          issuers.push(entity)
+          tmp.canIssue = issuers
+          store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
+        }
+      } else if (role == TOKEN_MANAGER_BURN_ROLE_HASH) {
+        let burners = tmp.canBurn
+        if (burners.indexOf(entity) == -1) {
+          burners.push(entity)
+          tmp.canBurn = burners
+          store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
+        }
+      } else if (role == TOKEN_MANAGER_ASSIGN_ROLE_HASH) {
+        let assigners = tmp.canAssign
+        if (assigners.indexOf(entity) == -1) {
+          assigners.push(entity)
+          tmp.canAssign = assigners
+          store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
+        }
+      }
+    } else if (event.params.allowed == false) {
+      if (role == TOKEN_MANAGER_REVOKE_VESTINGS_ROLE_HASH) {
+        let revokeVestings = tmp.canRevokeVestings
+        let i = revokeVestings.indexOf(entity)
+        revokeVestings.splice(i, 1)
         tmp.canRevokeVestings = revokeVestings
         store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
       } else if (role == TOKEN_MANAGER_MINT_ROLE_HASH) {
         let minters = tmp.canMint
-        minters.push(entity)
+        let i = minters.indexOf(entity)
+        minters.splice(i, 1)
         tmp.canMint = minters
         store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
       } else if (role == TOKEN_MANAGER_ISSUE_ROLE_HASH) {
         let issuers = tmp.canIssue
-        issuers.push(entity)
+        let i = issuers.indexOf(entity)
+        issuers.splice(i, 1)
         tmp.canIssue = issuers
         store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
       } else if (role == TOKEN_MANAGER_BURN_ROLE_HASH) {
         let burners = tmp.canBurn
-        burners.push(entity)
+        let i = burners.indexOf(entity)
+        burners.splice(i, 1)
         tmp.canBurn = burners
         store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
       } else if (role == TOKEN_MANAGER_ASSIGN_ROLE_HASH) {
         let assigners = tmp.canAssign
-        assigners.push(entity)
+        let i = assigners.indexOf(entity)
+        assigners.splice(i, 1)
         tmp.canAssign = assigners
         store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
       }
 
-      // it is not possible for 2 users to hold the same role
-    } else {
-
-      // to remove
     }
-    // let ap = store.get("AppPermission", id) as AppPermission | null
-    // // let allowed:string
-    // //
-    // //
-    // // if (event.params.allowed == true) {
-    // //    allowed = "true"
-    // // } else {
-    // //    allowed = "false"
-    // // }
-    //
-    // if (ap == null) {
-    //   ap = new AppPermission()
-    //
-    //   let app = store.get("ProxyApp", id) as ProxyApp
-    //   ap.appName = app.appName
-    //   // let entity:string = event.params.entity.toHex()
-    //   //
-    //   // let roleName = roleResolver(event.params.role.toHex(), id)
-    //   //
-    //   // ap[roleName] = entity
-    //   // let roles = new Array<string>()
-    //   // let roleString = "Entity: " + entity + " Role: " + roleName+  " Allowed: " + allowed
-    //   //
-    //   // roles.push(roleString)
-    //   // let ar = roleResolver(event.params.role.toHex(), id, event.params.entity)
-    //
-    //   // ap.roles = roles
-    //
-    //   store.set("AppPermission", id, ap as AppPermission)
-    //
-    // } else {
-    //   // let roleName = roleResolver(event.params.role.toHex(), id)
-    //   // let entity:string = event.params.entity.toHex()
-    //   // let roles = ap.roles
-    //   // let roleString = "Entity: " + entity + " Role: " + roleName+  " Allowed: " + allowed
-    //   // roles.push(roleString)
-    //   // ap.roles = roles
-    //   //
-    //   // store.set("AppPermission", id, ap as AppPermission)
-    // }
-    //
-    // // if (ar == null){
-    // //   ar = new AppRoles()
-    // //   let entity:string = event.params.entity.toHex()
-    //
-    // // let ar = store.get("AppRoles", id) as AppRole | null
-    //
-    // let ar = roleResolver(event.params.role.toHex(), id, event.params.entity.toHex())
-    //
-    // store.set("AppRole", id, ar)
-    //
-    //   // ar[roleName] = entity
 
+    // FINANCE //////////////////////
+
+    /// TODO: this one is returning blank arrays, not sure why. 
+  } else if (store.get("FinancePermission", id) != null) {
+    let fp = store.get("FinancePermission", id) as FinancePermission | null
+    if (fp == null) {
+      fp = new FinancePermission()
+      fp.canChangeBudget = new Array<Bytes>()
+      fp.canChangePeriod = new Array<Bytes>()
+      fp.canCreatePayments = new Array<Bytes>()
+      fp.canExecutePayments = new Array<Bytes>()
+      fp.canManagePayments = new Array<Bytes>()
+    }
+    if (event.params.allowed == true) {
+      if (role == FINANCE_EXECUTE_PAYMENTS_ROLE_HASH) {
+        let executePayments = fp.canExecutePayments
+        if (executePayments.indexOf(entity) == -1) {
+          executePayments.push(entity)
+          fp.canExecutePayments = executePayments
+          store.set("FinancePermission", id, fp as FinancePermission)
+        }
+      } else if (role == FINANCE_MANAGE_PAYMENTS_ROLE_HASH) {
+        let managePayments = fp.canManagePayments
+        if (managePayments.indexOf(entity) == -1) {
+          managePayments.push(entity)
+          fp.canManagePayments = managePayments
+          store.set("FinancePermission", id, fp as FinancePermission)
+        }
+      } else if (role == FINANCE_CREATE_PAYMENTS_ROLE_HASH) {
+        let changePeriods = fp.canChangePeriod
+        if (changePeriods.indexOf(entity) == -1) {
+          changePeriods.push(entity)
+          fp.canChangePeriod = changePeriods
+          store.set("FinancePermission", id, fp as FinancePermission)
+        }
+      } else if (role == FINANCE_CHANGE_BUDGETS_ROLE_HASH) {
+        let changeBudgets = fp.canChangeBudget
+        if (changeBudgets.indexOf(entity) == -1) {
+          changeBudgets.push(entity)
+          fp.canChangeBudget = changeBudgets
+          store.set("FinancePermission", id, fp as FinancePermission)
+        }
+      } else if (role == FINANCE_CHANGE_PERIOD_ROLE_HASH) {
+        let createPayments = fp.canCreatePayments
+        if (createPayments.indexOf(entity) == -1) {
+          createPayments.push(entity)
+          fp.canCreatePayments = createPayments
+          store.set("FinancePermission", id, fp as FinancePermission)
+        }
+      }
+    } else if (event.params.allowed == false) {
+      if (role == FINANCE_EXECUTE_PAYMENTS_ROLE_HASH) {
+        let executePayments = fp.canExecutePayments
+        let i = executePayments.indexOf(entity)
+        executePayments.splice(i, 1)
+        fp.canExecutePayments = executePayments
+        store.set("FinancePermission", id, fp as FinancePermission)
+      } else if (role == FINANCE_MANAGE_PAYMENTS_ROLE_HASH) {
+        let managePayments = fp.canManagePayments
+        let i = managePayments.indexOf(entity)
+        managePayments.splice(i, 1)
+        fp.canManagePayments = managePayments
+        store.set("FinancePermission", id, fp as FinancePermission)
+      } else if (role == FINANCE_CREATE_PAYMENTS_ROLE_HASH) {
+        let createPayments = fp.canCreatePayments
+        let i = createPayments.indexOf(entity)
+        createPayments.splice(i, 1)
+        fp.canCreatePayments = createPayments
+        store.set("FinancePermission", id, fp as FinancePermission)
+      } else if (role == FINANCE_CHANGE_BUDGETS_ROLE_HASH) {
+        let changeBudgets = fp.canChangeBudget
+        let i = changeBudgets.indexOf(entity)
+        changeBudgets.splice(i, 1)
+        fp.canChangeBudget = changeBudgets
+        store.set("FinancePermission", id, fp as FinancePermission)
+      } else if (role == FINANCE_CHANGE_PERIOD_ROLE_HASH) {
+        let changesPeriod = fp.canChangePeriod
+        let i = changesPeriod.indexOf(entity)
+        changesPeriod.splice(i, 1)
+        fp.canChangePeriod = changesPeriod
+        store.set("FinancePermission", id, fp as FinancePermission)
+      }
+
+    }
   }
 }
 
-//
-// export function handleSetPermission(event: SetPermission): void {
-//   let id = event.params.app.toHex()
-//   let ap = store.get("AppPermission", id) as AppPermission | null
-//   let allowed:string
-//
-//   if (event.params.allowed == true) {
-//     allowed = "true"
-//   } else {
-//     allowed = "false"
-//   }
-//
-//   if (ap == null) {
-//     ap = new AppPermission()
-//
-//     let app = store.get("ProxyApp", id) as ProxyApp
-//     ap.appName = app.appName
-//     let entity:string = event.params.entity.toHex()
-//
-//     let roleName = roleResolver(event.params.role.toHex(), id)
-//     let roles = new Array<string>()
-//     let roleString = "Entity: " + entity + " Role: " + roleName+  " Allowed: " + allowed
-//
-//     roles.push(roleString)
-//     ap.roles = roles
-//
-//     store.set("AppPermission", id, ap as AppPermission)
-//
-//   } else {
-//     let roleName = roleResolver(event.params.role.toHex(), id)
-//     let entity:string = event.params.entity.toHex()
-//     let roles = ap.roles
-//     let roleString = "Entity: " + entity + " Role: " + roleName+  " Allowed: " + allowed
-//     roles.push(roleString)
-//     ap.roles = roles
-//
-//     store.set("AppPermission", id, ap as AppPermission)
-//   }
-// }
-
 
 export function handleChangePermissionManager(event: ChangePermissionManager): void {
-  // let id = event.params.app.toHex()
-  // let ap = store.get("AppPermission", id) as AppPermission | null
-  //
-  // if (ap == null) {
-  //   ap = new AppPermission()
-  //
-  //   let app = store.get("ProxyApp", id) as ProxyApp
-  //   ap.appName = app.appName
-  //   let manager:string = event.params.manager.toHex()
-  //
-  //   let roleName = roleResolver(event.params.role.toHex(), id)
-  //   let pms = new Array<string>()
-  //   let roleString = "Manager: " + manager + " Role: " + roleName
-  //
-  //   pms.push(roleString)
-  //   ap.permissionManagers = pms
-  //
-  //   store.set("AppPermission", id, ap as AppPermission)
-  //
-  // } else {
-  //   let roleName = roleResolver(event.params.role.toHex(), id)
-  //   let manager:string = event.params.manager.toHex()
-  //   let pms = ap.permissionManagers
-  //   let roleString = "Manager: " + manager + " Role: " + roleName
-  //   pms.push(roleString)
-  //   ap.permissionManagers = pms
-  //
-  //   store.set("AppPermission", id, ap as AppPermission)
-  // }
 }
 
 // hasnt been called on my app, but it will be
