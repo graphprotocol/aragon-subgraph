@@ -40,6 +40,25 @@ type Vault @entity {
     permissions: [VaultPermission!] @derivedFrom(field: "id")
     defaultApp: Boolean
     # params: [Bytes!] maybe needed
+    transfers: [VaultTransferList!] @derivedFrom(field: "id")
+    deposits: [VaultDepositList!] @derivedFrom(field: "id")
+
+}
+
+type VaultTransferList @entity {
+    id: ID! # counter
+    tokenAddress: [Bytes!]
+    to: [Bytes!]
+    amount: [BigInt!]
+
+}
+
+type VaultDepositList @entity {
+    id: ID! # counter
+    tokenAddress: [Bytes!]
+    sender: [Bytes!]
+    amount: [BigInt!]
+
 }
 
 type TokenManager @entity {
@@ -70,6 +89,22 @@ type Voting @entity {
     permissions: [VotingPermission!] @derivedFrom(field: "id")
     defaultApp: Boolean
     # params: [Bytes!] maybe needed
+    supportRequiredPercent: BigInt
+    minQuorumPercent: BigInt
+    votes: [Vote!] @derivedFrom(field: "appAddress")
+}
+
+type Vote @entity {
+    id: ID! # vote ID
+    appAddress: Bytes!
+    creator: Bytes!
+    metadata: String!
+    supporters: [Bytes!]
+    supportersStake: [BigInt!]
+    nonSupporters: [Bytes!]
+    nonSupportersStake: [BigInt!]
+    executed: Boolean # i.e. the vote passed
+
 }
 
 # Need to use baseapps, because the proxy addr isn't created
