@@ -57,8 +57,6 @@ import {
 // -     event ChangePermissionManager(address indexed app, bytes32 indexed role, address indexed manager); f3addc8b8
 // -     event ScriptResult(address indexed executor, bytes script, bytes input, bytes returnData);
 
-//so i need to take into account that bool allowed means we have added a guy, and that bool remove will remove a guy
-// okay, ultimately I gotta figure out how to pop out stuff from arrays, so i should learn now
 export function handleSetPermission(event: SetPermission): void {
   let id = event.params.app.toHex()
   let role = event.params.role.toHex()

@@ -20,7 +20,7 @@ type ACL @entity {
     # params: [Bytes!] maybe needed
 }
 
-type EVMScriptRegisty @entity {
+type EVMScriptRegistry @entity {
     id: ID! # app proxy address
     baseAddress: Bytes
     appID: Bytes
@@ -28,6 +28,8 @@ type EVMScriptRegisty @entity {
     permissions: [EVMScriptRegistryPermission!] @derivedFrom(field: "id")
     defaultApp: Boolean
     # params: [Bytes!] maybe needed
+    executors: [Bytes!]
+
 }
 
 type Vault @entity {

@@ -3,13 +3,13 @@ import 'allocator/arena'
 export {allocate_memory}
 
 // Import APIs from graph-ts
-import {store} from '@graphprotocol/graph-ts'
+import {Bytes, store} from '@graphprotocol/graph-ts'
 
 // Import event types from the registrar contract ABI
 import {SetApp, NewAppProxy} from '../types/Kernel/Kernel'
 
 // Import entity types from the schema
-import {ACL, Vault, EVMScriptRegisty, Kernel, TokenManager, Finance, Voting, BaseApp} from '../types/schema'
+import {ACL, Vault, EVMScriptRegistry, Kernel, TokenManager, Finance, Voting, BaseApp} from '../types/schema'
 
 import {
   APP_DEFAULT_VOTING_APP_ID,
@@ -59,12 +59,12 @@ export function handleSetApp(event: SetApp): void {
       store.set("ACL", proxyAddressID, acl as ACL)
     }
     else {
-      let evmsr = store.get("EVMScriptRegisty", proxyAddressID) as EVMScriptRegisty | null
+      let evmsr = store.get("EVMScriptRegistry", proxyAddressID) as EVMScriptRegistry | null
       if (evmsr == null) {
-        evmsr = new EVMScriptRegisty()
+        evmsr = new EVMScriptRegistry()
       }
       evmsr.defaultApp = true
-      store.set("EVMScriptRegisty", proxyAddressID, evmsr as EVMScriptRegisty)
+      store.set("EVMScriptRegistry", proxyAddressID, evmsr as EVMScriptRegistry)
     }
   }
 }
@@ -104,9 +104,10 @@ export function handleSetApp(event: SetApp): void {
       store.set("ACL", id, acl as ACL)
 
     } else if (appID == KERNEL_DEFAULT_EVM_SCRIPT_REGISTRY_ID) {
-      let evmsr = store.get("EVMScriptRegistry", id) as EVMScriptRegisty | null
+      let evmsr = store.get("EVMScriptRegistry", id) as EVMScriptRegistry | null
       if (evmsr == null) {
-        evmsr = new EVMScriptRegisty()
+        evmsr = new EVMScriptRegistry()
+        evmsr.executors = new Array<Bytes>()
       }
 
       evmsr.appID = event.params.appId
@@ -115,7 +116,7 @@ export function handleSetApp(event: SetApp): void {
       let baseEvmsr = store.get("BaseApp", appID) as BaseApp
       evmsr.baseAddress = baseEvmsr.baseAddress
 
-      store.set("EVMScriptRegistry", id, evmsr as EVMScriptRegisty)
+      store.set("EVMScriptRegistry", id, evmsr as EVMScriptRegistry)
 
     } else if (appID == APP_DEFAULT_TOKENMANGER_APP_ID) {
       let tm = store.get("TokenManager", id) as TokenManager | null
