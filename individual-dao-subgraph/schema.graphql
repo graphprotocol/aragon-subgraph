@@ -83,11 +83,11 @@ type BaseApp @entity {
 # contains roles and managers
 type FinancePermission @entity {
     id: ID! # must end up being the app address: String so there will be 7 of these
-    canChangeBudget: [Bytes!]
-    canChangePeriod: [Bytes!]
-    canCreatePayments: [Bytes!]
-    canManagePayments: [Bytes!]
-    canExecutePayments: [Bytes!]
+    canChangeBudget: [String!]
+    canChangePeriod: [String!]
+    canCreatePayments: [String!]
+    canManagePayments: [String!]
+    canExecutePayments: [String!]
     managesChangeBudget: Bytes
     managesChangePeriod: Bytes
     managesCreatePayments: Bytes
@@ -97,11 +97,11 @@ type FinancePermission @entity {
 
 type TokenManagerPermission @entity {
     id: ID! # must end up being the app address: String so there will be 7 of these
-    canAssign: [Bytes!]
-    canBurn: [Bytes!]
-    canIssue: [Bytes!]
-    canMint: [Bytes!]
-    canRevokeVestings: [Bytes!]
+    canAssign: [String!]
+    canBurn: [String!]
+    canIssue: [String!]
+    canMint: [String!]
+    canRevokeVestings: [String!]
     managesAssign: Bytes
     managesBurn: Bytes
     managesIssue: Bytes
@@ -111,9 +111,9 @@ type TokenManagerPermission @entity {
 
 type VotingPermission @entity {
     id: ID! # must end up being the app address: String so there will be 7 of these
-    canCreateVotes: [Bytes!]
-    canModifyQuorum: [Bytes!]
-    canModifySupport: [Bytes!]
+    canCreateVotes: [String!]
+    canModifyQuorum: [String!]
+    canModifySupport: [String!]
     managesCreateVotes: Bytes
     managesModifyQuorum: Bytes
     managesModifySupport: Bytes
@@ -121,27 +121,27 @@ type VotingPermission @entity {
 
 type EVMScriptRegistryPermission @entity {
     id: ID! # must end up being the app address: String so there will be 7 of these
-    canAddExecutor: [Bytes!]
-    canEnableAndDisableExecutors: [Bytes!]
+    canAddExecutor: [String!]
+    canEnableAndDisableExecutors: [String!]
     managesAddExecutor: Bytes
     managesEnableAndDisableExecutors: Bytes
 }
 
 type ACLPermission @entity {
     id: ID! # must end up being the app address: String so there will be 7 of these
-    canCreatePermissions: [Bytes!]
+    canCreatePermissions: [String!]
     managesCreatePermissions: Bytes
 }
 
 type KernelPermission @entity {
     id: ID! # must end up being the app address: String so there will be 7 of these
-    canManageApps: [Bytes!]
+    canManageApps: [String!]
     managesManageApps: Bytes
 }
 
 type VaultPermission @entity {
     id: ID! # must end up being the app address: String so there will be 7 of these
-    canTransfer: [Bytes!]
+    canTransfer: [String!]
     managesTransfers: Bytes
 }
 
