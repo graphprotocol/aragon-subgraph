@@ -80,6 +80,144 @@ Below are a few ways to show how to query the Aragon-Subgraph for data.
 The query below shows all the information that is possible to query, but is limited to the first 5 instances. There are many other filtering options that can be used, just check out the [querying api](https://github.com/graphprotocol/graph-node/blob/master/docs/graphql-api.md).
 
 ```
+{
+  kernels {
+    id
+    baseAddress
+    appID
+    upgradeable
+    defaultApp
+    permissions {
+      canManageApps
+      managesManageApps
+    }
+  }
+  acls {
+    id
+    baseAddress
+    appID
+    upgradeable
+    defaultApp
+    permissions {
+      canCreatePermissions
+      managesCreatePermissions
+    }
+  }
+  evmscriptRegistries {
+    id
+    baseAddress
+    appID
+    upgradeable
+    defaultApp
+    permissions {
+      canAddExecutor
+      canEnableAndDisableExecutors
+      managesAddExecutor
+      managesEnableAndDisableExecutors
+    }
+    executors
+  }
+  vaults {
+    id
+    baseAddress
+    appID
+    upgradeable
+    defaultApp
+    permissions {
+      canTransfer
+      managesTransfers
+    }
+    transfers {
+      amount
+      tokenAddress
+      to
+    }
+    deposits {
+      amount
+      tokenAddress
+      sender
+    }
+  }
+  tokenManagers {
+    id
+    baseAddress
+    appID
+    upgradeable
+    defaultApp
+    permissions {
+      canAssign
+      canBurn
+      canIssue
+      canMint
+      canRevokeVestings
+      managesBurn
+      managesMint
+      managesIssue
+      managesAssign
+      managesRevokeVestings
+    }
+  }
+  finances(first: 5) {
+    id
+    baseAddress
+    appID
+    upgradeable
+    defaultApp
+    permissions {
+      canChangeBudget
+      canChangePeriod
+      canCreatePayments
+      canManagePayments
+      canExecutePayments
+      managesChangeBudget
+      managesChangePeriod
+      managesCreatePayments
+      managesManagePayments
+      managesExecutePayments
+    }
+    periods{
+      id
+      starts
+      ends
+    }
+    transactions{
+      id
+      incoming
+      amount
+      entity
+      reference
+    }
+    
+  }
+  votings {
+    id
+    baseAddress
+    appID
+    upgradeable
+    defaultApp
+    permissions {
+      canCreateVotes
+      canModifyQuorum
+      canModifySupport
+      managesCreateVotes
+      managesModifyQuorum
+      managesModifySupport
+    }
+    supportRequiredPercent
+    minQuorumPercent
+  }
+  votes(first: 5) {
+    id
+    appAddress
+    creator
+    metadata
+    supporters
+    supportersStake
+    nonSupporters
+    nonSupportersStake
+    executed
+  }
+}
 
 ```
 The command above can be copy pasted into the Graphiql interface in your browser at `127.0.0.1:8000`.
