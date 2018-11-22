@@ -18,7 +18,7 @@ export function handleDeployDAO(event: DeployDAO): void {
 }
 
 export function handleDeployScriptRegistry(event: DeployEVMScriptRegistry): void {
-  let id = event.params.reg.toHex()
-  let reg = new EVMScriptRegistry()
-  store.set("EVMScriptRegistry", id, reg)
+  // let id = event.params.reg.toHex()
+  // let reg = new EVMScriptRegistry()
+  // store.set("EVMScriptRegistry", id, reg)
 }
