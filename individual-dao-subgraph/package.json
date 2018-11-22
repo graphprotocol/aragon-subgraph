@@ -11,8 +11,8 @@
     "deploy": "graph deploy subgraph.yaml --ipfs /ip4/127.0.0.1/tcp/5001 --node http://127.0.0.1:8020 --subgraph-name single-dao-subgraph"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.4.0",
-    "@graphprotocol/graph-ts": "^0.4.0"
+    "@graphprotocol/graph-cli": "^0.4.1",
+    "@graphprotocol/graph-ts": "^0.4.2"
   },
   "author": "David Kajpust <kajpustd@gmail.com>"
 }

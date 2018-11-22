@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@graphprotocol/graph-cli@^0.4.0":
+"@graphprotocol/graph-cli@^0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@graphprotocol/graph-cli/-/graph-cli-0.4.1.tgz#22fade7b5f1d5455980e4ced284f14c0420fad36"
   integrity sha512-dXAJBSqkoAVNj9haqI3tL+ECx1N28e3xV7Fbe3vCT/DWTekDyUAkkc65s9FG4PvFymHUzA2VwjJz8awlwY3zuA==
@@ -25,7 +25,7 @@
     request "^2.88.0"
     winston "^3.0.0"
 
-"@graphprotocol/graph-ts@^0.4.0":
+"@graphprotocol/graph-ts@^0.4.2":
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/@graphprotocol/graph-ts/-/graph-ts-0.4.2.tgz#d111eb5b505a6ae5825ef976c40055056646383e"
   integrity sha512-z19vLZ8fw04EcSu7alWdvvmNG05yFbfdJIAKBWDloctmCm56692S0X+QIuU92p7JmkW7XHcXf97uX5HCsEc9Zg==

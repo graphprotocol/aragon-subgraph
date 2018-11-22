@@ -5,3 +5,9 @@ type DAO @entity {
 type EVMScriptRegistry @entity {
     id: ID! # reg address
 }
+
+type ENSResolver @entity {
+    id: ID! # subnode
+    owner: Bytes!
+    resolver: Bytes!
+}
