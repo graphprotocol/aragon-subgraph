@@ -12,6 +12,7 @@ import {SetApp, NewAppProxy} from '../types/Kernel/Kernel'
 import {ACL, Vault, EVMScriptRegistry, Kernel, TokenManager, Finance, Voting, BaseApp} from '../types/schema'
 
 import {
+  KERNEL_CORE_APP_ID,
   APP_DEFAULT_VOTING_APP_ID,
   APP_DEFAULT_TOKENMANGER_APP_ID,
   APP_DEFAULT_FINANCE_APP_ID,
@@ -23,11 +24,18 @@ import {
 } from './constants'
 
 
-// NOTE - does not account for unknown apps
 export function handleSetApp(event: SetApp): void {
   let id = event.params.appId.toHex()
-  let namespaceHash = event.params.namespace.toHex() //is this converstion ok?
+  let namespaceHash = event.params.namespace.toHex()
   let proxyAddressID = event.params.app.toHex()
+  let kernelAddress = event.address.toHex()
+
+  // one time instantiation of the kernel app, will run on the first time this event gets called
+  if (store.get("kernel", kernelAddress) == null){
+    let kernel = new Kernel()
+    kernel.appID = KERNEL_CORE_APP_ID
+    store.set("Kernel", kernelAddress, kernel)
+  }
 
   if (namespaceHash == KERNEL_APP_BASES_NAMESPACE) {
 
@@ -69,7 +77,6 @@ export function handleSetApp(event: SetApp): void {
   }
 }
 
-// NOTE - does not account for unknown apps
   export function handleNewProxyApp(event: NewAppProxy): void {
     let id = event.params.proxy.toHex()
     let appID = event.params.appId.toHex()

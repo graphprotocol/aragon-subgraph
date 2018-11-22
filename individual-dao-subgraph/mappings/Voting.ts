@@ -31,7 +31,7 @@ export function handleStartVote(event: StartVote): void {
   vote.nonSupportersStake = new Array<BigInt>()
   vote.supporters = new Array<Bytes>()
   vote.supportersStake = new Array<BigInt>()
-  vote.executed = false // still getting an error where false shows up as null 
+  vote.executed = false // still getting an error where false shows up as null
 
   store.set("Vote", id, vote)
 }

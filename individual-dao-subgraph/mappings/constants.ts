@@ -8,7 +8,7 @@ export const KERNEL_DEFAULT_EVM_SCRIPT_REGISTRY_ID = "0xddbcfd564f642ab5627cf68b
 export const APP_DEFAULT_TOKENMANGER_APP_ID = "0x6b20a3010614eeebf2138ccec99f028a61c811b3b1a3343b6ff635985c75c91f";
 export const APP_DEFAULT_VOTING_APP_ID = "0x9fa3927f639745e587912d4b0fea7ef9013bf93fb907d29faeab57417ba6e1d4";
 export const APP_DEFAULT_FINANCE_APP_ID = "0xbf8491150dafc5dcaee5b861414dca922de09ccffa344964ae167212e8c673ae";
-// export const KERNEL_CORE_APP_ID = string = "0x3b4bf6bf3ad5000ecf0f989d5befde585c6860fea3e574a4fab4c49d1c177d9c"; not used
+export const KERNEL_CORE_APP_ID = "0x3b4bf6bf3ad5000ecf0f989d5befde585c6860fea3e574a4fab4c49d1c177d9c";
 
 // namespace variables
 export const KERNEL_APP_BASES_NAMESPACE = "0xf1f3eb40f5bc1ad1344716ced8b8a0431d840b5783aea1fd01786bc26f35ac0f";
