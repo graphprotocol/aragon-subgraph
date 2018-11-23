@@ -3,7 +3,7 @@ import 'allocator/arena'
 export {allocate_memory}
 
 // Import APIs from graph-ts
-import {store, Bytes, Value, BigInt} from '@graphprotocol/graph-ts'
+import {store, Bytes, Value, BigInt, TypedMap} from '@graphprotocol/graph-ts'
 
 // Import event types from the registrar contract ABI
 import {SetPermission, SetPermissionParams, ChangePermissionManager, ScriptResult} from '../types/ACL/ACL'
@@ -17,7 +17,13 @@ import {
   EVMScriptRegistryPermission,
   ACLPermission,
   KernelPermission,
-  VaultPermission
+  VaultPermission,
+  TokenManagerManagers,
+  FinanceManagers,
+  VotingManagers,
+  EVMScriptRegistryManagers,
+  VaultManagers,
+  ACLManagers, KernelManagers,
 } from '../types/schema'
 
 import {
@@ -34,522 +40,350 @@ import {
   VOTING_CREATE_VOTES_ROLE_HASH,
   VOTING_MODIFY_QUORUM_ROLE_HASH,
   VOTING_MODIFY_SUPPORT_ROLE_HASH,
-  EVM_SCRIPT_REGISTY_REGISTRY_ADD_EXECUTOR_ROLE_HASH,
-  EVM_SCRIPT_REGISTY_REGISTRY_MANAGER_ROLE_HASH, // alias for enable and disable executors
-
-  // might not need, since they are the only roles, and did not have to distingush
+  EVM_SCRIPT_REGISTRY_ADD_EXECUTOR_ROLE_HASH,
+  EVM_SCRIPT_REGISTRY_MANAGER_ROLE_HASH, // alias for enable and disable executors
   VAULT_TRANSFER_ROLE_HASH,
   ACL_CREATE_PERMISSIONS_ROLE_HASH,
   KERNEL_APP_MANAGER_ROLE_HASH,
-
-  APP_DEFAULT_VOTING_APP_ID,
-  APP_DEFAULT_TOKENMANGER_APP_ID,
-  APP_DEFAULT_FINANCE_APP_ID,
-  KERNEL_DEFAULT_VAULT_APP_ID,
-  KERNEL_DEFAULT_ACL_APP_ID,
-  KERNEL_DEFAULT_EVM_SCRIPT_REGISTRY_ID,
-  ZERO_ADDR
 } from './constants'
 
 
-// -     event SetPermission(address indexed entity, address indexed app, bytes32 indexed role, bool allowed); 759b9a74d
-// -     event SetPermissionParams(address indexed entity, address indexed app, bytes32 indexed role, bytes32 paramsHash);
-// -     event ChangePermissionManager(address indexed app, bytes32 indexed role, address indexed manager); f3addc8b8
-// -     event ScriptResult(address indexed executor, bytes script, bytes input, bytes returnData);
+let roleLookupTable = new TypedMap<string, string>();
+roleLookupTable.set(TOKEN_MANAGER_REVOKE_VESTINGS_ROLE_HASH, 'CanRevokeVestings')
+roleLookupTable.set(TOKEN_MANAGER_MINT_ROLE_HASH, 'CanMint')
+roleLookupTable.set(TOKEN_MANAGER_ISSUE_ROLE_HASH, 'CanIssue')
+roleLookupTable.set(TOKEN_MANAGER_BURN_ROLE_HASH, 'CanBurn')
+roleLookupTable.set(TOKEN_MANAGER_ASSIGN_ROLE_HASH, 'CanAssign')
+roleLookupTable.set(FINANCE_CHANGE_BUDGETS_ROLE_HASH, 'CanChangeBudget')
+roleLookupTable.set(FINANCE_CHANGE_PERIOD_ROLE_HASH, 'CanChangePeriod')
+roleLookupTable.set(FINANCE_CREATE_PAYMENTS_ROLE_HASH, 'CanCreatePayments')
+roleLookupTable.set(FINANCE_MANAGE_PAYMENTS_ROLE_HASH, 'CanManagePayments')
+roleLookupTable.set(FINANCE_EXECUTE_PAYMENTS_ROLE_HASH, 'CanExecutePayments')
+roleLookupTable.set(VOTING_CREATE_VOTES_ROLE_HASH, 'CanCreateVotes')
+roleLookupTable.set(VOTING_MODIFY_QUORUM_ROLE_HASH, 'CanModifyQuorum')
+roleLookupTable.set(VOTING_MODIFY_SUPPORT_ROLE_HASH, 'CanModifySupport')
+roleLookupTable.set(EVM_SCRIPT_REGISTRY_ADD_EXECUTOR_ROLE_HASH, 'CanAddExecutor')
+roleLookupTable.set(EVM_SCRIPT_REGISTRY_MANAGER_ROLE_HASH, 'CanEnableAndDisableExecutors')
+roleLookupTable.set(VAULT_TRANSFER_ROLE_HASH, 'CanTransfer')
+roleLookupTable.set(ACL_CREATE_PERMISSIONS_ROLE_HASH, 'CanCreatePermissions')
+roleLookupTable.set(KERNEL_APP_MANAGER_ROLE_HASH, 'CanManageApps')
+
+
+//   // NOTE - getting some weird results with splice here, on random instance (see the queries .  it seems to me like there is an error with how it is written.
+//   // Because i use it the same way 5 times, and in this instance it deletes the wrong element, and then replaces it with a duplicate of a different element.
+//   // I saw this while testing on rinkeby. Must keep an eye on it ( i can't reproduce it at the moment
 
 export function handleSetPermission(event: SetPermission): void {
   let id = event.params.app.toHex()
   let role = event.params.role.toHex()
   let entity = event.params.entity.toHex()
 
-// VAULT //////////////////////
+  // Vault
   if (store.get("Vault", id) != null) {
-    let vp = store.get("VaultPermission", id) as VaultPermission | null
+    let vp = store.get("VaultPermission", role) as VaultPermission | null
     if (vp == null) {
       vp = new VaultPermission()
-      vp.canTransfer = new Array<string>()
+      vp.entities = new Array<string>()
+      vp.appAddress = id
     }
     if (event.params.allowed == true) {
-      let canTransfer = vp.canTransfer
-      canTransfer.push(entity)
-      vp.canTransfer = canTransfer
-      store.set("VaultPermission", id, vp as VaultPermission)
-    } else {
-      let canTransfer = vp.canTransfer
-      let i = canTransfer.indexOf(entity)
-      canTransfer.splice(i, 1)
-      vp.canTransfer = canTransfer
-      store.set("VaultPermission", id, vp as VaultPermission)
+      let roleName = roleLookupTable.get(role) as string
+      vp.role = roleName
+      let entities = vp.entities
+      entities.push(entity)
+      vp.entities = entities
+      store.set("VaultPermission", role, vp as VaultPermission)
+    } else  if (event.params.allowed == false){
+      let entities = vp.entities
+      let i = entities.indexOf(entity)
+      entities.splice(i, 1)
+      vp.entities = entities
+      store.set("VaultPermission", role, vp as VaultPermission)
     }
-
   }
-  // TOKEN MANAGER //////////////////////
 
+  // Token Manager
   else if (store.get("TokenManager", id) != null) {
-    let tmp = store.get("TokenManagerPermission", id) as TokenManagerPermission | null
+    let tmp = store.get("TokenManagerPermission", role) as TokenManagerPermission | null
     if (tmp == null) {
       tmp = new TokenManagerPermission()
-      tmp.canIssue = new Array<string>()
-      tmp.canRevokeVestings = new Array<string>()
-      tmp.canMint = new Array<string>()
-      tmp.canBurn = new Array<string>()
-      tmp.canAssign = new Array<string>()
+      tmp.entities = new Array<string>()
+      tmp.appAddress = id
     }
     if (event.params.allowed == true) {
-      if (role == TOKEN_MANAGER_REVOKE_VESTINGS_ROLE_HASH) {
-        let revokeVestings = tmp.canRevokeVestings
-        if (revokeVestings.indexOf(entity) == -1) {
-          revokeVestings.push(entity)
-          tmp.canRevokeVestings = revokeVestings
-          store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
-        }
-      } else if (role == TOKEN_MANAGER_MINT_ROLE_HASH) {
-        let minters = tmp.canMint
-        if (minters.indexOf(entity) == -1) {
-          minters.push(entity)
-          tmp.canMint = minters
-          store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
-        }
-      } else if (role == TOKEN_MANAGER_ISSUE_ROLE_HASH) {
-        let issuers = tmp.canIssue
-        if (issuers.indexOf(entity) == -1) {
-          issuers.push(entity)
-          tmp.canIssue = issuers
-          store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
-        }
-      } else if (role == TOKEN_MANAGER_BURN_ROLE_HASH) {
-        let burners = tmp.canBurn
-        if (burners.indexOf(entity) == -1) {
-          burners.push(entity)
-          tmp.canBurn = burners
-          store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
-        }
-      } else if (role == TOKEN_MANAGER_ASSIGN_ROLE_HASH) {
-        let assigners = tmp.canAssign
-        if (assigners.indexOf(entity) == -1) {
-          assigners.push(entity)
-          tmp.canAssign = assigners
-          store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
-        }
-      }
+      let roleName = roleLookupTable.get(role) as string
+      tmp.role = roleName
+      let entities = tmp.entities
+      entities.push(entity)
+      tmp.entities = entities
+      store.set("TokenManagerPermission", role, tmp as TokenManagerPermission)
     } else if (event.params.allowed == false) {
-      if (role == TOKEN_MANAGER_REVOKE_VESTINGS_ROLE_HASH) {
-        let revokeVestings = tmp.canRevokeVestings
-        let i = revokeVestings.indexOf(entity)
-        revokeVestings.splice(i, 1)
-        tmp.canRevokeVestings = revokeVestings
-        store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
-      } else if (role == TOKEN_MANAGER_MINT_ROLE_HASH) {
-        let minters = tmp.canMint
-        let i = minters.indexOf(entity)
-        minters.splice(i, 1)
-        tmp.canMint = minters
-        store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
-      } else if (role == TOKEN_MANAGER_ISSUE_ROLE_HASH) {
-        let issuers = tmp.canIssue
-        let i = issuers.indexOf(entity)
-        issuers.splice(i, 1)
-        tmp.canIssue = issuers
-        store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
-
-        // NOTE - getting some weird results with splice here.  it seems to me like there is an error with how it is written.
-        // Because i use it the same way 5 times, and in this instance it deletes the wrong element, and then replaces it with a duplicate of a different element.
-        // I saw this while testing on rinkeby. Must keep an eye on it ( i can't reproduce it at the moment
-      } else if (role == TOKEN_MANAGER_BURN_ROLE_HASH) {
-        let burners = tmp.canBurn
-        let i = burners.indexOf(entity)
-        burners.splice(i, 1)
-        tmp.canBurn = burners
-        store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
-      } else if (role == TOKEN_MANAGER_ASSIGN_ROLE_HASH) {
-        let assigners = tmp.canAssign
-        let i = assigners.indexOf(entity)
-        assigners.splice(i, 1)
-        tmp.canAssign = assigners
-        store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
-      }
-
+      let entities = tmp.entities
+      let i = entities.indexOf(entity)
+      entities.splice(i, 1)
+      tmp.entities = entities
+      store.set("TokenManagerPermission", role, tmp as TokenManagerPermission)
     }
+  }
 
-    // FINANCE //////////////////////
-  } else if (store.get("Finance", id) != null) {
-    let fp = store.get("FinancePermission", id) as FinancePermission | null
+  // Finance
+  else if (store.get("Finance", id) != null) {
+    let fp = store.get("FinancePermission", role) as FinancePermission | null
     if (fp == null) {
       fp = new FinancePermission()
-      fp.canChangeBudget = new Array<string>()
-      fp.canChangePeriod = new Array<string>()
-      fp.canCreatePayments = new Array<string>()
-      fp.canExecutePayments = new Array<string>()
-      fp.canManagePayments = new Array<string>()
-    }
-    if (event.params.allowed == true) {
-      if (role == FINANCE_EXECUTE_PAYMENTS_ROLE_HASH) {
-        let executePayments = fp.canExecutePayments
-        if (executePayments.indexOf(entity) == -1) {
-          executePayments.push(entity)
-          fp.canExecutePayments = executePayments
-          store.set("FinancePermission", id, fp as FinancePermission)
-        }
-      } else if (role == FINANCE_MANAGE_PAYMENTS_ROLE_HASH) {
-        let managePayments = fp.canManagePayments
-        if (managePayments.indexOf(entity) == -1) {
-          managePayments.push(entity)
-          fp.canManagePayments = managePayments
-          store.set("FinancePermission", id, fp as FinancePermission)
-        }
-      } else if (role == FINANCE_CREATE_PAYMENTS_ROLE_HASH) {
-        let changePeriods = fp.canChangePeriod
-        if (changePeriods.indexOf(entity) == -1) {
-          changePeriods.push(entity)
-          fp.canChangePeriod = changePeriods
-          store.set("FinancePermission", id, fp as FinancePermission)
-        }
-      } else if (role == FINANCE_CHANGE_BUDGETS_ROLE_HASH) {
-        let changeBudgets = fp.canChangeBudget
-        if (changeBudgets.indexOf(entity) == -1) {
-          changeBudgets.push(entity)
-          fp.canChangeBudget = changeBudgets
-          store.set("FinancePermission", id, fp as FinancePermission)
-        }
-      } else if (role == FINANCE_CHANGE_PERIOD_ROLE_HASH) {
-        let createPayments = fp.canCreatePayments
-        if (createPayments.indexOf(entity) == -1) {
-          createPayments.push(entity)
-          fp.canCreatePayments = createPayments
-          store.set("FinancePermission", id, fp as FinancePermission)
-        }
+      fp.entities = new Array<string>()
+      fp.appAddress = id
+      if (event.params.allowed == true) {
+        let roleName = roleLookupTable.get(role) as string
+        fp.role = roleName
+        let entities = fp.entities
+        entities.push(entity)
+        fp.entities = entities
+        store.set("FinancePermission", role, fp as FinancePermission)
+      } else if (event.params.allowed == false) {
+        let entities = fp.entities
+        let i = entities.indexOf(entity)
+        entities.splice(i, 1)
+        fp.entities = entities
+        store.set("FinancePermission", role, fp as FinancePermission)
       }
-    } else if (event.params.allowed == false) {
-      if (role == FINANCE_EXECUTE_PAYMENTS_ROLE_HASH) {
-        let executePayments = fp.canExecutePayments
-        let i = executePayments.indexOf(entity)
-        executePayments.splice(i, 1)
-        fp.canExecutePayments = executePayments
-        store.set("FinancePermission", id, fp as FinancePermission)
-      } else if (role == FINANCE_MANAGE_PAYMENTS_ROLE_HASH) {
-        let managePayments = fp.canManagePayments
-        let i = managePayments.indexOf(entity)
-        managePayments.splice(i, 1)
-        fp.canManagePayments = managePayments
-        store.set("FinancePermission", id, fp as FinancePermission)
-
-        //Seem to be getting an error here too... usually with 0xffffffff
-      } else if (role == FINANCE_CREATE_PAYMENTS_ROLE_HASH) {
-        let createPayments = fp.canCreatePayments
-        let i = createPayments.indexOf(entity)
-        createPayments.splice(i, 1)
-        fp.canCreatePayments = createPayments
-        store.set("FinancePermission", id, fp as FinancePermission)
-      } else if (role == FINANCE_CHANGE_BUDGETS_ROLE_HASH) {
-        let changeBudgets = fp.canChangeBudget
-        let i = changeBudgets.indexOf(entity)
-        changeBudgets.splice(i, 1)
-        fp.canChangeBudget = changeBudgets
-        store.set("FinancePermission", id, fp as FinancePermission)
-        // missing 0xfffff here too
-      } else if (role == FINANCE_CHANGE_PERIOD_ROLE_HASH) {
-        let changesPeriod = fp.canChangePeriod
-        let i = changesPeriod.indexOf(entity)
-        changesPeriod.splice(i, 1)
-        fp.canChangePeriod = changesPeriod
-        store.set("FinancePermission", id, fp as FinancePermission)
-      }
-
     }
+  }
 
-    // VOTING
-  } else if (store.get("Voting", id) != null) {
-    let vp = store.get("VotingPermission", id) as VotingPermission | null
+  // Voting
+  else if (store.get("Voting", id) != null) {
+    let vp = store.get("VotingPermission", role) as VotingPermission | null
     if (vp == null) {
       vp = new VotingPermission()
-      vp.canCreateVotes = new Array<string>()
-      vp.canModifyQuorum = new Array<string>()
-      vp.canModifySupport = new Array<string>()
+      vp.entities = new Array<string>()
+      vp.appAddress = id
     }
     if (event.params.allowed == true) {
-      if (role == VOTING_MODIFY_SUPPORT_ROLE_HASH) {
-        let modifyingSupport = vp.canModifySupport
-        if (modifyingSupport.indexOf(entity) == -1) {
-          modifyingSupport.push(entity)
-          vp.canModifySupport = modifyingSupport
-          store.set("VotingPermission", id, vp as VotingPermission)
-        }
-      } else if (role == VOTING_MODIFY_QUORUM_ROLE_HASH) {
-        let modifyingQuorum = vp.canModifyQuorum
-        if (modifyingQuorum.indexOf(entity) == -1) {
-          modifyingQuorum.push(entity)
-          vp.canModifyQuorum = modifyingQuorum
-          store.set("VotingPermission", id, vp as VotingPermission)
-        }
-      } else if (role == VOTING_CREATE_VOTES_ROLE_HASH) {
-        let creatingVotes = vp.canCreateVotes
-        if (creatingVotes.indexOf(entity) == -1) {
-          creatingVotes.push(entity)
-          vp.canCreateVotes = creatingVotes
-          store.set("VotingPermission", id, vp as VotingPermission)
-        }
-      }
+      let roleName = roleLookupTable.get(role) as string
+      vp.role = roleName
+      let entities = vp.entities
+      entities.push(entity)
+      vp.entities = entities
+      store.set("VotingPermission", role, vp as VotingPermission)
     } else if (event.params.allowed == false) {
-      if (role == VOTING_MODIFY_SUPPORT_ROLE_HASH) {
-        let modifyingSupport = vp.canModifySupport
-        let i = modifyingSupport.indexOf(entity)
-        modifyingSupport.splice(i, 1)
-        vp.canModifySupport = modifyingSupport
-        store.set("VotingPermission", id, vp as VotingPermission)
-      } else if (role == VOTING_MODIFY_QUORUM_ROLE_HASH) {
-        let modifyingQuorum = vp.canModifyQuorum
-        let i = modifyingQuorum.indexOf(entity)
-        modifyingQuorum.splice(i, 1)
-        vp.canModifyQuorum = modifyingQuorum
-        store.set("VotingPermission", id, vp as VotingPermission)
-      } else if (role == VOTING_CREATE_VOTES_ROLE_HASH) {
-        let creatingVotes = vp.canCreateVotes
-        let i = creatingVotes.indexOf(entity)
-        creatingVotes.splice(i, 1)
-        vp.canCreateVotes = creatingVotes
-        store.set("VotingPermission", id, vp as VotingPermission)
-      }
+      let entities = vp.entities
+      let i = entities.indexOf(entity)
+      entities.splice(i, 1)
+      vp.entities = entities
+      store.set("VotingPermission", role, vp as VotingPermission)
     }
-    //EVMScriptRegistry
-  } else if (store.get("EVMScriptRegistry", id) != null) {
-    let evmsr = store.get("EVMScriptRegistryPermission", id) as EVMScriptRegistryPermission | null
+  }
+
+  // EVMScriptRegistry
+  else if (store.get("EVMScriptRegistry", id) != null) {
+    let evmsr = store.get("EVMScriptRegistryPermission", role) as EVMScriptRegistryPermission | null
     if (evmsr == null) {
       evmsr = new EVMScriptRegistryPermission()
-      evmsr.canAddExecutor = new Array<string>()
-      evmsr.canEnableAndDisableExecutors = new Array<string>()
+      evmsr.entities = new Array<string>()
+      evmsr.appAddress = id
     }
     if (event.params.allowed == true) {
-      if (role == EVM_SCRIPT_REGISTY_REGISTRY_ADD_EXECUTOR_ROLE_HASH) {
-        let addingExecutor = evmsr.canAddExecutor
-        if (addingExecutor.indexOf(entity) == -1) {
-          addingExecutor.push(entity)
-          evmsr.canAddExecutor = addingExecutor
-          store.set("EVMScriptRegistryPermission", id, evmsr as EVMScriptRegistryPermission)
-        }
-      } else if (role == EVM_SCRIPT_REGISTY_REGISTRY_MANAGER_ROLE_HASH) {
-        let enableDisable = evmsr.canEnableAndDisableExecutors
-        if (enableDisable.indexOf(entity) == -1) {
-          enableDisable.push(entity)
-          evmsr.canEnableAndDisableExecutors = enableDisable
-          store.set("EVMScriptRegistryPermission", id, evmsr as EVMScriptRegistryPermission)
-        }
-      }
+      let roleName = roleLookupTable.get(role) as string
+      evmsr.role = roleName
+      let entities = evmsr.entities
+      entities.push(entity)
+      evmsr.entities = entities
+      store.set("EVMScriptRegistryPermission", role, evmsr as EVMScriptRegistryPermission)
     } else if (event.params.allowed == false) {
-      if (role == EVM_SCRIPT_REGISTY_REGISTRY_ADD_EXECUTOR_ROLE_HASH) {
-        let addingExecutor = evmsr.canAddExecutor
-        let i = addingExecutor.indexOf(entity)
-        addingExecutor.splice(i, 1)
-        evmsr.canAddExecutor = addingExecutor
-        store.set("EVMScriptRegistryPermission", id, evmsr as EVMScriptRegistryPermission)
-      } else if (role == EVM_SCRIPT_REGISTY_REGISTRY_MANAGER_ROLE_HASH) {
-        let enableDisable = evmsr.canEnableAndDisableExecutors
-        let i = enableDisable.indexOf(entity)
-        enableDisable.splice(i, 1)
-        evmsr.canEnableAndDisableExecutors = enableDisable
-        store.set("EVMScriptRegistryPermission", id, evmsr as EVMScriptRegistryPermission)
-      }
+      let entities = evmsr.entities
+      let i = entities.indexOf(entity)
+      entities.splice(i, 1)
+      evmsr.entities = entities
+      store.set("EVMScriptRegistryPermission", role, evmsr as EVMScriptRegistryPermission)
     }
-  } else if (store.get("ACL", id) != null) {
-    let aclp = store.get("ACLPermission", id) as ACLPermission | null
+  }
+
+  // ACL
+  else if (store.get("ACL", id) != null) {
+    let aclp = store.get("ACLPermission", role) as ACLPermission | null
     if (aclp == null) {
       aclp = new ACLPermission()
-      aclp.canCreatePermissions = new Array<string>()
+      aclp.entities = new Array<string>()
+      aclp.appAddress = id
     }
     if (event.params.allowed == true) {
-      let createPermissions = aclp.canCreatePermissions
-      createPermissions.push(entity)
-      aclp.canCreatePermissions = createPermissions
-      store.set("ACLPermission", id, aclp as ACLPermission)
-    } else {
-      let createPermissions = aclp.canCreatePermissions
-      let i = createPermissions.indexOf(entity)
-      createPermissions.splice(i, 1)
-      aclp.canCreatePermissions = createPermissions
-      store.set("ACLPermission", id, aclp as ACLPermission)
+      let roleName = roleLookupTable.get(role) as string
+      aclp.role = roleName
+      let entities = aclp.entities
+      entities.push(entity)
+      aclp.entities = entities
+      store.set("ACLPermission", role, aclp as ACLPermission)
+    } else if (event.params.allowed == false) {
+      let entities = aclp.entities
+      let i = entities.indexOf(entity)
+      entities.splice(i, 1)
+      aclp.entities = entities
+      store.set("ACLPermission", role, aclp as ACLPermission)
     }
-    //TODO: this currently doesnt work, because the kernel app has't been registered, so it does == null
-  } else if (store.get("Kernel", id) != null) {
-    let kp = store.get("KernelPermission", id) as KernelPermission | null
+  }
+
+  // Kernel
+  else if (store.get("Kernel", id) != null) {
+    let kp = store.get("KernelPermission", role) as KernelPermission | null
     if (kp == null) {
       kp = new KernelPermission()
-      kp.canManageApps = new Array<string>()
+      kp.entities = new Array<string>()
+      kp.appAddress = id
     }
     if (event.params.allowed == true) {
-      let managingApps = kp.canManageApps
-      managingApps.push(entity)
-      kp.canManageApps = managingApps
-      store.set("KernelPermission", id, kp as KernelPermission)
-    } else {
-      let managingApps = kp.canManageApps
-      let i = managingApps.indexOf(entity)
-      managingApps.splice(i, 1)
-      kp.canManageApps = managingApps
-      store.set("KernelPermission", id, kp as KernelPermission)
+      let roleName = roleLookupTable.get(role) as string
+      kp.role = roleName
+      let entities = kp.entities
+      entities.push(entity)
+      kp.entities = entities
+      store.set("KernelPermission", role, kp as KernelPermission)
+    } else if (event.params.allowed == false) {
+      let entities = kp.entities
+      let i = entities.indexOf(entity)
+      entities.splice(i, 1)
+      kp.entities = entities
+      store.set("KernelPermission", role, kp as KernelPermission)
     }
-
   }
 }
-
-
-// -     event ChangePermissionManager(address indexed app, bytes32 indexed role, address indexed manager); f3addc8b8
-
 
 export function handleChangePermissionManager(event: ChangePermissionManager): void {
   let id = event.params.app.toHex()
   let role = event.params.role.toHex()
   let manager = event.params.manager
 
-  // VAULT //////////////////////
+  // VAULT
   if (store.get("Vault", id) != null) {
-    let vp = store.get("VaultPermission", id) as VaultPermission | null
-    if (vp == null) {
-      vp = new VaultPermission()
-      vp.canTransfer = new Array<string>()
+    let vm = store.get("VaultManagers", id) as VaultManagers | null
+    if (vm == null) {
+      vm = new VaultManagers()
     }
-    vp.managesTransfers = manager
-    store.set("VaultPermission", id, vp as VaultPermission)
+    vm.managesTransfers = manager
+    store.set("VaultManagers", id, vm as VaultManagers)
 
   }
 
-  // TOKEN MANAGER //////////////////////
+  // TOKEN MANAGER
   else if (store.get("TokenManager", id) != null) {
-    let tmp = store.get("TokenManagerPermission", id) as TokenManagerPermission | null
-    if (tmp == null) {
-      tmp = new TokenManagerPermission()
-      tmp.canIssue = new Array<string>()
-      tmp.canRevokeVestings = new Array<string>()
-      tmp.canMint = new Array<string>()
-      tmp.canBurn = new Array<string>()
-      tmp.canAssign = new Array<string>()
+    let tmm = store.get("TokenManagerManagers", id) as TokenManagerManagers | null
+    if (tmm == null) {
+      tmm = new TokenManagerManagers()
     }
     if (role == TOKEN_MANAGER_REVOKE_VESTINGS_ROLE_HASH) {
-      tmp.managesRevokeVestings = manager
-      store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
+      tmm.managesRevokeVestings = manager
+      store.set("TokenManagerManagers", id, tmm as TokenManagerManagers)
 
     } else if (role == TOKEN_MANAGER_MINT_ROLE_HASH) {
-      tmp.managesMint = manager
-      store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
+      tmm.managesMint = manager
+      store.set("TokenManagerManagers", id, tmm as TokenManagerManagers)
 
     } else if (role == TOKEN_MANAGER_ISSUE_ROLE_HASH) {
-      tmp.managesIssue = manager
-      store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
+      tmm.managesIssue = manager
+      store.set("TokenManagerManagers", id, tmm as TokenManagerManagers)
 
     } else if (role == TOKEN_MANAGER_BURN_ROLE_HASH) {
-      tmp.managesBurn = manager
-      store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
+      tmm.managesBurn = manager
+      store.set("TokenManagerManagers", id, tmm as TokenManagerManagers)
 
     } else if (role == TOKEN_MANAGER_ASSIGN_ROLE_HASH) {
-      tmp.managesAssign = manager
-      store.set("TokenManagerPermission", id, tmp as TokenManagerPermission)
+      tmm.managesAssign = manager
+      store.set("TokenManagerManagers", id, tmm as TokenManagerManagers)
     }
 
-    // FINANCE //////////////////////
-  } else if (store.get("Finance", id) != null) {
-    let fp = store.get("FinancePermission", id) as FinancePermission | null
-    if (fp == null) {
-      fp = new FinancePermission()
-      fp.canChangeBudget = new Array<string>()
-      fp.canChangePeriod = new Array<string>()
-      fp.canCreatePayments = new Array<string>()
-      fp.canExecutePayments = new Array<string>()
-      fp.canManagePayments = new Array<string>()
+  }
+
+  // FINANCE
+  else if (store.get("Finance", id) != null) {
+    let fm = store.get("FinanceManagers", id) as FinanceManagers | null
+    if (fm == null) {
+      fm = new FinanceManagers()
     }
     if (role == FINANCE_EXECUTE_PAYMENTS_ROLE_HASH) {
 
-      fp.managesExecutePayments = manager
-      store.set("FinancePermission", id, fp as FinancePermission)
+      fm.managesExecutePayments = manager
+      store.set("FinanceManagers", id, fm as FinanceManagers)
 
     } else if (role == FINANCE_MANAGE_PAYMENTS_ROLE_HASH) {
 
-      fp.managesManagePayments = manager
-      store.set("FinancePermission", id, fp as FinancePermission)
+      fm.managesManagePayments = manager
+      store.set("FinanceManagers", id, fm as FinanceManagers)
 
     } else if (role == FINANCE_CREATE_PAYMENTS_ROLE_HASH) {
 
-      fp.managesCreatePayments = manager
-      store.set("FinancePermission", id, fp as FinancePermission)
+      fm.managesCreatePayments = manager
+      store.set("FinanceManagers", id, fm as FinanceManagers)
 
     } else if (role == FINANCE_CHANGE_BUDGETS_ROLE_HASH) {
 
-      fp.managesChangeBudget = manager
-      store.set("FinancePermission", id, fp as FinancePermission)
+      fm.managesChangeBudget = manager
+      store.set("FinanceManagers", id, fm as FinanceManagers)
 
     } else if (role == FINANCE_CHANGE_PERIOD_ROLE_HASH) {
-      fp.managesChangePeriod = manager
-      store.set("FinancePermission", id, fp as FinancePermission)
+      fm.managesChangePeriod = manager
+      store.set("FinanceManagers", id, fm as FinanceManagers)
 
     }
+  }
 
-
-    // VOTING
-  } else if (store.get("Voting", id) != null) {
-    let vp = store.get("VotingPermission", id) as VotingPermission | null
-    if (vp == null) {
-      vp = new VotingPermission()
-      vp.canCreateVotes = new Array<string>()
-      vp.canModifyQuorum = new Array<string>()
-      vp.canModifySupport = new Array<string>()
+  // VOTING
+  else if (store.get("Voting", id) != null) {
+    let vm = store.get("VotingManagers", id) as VotingManagers | null
+    if (vm == null) {
+      vm = new VotingManagers()
     }
     if (role == VOTING_MODIFY_SUPPORT_ROLE_HASH) {
-      vp.managesModifySupport = manager
-      store.set("VotingPermission", id, vp as VotingPermission)
+      vm.managesModifySupport = manager
+      store.set("VotingManagers", id, vm as VotingManagers)
 
     } else if (role == VOTING_MODIFY_QUORUM_ROLE_HASH) {
-      vp.managesModifyQuorum = manager
-      store.set("VotingPermission", id, vp as VotingPermission)
+      vm.managesModifyQuorum = manager
+      store.set("VotingManagers", id, vm as VotingManagers)
 
     } else if (role == VOTING_CREATE_VOTES_ROLE_HASH) {
-      vp.managesCreateVotes = manager
-      store.set("VotingPermission", id, vp as VotingPermission)
+      vm.managesCreateVotes = manager
+      store.set("VotingManagers", id, vm as VotingManagers)
     }
+  }
 
-    //EVMScriptRegistry
-  } else if (store.get("EVMScriptRegistry", id) != null) {
-    let evmsr = store.get("EVMScriptRegistryPermission", id) as EVMScriptRegistryPermission | null
+  // EVMScriptRegistry
+  else if (store.get("EVMScriptRegistry", id) != null) {
+    let evmsr = store.get("EVMScriptRegistryManagers", id) as EVMScriptRegistryManagers | null
     if (evmsr == null) {
-      evmsr = new EVMScriptRegistryPermission()
-      evmsr.canAddExecutor = new Array<string>()
-      evmsr.canEnableAndDisableExecutors = new Array<string>()
+      evmsr = new EVMScriptRegistryManagers()
     }
-    if (role == EVM_SCRIPT_REGISTY_REGISTRY_ADD_EXECUTOR_ROLE_HASH) {
+    if (role == EVM_SCRIPT_REGISTRY_ADD_EXECUTOR_ROLE_HASH) {
       evmsr.managesAddExecutor = manager
-      store.set("EVMScriptRegistryPermission", id, evmsr as EVMScriptRegistryPermission)
-    } else if (role == EVM_SCRIPT_REGISTY_REGISTRY_MANAGER_ROLE_HASH) {
+      store.set("EVMScriptRegistryManagers", id, evmsr as EVMScriptRegistryManagers)
+    } else if (role == EVM_SCRIPT_REGISTRY_MANAGER_ROLE_HASH) {
       evmsr.managesEnableAndDisableExecutors = manager
-      store.set("EVMScriptRegistryPermission", id, evmsr as EVMScriptRegistryPermission)
+      store.set("EVMScriptRegistryManagers", id, evmsr as EVMScriptRegistryManagers)
     }
-
-    //ACL ////////////////////
-  } else if (store.get("ACL", id) != null) {
-    let aclp = store.get("ACLPermission", id) as ACLPermission | null
-    if (aclp == null) {
-      aclp = new ACLPermission()
-      aclp.canCreatePermissions = new Array<string>()
-    }
-    aclp.managesCreatePermissions = manager
-    store.set("ACLPermission", id, aclp as ACLPermission)
   }
 
-  //Kernel ////////////////////////
-  //TODO: this currently doesnt work, because the kernel app has't been registered, so it does == null
+  // ACL
+  // TODO: managers for ACL doesn't work. need to investigate
+  else if (store.get("ACL", id) != null) {
+    let am = store.get("ACLManagers", id) as ACLManagers | null
+    if (am == null) {
+      am = new ACLManagers()
+    }
+    am.managesCreatePermissions = manager
+    store.set("ACLManagers", id, am as ACLManagers)
+  }
+
+  //Kernel
   else if (store.get("Kernel", id) != null) {
-    let kp = store.get("KernelPermission", id) as KernelPermission | null
-    if (kp == null) {
-      kp = new KernelPermission()
-      kp.canManageApps = new Array<string>()
+    let km = store.get("KernelManagers", id) as KernelManagers | null
+    if (km == null) {
+      km = new KernelManagers()
     }
-    kp.managesManageApps = manager
-    store.set("KernelPermission", id, kp as KernelPermission)
+    km.managesManageApps = manager
+    store.set("KernelManagers", id, km as KernelManagers)
   }
 }
 
 
-// hasnt been called on my app, but it will be
+// hasnt been called on my app, doesnt appear to be used anywhere in the DApp, leaving out
 export function handleSetPermissionParams(event: SetPermissionParams): void {
-
-}
-
-// 99% sure we dont need
-export function handleScriptResult(event: ScriptResult): void {
 
 }

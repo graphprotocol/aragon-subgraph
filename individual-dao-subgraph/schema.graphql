@@ -1,7 +1,31 @@
+# Need to use baseapps, because the proxy addr isn't created
+# at the start, so we need to grab baseAddress from appID relationship
+type BaseApp @entity {
+    id: ID! # appID
+    baseAddress: Bytes
+}
+
 type Kernel @entity {
     id: ID! # kernel does not have proxy address, so it just needs the single address
     appID: String!
-    permissions: [KernelPermission!] @derivedFrom(field: "id")
+    permissions: [KernelPermission!] @derivedFrom(field: "appAddress")
+    managers: [KernelManagers!] @derivedFrom(field: "id")
+}
+
+type KernelPermission @entity {
+    id: ID! # the hash acl role
+    appAddress: String! #the address of the app, for references
+    entities: [String!]!
+    role: KernelRoles!
+}
+
+type KernelManagers @entity {
+    id: ID! # app address
+    managesManageApps: Bytes
+}
+
+enum KernelRoles {
+    CanManageApps
 }
 
 type ACL @entity {
@@ -9,19 +33,55 @@ type ACL @entity {
     baseAddress: Bytes
     appID: Bytes
     upgradeable: Boolean
-    permissions: [ACLPermission!] @derivedFrom(field: "id")
+    permissions: [ACLPermission!] @derivedFrom(field: "appAddress")
+    managers: [ACLManagers!] @derivedfrom(field: "id")
     defaultApp: Boolean
 }
+
+type ACLPermission @entity {
+    id: ID! # the hash acl role
+    appAddress: String! #the address of the app, for references
+    entities: [String!]!
+    role: ACLRole!
+}
+
+type ACLManagers @entity {
+    id: ID! # must end up being the app address
+    managesCreatePermissions: Bytes
+}
+
+enum ACLRole {
+    CanCreatePermissions
+}
+
 
 type EVMScriptRegistry @entity {
     id: ID! # app proxy address
     baseAddress: Bytes
     appID: Bytes
     upgradeable: Boolean
-    permissions: [EVMScriptRegistryPermission!] @derivedFrom(field: "id")
+    permissions: [EVMScriptRegistryPermission!] @derivedFrom(field: "appAddress")
+    managers: [EVMScriptRegistryManagers!] @derivedFrom(field: "id")
     defaultApp: Boolean
     executors: [Bytes!]
+}
 
+type EVMScriptRegistryPermission @entity {
+    id: ID! # the hash evmsr role
+    appAddress: String! #the address of the app, for references
+    entities: [String!]!
+    role: EVMScriptRegistryRoles!
+}
+
+type EVMScriptRegistryManagers @entity {
+    id: ID! # app address
+    managesAddExecutor: Bytes
+    managesEnableAndDisableExecutors: Bytes
+}
+
+enum EVMScriptRegistryRoles {
+    CanAddExecutor,
+    CanEnableAndDisableExecutors,
 }
 
 type Vault @entity {
@@ -29,11 +89,28 @@ type Vault @entity {
     baseAddress: Bytes
     appID: Bytes
     upgradeable: Boolean
-    permissions: [VaultPermission!] @derivedFrom(field: "id")
+    permissions: [VaultPermission!] @derivedFrom(field: "appAddress")
+    managers: [VaultManagers!] @derivedFrom(field: "id")
     defaultApp: Boolean
     transfers: [VaultTransferList!] @derivedFrom(field: "id")
     deposits: [VaultDepositList!] @derivedFrom(field: "id")
 
+}
+
+type VaultPermission @entity {
+    id: ID! # the role hash
+    appAddress: String! #the address of the app, for references
+    entities: [String!]!
+    role: VaultRole!
+}
+
+type VaultManagers @entity {
+    id: ID! # appAddress
+    managesTransfers: Bytes
+}
+
+enum VaultRole {
+    CanTransfer
 }
 
 type VaultTransferList @entity {
@@ -41,7 +118,6 @@ type VaultTransferList @entity {
     tokenAddress: [Bytes!]
     to: [Bytes!]
     amount: [BigInt!]
-
 }
 
 type VaultDepositList @entity {
@@ -49,7 +125,6 @@ type VaultDepositList @entity {
     tokenAddress: [Bytes!]
     sender: [Bytes!]
     amount: [BigInt!]
-
 }
 
 type TokenManager @entity {
@@ -57,8 +132,34 @@ type TokenManager @entity {
     baseAddress: Bytes
     appID: Bytes
     upgradeable: Boolean
-    permissions: [TokenManagerPermission!] @derivedFrom(field: "id")
+    permissions: [TokenManagerPermission!] @derivedFrom(field: "appAddress")
+    managers: [TokenManagerManagers!] @derivedFrom(field: "id")
     defaultApp: Boolean
+}
+
+# one instance of this
+type TokenManagerManagers @entity {
+    id: ID!
+    managesAssign: Bytes
+    managesBurn: Bytes
+    managesIssue: Bytes
+    managesMint: Bytes
+    managesRevokeVestings: Bytes
+}
+
+type TokenManagerPermission @entity {
+    id: ID! # the role hash
+    appAddress: String! #the address of the app, for references
+    entities: [String!]!
+    role: TokenManagerRole!
+}
+
+enum TokenManagerRole {
+    CanAssign,
+    CanBurn,
+    CanIssue,
+    CanMint,
+    CanRevokeVestings,
 }
 
 type Finance @entity {
@@ -66,12 +167,11 @@ type Finance @entity {
     baseAddress: Bytes
     appID: Bytes
     upgradeable: Boolean
-    permissions: [FinancePermission!] @derivedFrom(field: "id")
+    permissions: [FinancePermission!] @derivedFrom(field: "appAddress")
+    managers: [FinanceManagers!] @derivedFrom(field: "id")
     defaultApp: Boolean
     periods: [FinancePeriod!] @derivedFrom(field: "appAddress")
     transactions: [FinanceTransaction!] @derivedFrom(field: "appAddress")
-
-
 }
 
 type FinancePeriod @entity {
@@ -90,12 +190,37 @@ type FinanceTransaction @entity {
     reference: String
 }
 
+type FinancePermission @entity {
+    id: ID! # the hashed finance roles
+    appAddress: String! #the address of the app for references
+    entities: [String!]!
+    role: FinanceRole!
+}
+
+enum FinanceRole {
+    CanChangeBudget,
+    CanChangePeriod,
+    CanCreatePayments,
+    CanManagePayments,
+    CanExecutePayments,
+}
+
+type FinanceManagers @entity {
+    id: ID! # finance address
+    managesChangeBudget: Bytes
+    managesChangePeriod: Bytes
+    managesCreatePayments: Bytes
+    managesManagePayments: Bytes
+    managesExecutePayments: Bytes
+}
+
 type Voting @entity {
     id: ID! # app proxy address
     baseAddress: Bytes
     appID: Bytes
     upgradeable: Boolean
-    permissions: [VotingPermission!] @derivedFrom(field: "id")
+    permissions: [VotingPermission!] @derivedFrom(field: "appAddress")
+    managers: [VotingManagers!] @derivedFrom(field: "id")
     defaultApp: Boolean
     supportRequiredPercent: BigInt
     minQuorumPercent: BigInt
@@ -112,80 +237,25 @@ type Vote @entity {
     nonSupporters: [Bytes!]
     nonSupportersStake: [BigInt!]
     executed: Boolean # i.e. the vote passed
-
-}
-
-# Need to use baseapps, because the proxy addr isn't created
-# at the start, so we need to grab baseAddress from appID relationship
-type BaseApp @entity {
-    id: ID! # appID
-    baseAddress: Bytes
-}
-
-
-# Here I include all roles in one entity. It acts like an object holding all roles
-# We will only query the ones we need, when we need them, so that it can look clean across all apps
-# contains roles and managers
-type FinancePermission @entity {
-    id: ID! # must end up being the app address: String so there will be 7 of these
-    canChangeBudget: [String!]
-    canChangePeriod: [String!]
-    canCreatePayments: [String!]
-    canManagePayments: [String!]
-    canExecutePayments: [String!]
-    managesChangeBudget: Bytes
-    managesChangePeriod: Bytes
-    managesCreatePayments: Bytes
-    managesManagePayments: Bytes
-    managesExecutePayments: Bytes
-}
-
-type TokenManagerPermission @entity {
-    id: ID! # must end up being the app address: String so there will be 7 of these
-    canAssign: [String!]
-    canBurn: [String!]
-    canIssue: [String!]
-    canMint: [String!]
-    canRevokeVestings: [String!]
-    managesAssign: Bytes
-    managesBurn: Bytes
-    managesIssue: Bytes
-    managesMint: Bytes
-    managesRevokeVestings: Bytes
 }
 
 type VotingPermission @entity {
+    id: ID! # the hashed voting roles
+    appAddress: String! #the address of the app for references
+    entities: [String!]!
+    role: VotingRole!
+}
+
+type VotingManagers @entity {
     id: ID! # must end up being the app address: String so there will be 7 of these
-    canCreateVotes: [String!]
-    canModifyQuorum: [String!]
-    canModifySupport: [String!]
     managesCreateVotes: Bytes
     managesModifyQuorum: Bytes
     managesModifySupport: Bytes
 }
 
-type EVMScriptRegistryPermission @entity {
-    id: ID! # must end up being the app address: String so there will be 7 of these
-    canAddExecutor: [String!]
-    canEnableAndDisableExecutors: [String!]
-    managesAddExecutor: Bytes
-    managesEnableAndDisableExecutors: Bytes
+enum VotingRole {
+    CanModifySupport,
+    CanModifyQuorum,
+    CanCreateVotes,
 }
 
-type ACLPermission @entity {
-    id: ID! # must end up being the app address: String so there will be 7 of these
-    canCreatePermissions: [String!]
-    managesCreatePermissions: Bytes
-}
-
-type KernelPermission @entity {
-    id: ID! # must end up being the app address: String so there will be 7 of these
-    canManageApps: [String!]
-    managesManageApps: Bytes
-}
-
-type VaultPermission @entity {
-    id: ID! # must end up being the app address: String so there will be 7 of these
-    canTransfer: [String!]
-    managesTransfers: Bytes
-}

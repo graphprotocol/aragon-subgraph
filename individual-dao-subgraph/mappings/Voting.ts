@@ -36,8 +36,7 @@ export function handleStartVote(event: StartVote): void {
   store.set("Vote", id, vote)
 }
 
-// TODO: getting one instance where there is a double vote, not sure why
-// MIght be okay, you only vote with some of your stake, then do it again
+// TODO: getting one instance where there is a double vote, not sure why, but it might be okay, you only vote with some of your stake, then do it again
 export function handleCastVote(event: CastVote): void {
   let id = event.params.voteId.toString()
   let voter = event.params.voter

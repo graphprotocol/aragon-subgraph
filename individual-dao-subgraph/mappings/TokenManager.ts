@@ -11,7 +11,7 @@ import {NewVesting, RevokeVesting} from '../types/TokenManager/TokenManager'
 import {} from '../types/schema'
 
 
-//TODO: Not implementing right now, because there doesn't appear to be any functionality in the aragon dapp that allows for vesting. Focusing on just the dapp for V1
+//NOTE: Not implementing right now, because there doesn't appear to be any functionality in the aragon dapp that allows for vesting. Focusing on just the dapp for V1
 
 export function handleNewVesting(event: NewVesting): void {
 
