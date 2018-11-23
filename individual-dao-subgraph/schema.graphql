@@ -34,7 +34,7 @@ type ACL @entity {
     appID: Bytes
     upgradeable: Boolean
     permissions: [ACLPermission!] @derivedFrom(field: "appAddress")
-    managers: [ACLManagers!] @derivedfrom(field: "id")
+    managers: [ACLManagers!] @derivedFrom(field: "id")
     defaultApp: Boolean
 }
 
