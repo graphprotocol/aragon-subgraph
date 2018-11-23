@@ -2,6 +2,8 @@
 
 // appID variables
 
+import {TypedMap} from "@graphprotocol/graph-ts/index";
+
 export const KERNEL_DEFAULT_ACL_APP_ID = "0xe3262375f45a6e2026b7e7b18c2b807434f2508fe1a2a3dfb493c7df8f4aad6a";
 export const KERNEL_DEFAULT_VAULT_APP_ID = "0x7e852e0fcfce6551c13800f1e7476f982525c2b5277ba14b24339c68416336d1";
 export const KERNEL_DEFAULT_EVM_SCRIPT_REGISTRY_ID = "0xddbcfd564f642ab5627cf68b9b7d374fb4f8a36e941a75d89c87998cef03bd61";
@@ -46,3 +48,22 @@ export const KERNEL_APP_MANAGER_ROLE_HASH = "0xb6d92708f3d4817afc106147d969e229c
 // export const ZERO_ADDR = "0x0000000000000000000000000000000000000000"
 
 
+export let roleLookupTable = new TypedMap<string, string>();
+roleLookupTable.set(TOKEN_MANAGER_REVOKE_VESTINGS_ROLE_HASH, 'CanRevokeVestings')
+roleLookupTable.set(TOKEN_MANAGER_MINT_ROLE_HASH, 'CanMint')
+roleLookupTable.set(TOKEN_MANAGER_ISSUE_ROLE_HASH, 'CanIssue')
+roleLookupTable.set(TOKEN_MANAGER_BURN_ROLE_HASH, 'CanBurn')
+roleLookupTable.set(TOKEN_MANAGER_ASSIGN_ROLE_HASH, 'CanAssign')
+roleLookupTable.set(FINANCE_CHANGE_BUDGETS_ROLE_HASH, 'CanChangeBudget')
+roleLookupTable.set(FINANCE_CHANGE_PERIOD_ROLE_HASH, 'CanChangePeriod')
+roleLookupTable.set(FINANCE_CREATE_PAYMENTS_ROLE_HASH, 'CanCreatePayments')
+roleLookupTable.set(FINANCE_MANAGE_PAYMENTS_ROLE_HASH, 'CanManagePayments')
+roleLookupTable.set(FINANCE_EXECUTE_PAYMENTS_ROLE_HASH, 'CanExecutePayments')
+roleLookupTable.set(VOTING_CREATE_VOTES_ROLE_HASH, 'CanCreateVotes')
+roleLookupTable.set(VOTING_MODIFY_QUORUM_ROLE_HASH, 'CanModifyQuorum')
+roleLookupTable.set(VOTING_MODIFY_SUPPORT_ROLE_HASH, 'CanModifySupport')
+roleLookupTable.set(EVM_SCRIPT_REGISTRY_ADD_EXECUTOR_ROLE_HASH, 'CanAddExecutor')
+roleLookupTable.set(EVM_SCRIPT_REGISTRY_MANAGER_ROLE_HASH, 'CanEnableAndDisableExecutors')
+roleLookupTable.set(VAULT_TRANSFER_ROLE_HASH, 'CanTransfer')
+roleLookupTable.set(ACL_CREATE_PERMISSIONS_ROLE_HASH, 'CanCreatePermissions')
+roleLookupTable.set(KERNEL_APP_MANAGER_ROLE_HASH, 'CanManageApps')

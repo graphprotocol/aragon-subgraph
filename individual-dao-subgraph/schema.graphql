@@ -247,7 +247,7 @@ type VotingPermission @entity {
 }
 
 type VotingManagers @entity {
-    id: ID! # must end up being the app address: String so there will be 7 of these
+    id: ID! # app address
     managesCreateVotes: Bytes
     managesModifyQuorum: Bytes
     managesModifySupport: Bytes

@@ -6,7 +6,7 @@ export {allocate_memory}
 import {store, Bytes, Value, BigInt, TypedMap} from '@graphprotocol/graph-ts'
 
 // Import event types from the registrar contract ABI
-import {SetPermission, SetPermissionParams, ChangePermissionManager, ScriptResult} from '../types/ACL/ACL'
+import {SetPermission, SetPermissionParams, ChangePermissionManager} from '../types/ACL/ACL'
 
 
 // Import entity types from the schema
@@ -42,37 +42,12 @@ import {
   VOTING_MODIFY_SUPPORT_ROLE_HASH,
   EVM_SCRIPT_REGISTRY_ADD_EXECUTOR_ROLE_HASH,
   EVM_SCRIPT_REGISTRY_MANAGER_ROLE_HASH, // alias for enable and disable executors
-  VAULT_TRANSFER_ROLE_HASH,
-  ACL_CREATE_PERMISSIONS_ROLE_HASH,
-  KERNEL_APP_MANAGER_ROLE_HASH,
+  roleLookupTable
 } from './constants'
 
-
-let roleLookupTable = new TypedMap<string, string>();
-roleLookupTable.set(TOKEN_MANAGER_REVOKE_VESTINGS_ROLE_HASH, 'CanRevokeVestings')
-roleLookupTable.set(TOKEN_MANAGER_MINT_ROLE_HASH, 'CanMint')
-roleLookupTable.set(TOKEN_MANAGER_ISSUE_ROLE_HASH, 'CanIssue')
-roleLookupTable.set(TOKEN_MANAGER_BURN_ROLE_HASH, 'CanBurn')
-roleLookupTable.set(TOKEN_MANAGER_ASSIGN_ROLE_HASH, 'CanAssign')
-roleLookupTable.set(FINANCE_CHANGE_BUDGETS_ROLE_HASH, 'CanChangeBudget')
-roleLookupTable.set(FINANCE_CHANGE_PERIOD_ROLE_HASH, 'CanChangePeriod')
-roleLookupTable.set(FINANCE_CREATE_PAYMENTS_ROLE_HASH, 'CanCreatePayments')
-roleLookupTable.set(FINANCE_MANAGE_PAYMENTS_ROLE_HASH, 'CanManagePayments')
-roleLookupTable.set(FINANCE_EXECUTE_PAYMENTS_ROLE_HASH, 'CanExecutePayments')
-roleLookupTable.set(VOTING_CREATE_VOTES_ROLE_HASH, 'CanCreateVotes')
-roleLookupTable.set(VOTING_MODIFY_QUORUM_ROLE_HASH, 'CanModifyQuorum')
-roleLookupTable.set(VOTING_MODIFY_SUPPORT_ROLE_HASH, 'CanModifySupport')
-roleLookupTable.set(EVM_SCRIPT_REGISTRY_ADD_EXECUTOR_ROLE_HASH, 'CanAddExecutor')
-roleLookupTable.set(EVM_SCRIPT_REGISTRY_MANAGER_ROLE_HASH, 'CanEnableAndDisableExecutors')
-roleLookupTable.set(VAULT_TRANSFER_ROLE_HASH, 'CanTransfer')
-roleLookupTable.set(ACL_CREATE_PERMISSIONS_ROLE_HASH, 'CanCreatePermissions')
-roleLookupTable.set(KERNEL_APP_MANAGER_ROLE_HASH, 'CanManageApps')
-
-
-//   // NOTE - getting some weird results with splice here, on random instance (see the queries .  it seems to me like there is an error with how it is written.
-//   // Because i use it the same way 5 times, and in this instance it deletes the wrong element, and then replaces it with a duplicate of a different element.
-//   // I saw this while testing on rinkeby. Must keep an eye on it ( i can't reproduce it at the moment
-
+// TODO: - getting some weird results with splice here, on random instance (see the queries .  it seems to me like there is an error with how it is written.
+// Because i use it the same way 5 times, and in this instance it deletes the wrong element, and then replaces it with a duplicate of a different element.
+// I saw this while testing on rinkeby. Must keep an eye on it ( i can't reproduce it at the moment
 export function handleSetPermission(event: SetPermission): void {
   let id = event.params.app.toHex()
   let role = event.params.role.toHex()
@@ -361,7 +336,6 @@ export function handleChangePermissionManager(event: ChangePermissionManager): v
   }
 
   // ACL
-  // TODO: managers for ACL doesn't work. need to investigate
   else if (store.get("ACL", id) != null) {
     let am = store.get("ACLManagers", id) as ACLManagers | null
     if (am == null) {

@@ -17,13 +17,13 @@ dataSources:
     - name: ACL
       file: ./abis/ACL.json
     eventHandlers:
-    - event: SetPermission(address,address,bytes32,bool) # yes emitted
+    - event: SetPermission(address,address,bytes32,bool)
       handler: handleSetPermission
     - event: SetPermissionParams(address,address,bytes32,bytes32)
       handler: handleSetPermissionParams
-    - event: ChangePermissionManager(address,bytes32,address) # yes emitted
+    - event: ChangePermissionManager(address,bytes32,address)
       handler: handleChangePermissionManager
-    - event: ScriptResult(address,bytes,bytes,bytes) # is bytes an alias?
+    - event: ScriptResult(address,bytes,bytes,bytes)
       handler: handleScriptResult
     file: ./mappings/ACL.ts
 - kind: ethereum/contract

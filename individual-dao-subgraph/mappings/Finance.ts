@@ -10,7 +10,7 @@ import {NewPeriod, SetBudget, NewPayment, NewTransaction, ChangePaymentState, Pa
 // Import entity types from the schema
 import {FinancePeriod, FinanceTransaction} from '../types/schema'
 
-//TODO: add in functionality for the events that are not in the dapp, some time in the future
+// In the future, functionality for the events that are not in the dapp need to be added
 
 export function handleNewPeriod(event: NewPeriod): void {
   let id = event.params.periodId.toString()

@@ -11,13 +11,6 @@ import {StartVote, CastVote, ExecuteVote, ChangeSupportRequired, ChangeMinQuorum
 // Import entity types from the schema
 import {Vote, Voting} from '../types/schema'
 
-
-// event StartVote(uint256 indexed voteId, address indexed creator, string metadata);
-// event CastVote(uint256 indexed voteId, address indexed voter, bool supports, uint256 stake);
-// event ExecuteVote(uint256 indexed voteId);
-// event ChangeSupportRequired(uint64 supportRequiredPct);
-// event ChangeMinQuorum(uint64 minAcceptQuorumPct);
-
 export function handleStartVote(event: StartVote): void {
   let id = event.params.voteId.toString()
   let creator = event.params.creator
@@ -72,7 +65,7 @@ export function handleExecuteVote(event: ExecuteVote): void {
 
 }
 
-// Untested
+// Untested, as it is not in the dapp
 export function handleChangeSupportRequired(event: ChangeSupportRequired): void {
   let id = event.address.toHex()
   let voting = store.get("Voting", id) as Voting
@@ -80,7 +73,7 @@ export function handleChangeSupportRequired(event: ChangeSupportRequired): void 
   store.set("Voting", id, voting)
 }
 
-// Untested
+// Untested, as it is not in the dapp
 export function handleChangeMinQuorum(event: ChangeMinQuorum): void {
   let id = event.address.toHex()
   let voting = store.get("Voting", id) as Voting

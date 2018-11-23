@@ -33,7 +33,7 @@ export function handleEnable(event: EnableExecutor): void {
 
 }
 
-// NOTE - untested
+// NOTE - untested, because I can't use it in the dapp
 export function handleDisable(event: DisableExecutor): void {
   let id = event.address.toHex()
   let executor = event.params.executorAddress
