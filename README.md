@@ -84,7 +84,7 @@ The query is set up so that all the internal entities are queried from within th
 
 #### Individual Subgraph Queries
 
-```
+```graphql
 {
   kernels {
     id
@@ -236,7 +236,7 @@ The command above can be copy pasted into the Graphiql interface in your browser
 
 This subgraph is a lot simpler, as most of the good data is within DAOs. The Kits could still be tracked here, but they don't directly show information in the Dapp, so they were left out. The following can be queried:
 
-```
+```graphql
 {
   daos(first:10) {
     id
