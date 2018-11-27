@@ -2,32 +2,33 @@
 
 This is a subgraph for the [Aragon Project](https://github.com/aragon).
 
-TODO: fiture out what testnet(s) they use and update doc to reflect
-
-new notes
-- abis for apps were truffle compiled in the reposity
-- they only include events for the specific contract, not inherited contracts 
+The Aragon contracts run on Mainnet and Rinkeby. The subgraphs have been split into two types. The `Aragon-Network-Subgraph` focuses on contracts that are high level, and are important to the entire Aragon Protocol. The contracts to be considered for the `Aragon-Network-Subgraph` can be expected not to change address. The `Individual-DAO-Subgraph` indexes data for one subgraph. Since each new DAO will have their own contract addresses for their DAO, every time a new DAO is created, those contracts can be sourced, and an `Individual-DAO-Subgraph` can be created.
 
 ## Brief Description of The Graph Node Setup
 
-A Graph Node can run multiple subgraphs, and in this case it can have a subgraph for Mainnet and testnets. The subgraph ingests event data by calling to Infura through http. It can also connect to any geth node or parity node that accepts RPC calls. Fast synced geth nodes work. To use parity, the `--no-warp` flag must be used. Setting up a local Ethereum node is more reliable and faster, but Infura is the easiest way to get started. 
+A Graph Node can run multiple subgraphs, and in this case it can have a subgraph for Mainnet and testnets. The subgraph ingests event data by calling to Infura through http. It can also connect to any geth node or parity node that accepts RPC calls (such as a local one). Fast synced geth nodes do work. To use parity, the `--no-warp` flag must be used. Setting up a local Ethereum node is more reliable and faster, but Infura is the easiest way to get started. 
 
-This subgraph has three types of files which tell the Graph Node to ingest events from specific contracts. They are:
+These subgraphs has three types of files which tell the Graph Node to ingest events from specific contracts. They are:
 * The subgraph manifest (subgraph.yaml)
 * A GraphQL schema      (schema.graphql)
-* Mapping scripts       (TODO)
+* Mapping scripts       (**Individual** - ACL.ts, constants.ts, EVMScriptRegistry.ts, Finance.ts, Kernel.ts, TokenManager.ts, Vault.ts, Voting.ts | **Network** - DAOFactory.ts, ENSResolverFIFS.ts)
 
-This repository has these files created and ready to compile, so a user can start this subgraph on their own. The only thing that needs to be edited is the contract addresses in the `subgraph.yaml` file to change between Rinkeby or Mainnet.  
+This repository has these files created and ready to compile, so a user can start this subgraph on their own. The only thing that needs to be edited is the contract addresses in the `subgraph.yaml` file to change between Rinkeby or Mainnet. If you are indexing a different Individual-DAO-Subgraph, you will have to grab the contract addresses that are relevant to that subgraph. 
 
-We have provided a quick guide on how to start up the Aragon-Subgraph graph node. If these steps aren't descriptive enough, the [getting started guide](https://github.com/graphprotocol/graph-node/blob/master/docs/getting-started.md) has in depth details on running a subgraph. 
+We have provided a quick guide on how to start up the Aragon-Subgraph graph node in the next section. If these steps aren't descriptive enough, the [getting started guide](https://github.com/graphprotocol/graph-node/blob/master/docs/getting-started.md) has in depth details on running a subgraph. 
 
 ## Brief Description of the Aragon Contracts
 
-All of the contracts were examined for the Aragon ecosystem. It was originally determined that the only relevant events are emitted from the exchange, and the proxy contracts. But then the proxy contracts really only register an event once or two, upon being published to the network. This isn't too important right now, although this would be easy to add.
+All of the contracts were examined for the Aragon ecosystem. As described above, the contracts have been split into individual-dao-subgraphs and network subgraphs. 
 
-Aragon upgraded their contracts to a V2 in September 2018. V1 is still running, and emitting events. This subgraph tracks both of these versions. The simplest way to look at it is that both of these contracts exist on the network, V1 has been around over a year, and V2 a few months. The subgraph ingests both of their events. In order to do this, mappings were written for each version, and then the schemas were adjusted to support both V1 and V2 fields. The `subgraph.yaml` file also must track both of the contract addresses.
+The bulk of the work is in the individual subgraphs. The mappings written for those are complex. They are built to provide all the data needed to run the Aragon Dapp for users to easily build DAOs. Therefore some events have been left out, as while testing the Dapp it was determined that some functionality available in the smart contracts is not currently available in the Dapp. Therefore the events are rarely getting emitted right now. But they can be added in the future if needed. 
+
+The ABIs for the subgraphs were received from downloading the Aragon repositories, and using truffle to compile within the repo. This is because the `build` docs are not uploaded to github, so you must locally build to get the ABIs for the contract, which are used to create a subgraph. 
 
 ## Steps to get the Aragon-Subgraph Running 
+
+First you must choose your type of subgraph, individual or network. The steps below will work for both cases. But you must change the contract addresses you are sourcing in the `subgraph.yaml`. You can use the same postgres db, as a new db will be created for each different subgraph, which is created upon uploading the subgraph files to IPFS. 
+
   1. Install IPFS and run `ipfs init` followed by `ipfs daemon`
   2. Install PostgreSQL and run `initdb -D .postgres` followed by `pg_ctl -D .postgres start` and `createdb Aragon-subgraph-mainnet` (note this db name is used in the commands below for the mainnet examples)
   3. If using Ubuntu, you may need to install additional packages: `sudo apt-get install -y clang libpq-dev libssl-dev pkg-config`
@@ -50,21 +51,21 @@ Aragon upgraded their contracts to a V2 in September 2018. V1 is still running, 
   --ipfs 127.0.0.1:5001 \
   --ethereum-rpc mainnet-local:http://127.0.0.1:8545 
 ```
-  6. c) Or Infura Rinkeby _(NOTE: Infura Rinkeby is not reliable right now, we get inconsistent results returned. If Rinkeby data is needed, it is suggested to run your own Rinkeby node)_
+  6. c) Or Infura Rinkeby_
 ```
     cargo run -p graph-node --release --   
-    --postgres-url postgresql://USERNAME:[PASSWORD]@localhost:5432/Aragon-Rinkeby 
+    --postgres-url postgresql://USERNAME:[PASSWORD]@localhost:5432/Aragon-rinkeby 
     --ipfs 127.0.0.1:5001
-    --ethereum-rpc Rinkeby-infura:https://Rinkeby.infura.io 
+    --ethereum-rpc rinkeby-infura:https://Rinkeby.infura.io 
 
 ```
- 6. d) Or a Rinkeby local node which was started with `parity --chain=Rinkeby --no-warp  --jsonrpc-apis="all" `:
+ 6. d) Or a Rinkeby local node:
  
  ```
    cargo run -p graph-node --release -- \
-   --postgres-url postgresql://USERNAME:[PASSWORD]@localhost:5432/Aragon-Rinkeby \
+   --postgres-url postgresql://USERNAME:[PASSWORD]@localhost:5432/Aragon-rinkeby \
    --ipfs 127.0.0.1:5001 \
-   --ethereum-rpc Rinkeby-local:http://127.0.0.1:8545
+   --ethereum-rpc rinkeby-local:http://127.0.0.1:8545
  
  ```
   
@@ -74,21 +75,25 @@ Now that you have subgraph is running you may open a [Graphiql](https://github.c
 
 ## Getting started with Querying 
 
-Below are a few ways to show how to query the Aragon-Subgraph for data. 
+Below shows all the ways to query a Individual Subgraph and the network subgraph 
 
 ### Querying all possible data that is being stored
-The query below shows all the information that is possible to query, but is limited to the first 5 instances. There are many other filtering options that can be used, just check out the [querying api](https://github.com/graphprotocol/graph-node/blob/master/docs/graphql-api.md).
+The query below shows all the information that is possible to query, but is limited to the first 5 instances. Limiting to 5 or 10 instances is good, because with no limit tens of thousands of results can be queried at once, which can be slow on your computer. There are many other filtering options that can be used, just check out the [querying api](https://github.com/graphprotocol/graph-node/blob/master/docs/graphql-api.md). Also check out the [GraphQL docs](https://graphql.org/learn/) if you are completely new to GraphQL and the info in this section doesn't make sense.
+
+The query is set up so that all the internal entities are queried from within the top level entities. The top level entities are the `apps`, which are Kernel, ACL, EVMScriptRegistry, Vault, TokenManager, Finances and Voting. 
+
+#### Individual Subgraph Queries
 
 ```
 {
   kernels {
     id
-    baseAddress
     appID
-    upgradeable
-    defaultApp
     permissions {
-      canManageApps
+      entities
+      role
+    }
+    managers {
       managesManageApps
     }
   }
@@ -99,7 +104,10 @@ The query below shows all the information that is possible to query, but is limi
     upgradeable
     defaultApp
     permissions {
-      canCreatePermissions
+      entities
+      role
+    }
+    managers {
       managesCreatePermissions
     }
   }
@@ -110,8 +118,10 @@ The query below shows all the information that is possible to query, but is limi
     upgradeable
     defaultApp
     permissions {
-      canAddExecutor
-      canEnableAndDisableExecutors
+      entities
+      role
+    }
+    managers {
       managesAddExecutor
       managesEnableAndDisableExecutors
     }
@@ -124,7 +134,10 @@ The query below shows all the information that is possible to query, but is limi
     upgradeable
     defaultApp
     permissions {
-      canTransfer
+      entities
+      role
+    }
+    managers {
       managesTransfers
     }
     transfers {
@@ -145,11 +158,10 @@ The query below shows all the information that is possible to query, but is limi
     upgradeable
     defaultApp
     permissions {
-      canAssign
-      canBurn
-      canIssue
-      canMint
-      canRevokeVestings
+      entities
+      role
+    }
+    managers{
       managesBurn
       managesMint
       managesIssue
@@ -157,37 +169,35 @@ The query below shows all the information that is possible to query, but is limi
       managesRevokeVestings
     }
   }
-  finances(first: 5) {
+  finances {
     id
     baseAddress
     appID
     upgradeable
     defaultApp
     permissions {
-      canChangeBudget
-      canChangePeriod
-      canCreatePayments
-      canManagePayments
-      canExecutePayments
-      managesChangeBudget
-      managesChangePeriod
-      managesCreatePayments
-      managesManagePayments
-      managesExecutePayments
+      entities
+      role
     }
-    periods{
+    periods {
       id
       starts
       ends
     }
-    transactions{
+    transactions {
       id
       incoming
       amount
       entity
       reference
     }
-    
+    managers{
+      managesChangeBudget
+      managesChangePeriod
+      managesCreatePayments
+      managesManagePayments
+      managesExecutePayments
+    }
   }
   votings {
     id
@@ -196,9 +206,10 @@ The query below shows all the information that is possible to query, but is limi
     upgradeable
     defaultApp
     permissions {
-      canCreateVotes
-      canModifyQuorum
-      canModifySupport
+      entities
+      role
+    }
+    managers{
       managesCreateVotes
       managesModifyQuorum
       managesModifySupport
@@ -218,7 +229,26 @@ The query below shows all the information that is possible to query, but is limi
     executed
   }
 }
-
 ```
 The command above can be copy pasted into the Graphiql interface in your browser at `127.0.0.1:8000`.
+
+#### Network Subgraph Queries 
+
+This subgraph is a lot simpler, as most of the good data is within DAOs. The Kits could still be tracked here, but they don't directly show information in the Dapp, so they were left out. The following can be queried:
+
+```
+{
+  daos(first:10) {
+    id
+  }
+  evmscriptRegistries(first:10){
+    id
+  }
+  ensresolvers(orderBy: id first:10){
+    id
+    owner
+    resolver
+  }
+}
+```
 

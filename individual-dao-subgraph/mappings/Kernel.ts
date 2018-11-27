@@ -9,7 +9,17 @@ import {Bytes, store} from '@graphprotocol/graph-ts'
 import {SetApp, NewAppProxy} from '../types/Kernel/Kernel'
 
 // Import entity types from the schema
-import {ACL, Vault, EVMScriptRegistry, Kernel, TokenManager, Finance, Voting, BaseApp} from '../types/schema'
+import {
+  ACL,
+  Vault,
+  EVMScriptRegistry,
+  Kernel,
+  TokenManager,
+  Finance,
+  Voting,
+  BaseApp,
+  KernelPermission
+} from '../types/schema'
 
 import {
   KERNEL_CORE_APP_ID,

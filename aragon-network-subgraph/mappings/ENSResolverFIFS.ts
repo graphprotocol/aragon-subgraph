@@ -11,7 +11,7 @@ import {ClaimSubdomain} from '../types/ENSResolver/ENSResolver'
 import {ENSResolver} from "../types/schema";
 
 
-//This mapping is named FIFSResolvingRegistrar on etherscan. Code is found under aragon-id repo
+//This mapping is named FIFSResolvingRegistrar on etherscan. Code for this contract is found under aragon-id repo
 // mainnet - https://etherscan.io/address/0x546aa2eae2514494eeadb7bbb35243348983c59d#events
 // testnet - https://rinkeby.etherscan.io/address/0x3665e7bfd4d3254ae7796779800f5b603c43c60d#events
 
