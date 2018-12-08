@@ -27,6 +27,8 @@ The ABIs for the subgraphs were received from downloading the Aragon repositorie
 
 ## Steps to get the Aragon-Subgraph Running 
 
+> IMPORTANT NOTE: The file individual-dao-subgraph/types/ACL/ACL.ts will cause errors because The Graph Node creates duplicate types for overloaded Solidity function. The temporary fix is to just name the functions differently after they are produced by `yarn codegen`. Follow the issue here https://github.com/graphprotocol/graph-cli/issues/168, which we are fixing soon. 
+
 First you must choose your type of subgraph, individual or network. The steps below will work for both cases. But you must change the contract addresses you are sourcing in the `subgraph.yaml`. You can use the same postgres db, as a new db will be created for each different subgraph, which is created upon uploading the subgraph files to IPFS. 
 
   1. Install IPFS and run `ipfs init` followed by `ipfs daemon`

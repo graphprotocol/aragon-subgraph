@@ -81,9 +81,9 @@ dataSources:
     - name: TokenManager
       file: ./abis/TokenManager.json
     eventHandlers:
-    - event: NewVesting()
+    - event: NewVesting(address,uint256,uint256)
       handler: handleNewVesting
-    - event: RevokeVesting()
+    - event: RevokeVesting(address,uint256,uint256)
       handler: handleRevokeVesting
     file: ./mappings/TokenManager.ts
 - kind: ethereum/contract

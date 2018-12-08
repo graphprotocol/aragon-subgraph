@@ -1,9 +1,5 @@
-import 'allocator/arena'
-
-export {allocate_memory}
-
 // Import APIs from graph-ts
-import {store, Bytes, BigInt} from '@graphprotocol/graph-ts'
+import {Bytes, BigInt} from '@graphprotocol/graph-ts'
 
 // Import event types from the registrar contract ABI
 import {StartVote, CastVote, ExecuteVote, ChangeSupportRequired, ChangeMinQuorum} from '../types/Voting/Voting'
@@ -16,7 +12,7 @@ export function handleStartVote(event: StartVote): void {
   let creator = event.params.creator
   let metadata = event.params.metadata
 
-  let vote = new Vote()
+  let vote = new Vote(id)
   vote.appAddress = event.address
   vote.creator = creator
   vote.metadata = metadata
@@ -26,7 +22,7 @@ export function handleStartVote(event: StartVote): void {
   vote.supportersStake = new Array<BigInt>()
   vote.executed = false // still getting an error where false shows up as null
 
-  store.set("Vote", id, vote)
+  vote.save()
 }
 
 // Note: getting one instance where there is a double vote, not sure why, but it might be okay, you only vote with some of your stake, then do it again
@@ -35,7 +31,7 @@ export function handleCastVote(event: CastVote): void {
   let voter = event.params.voter
   let stake = event.params.stake
 
-  let vote = store.get("Vote", id) as Vote
+  let vote = Vote.load(id)
 
   if (event.params.supports == true) {
     let voters = vote.supporters
@@ -44,7 +40,7 @@ export function handleCastVote(event: CastVote): void {
     stakes.push(stake)
     vote.supporters = voters
     vote.supportersStake = stakes
-    store.set("Vote", id, vote)
+    vote.save()
   } else {
     let nonSupportVoters = vote.nonSupporters
     let nonSupportStakes = vote.nonSupportersStake
@@ -52,32 +48,32 @@ export function handleCastVote(event: CastVote): void {
     nonSupportStakes.push(stake)
     vote.nonSupporters = nonSupportVoters
     vote.nonSupportersStake = nonSupportStakes
-    store.set("Vote", id, vote)
+    vote.save()
   }
 
 }
 
 export function handleExecuteVote(event: ExecuteVote): void {
   let id = event.params.voteId.toString()
-  let vote = store.get("Vote", id) as Vote
+  let vote = Vote.load(id)
   vote.executed = true
-  store.set("Vote", id, vote)
+  vote.save()
 
 }
 
 // Untested, as it is not in the dapp
 export function handleChangeSupportRequired(event: ChangeSupportRequired): void {
   let id = event.address.toHex()
-  let voting = store.get("Voting", id) as Voting
+  let voting = Voting.load(id)
   voting.supportRequiredPercent = event.params.supportRequiredPct
-  store.set("Voting", id, voting)
+  voting.save()
 }
 
 // Untested, as it is not in the dapp
 export function handleChangeMinQuorum(event: ChangeMinQuorum): void {
   let id = event.address.toHex()
-  let voting = store.get("Voting", id) as Voting
+  let voting = Voting.load(id)
   voting.minQuorumPercent = event.params.minAcceptQuorumPct
-  store.set("Voting", id, voting)
+  voting.save()
 }
 

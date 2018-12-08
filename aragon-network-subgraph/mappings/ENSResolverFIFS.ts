@@ -1,9 +1,3 @@
-import 'allocator/arena'
-export { allocate_memory }
-
-// Import APIs from graph-ts
-import { store } from '@graphprotocol/graph-ts'
-
 // Import event types from the registrar contract ABI
 import {ClaimSubdomain} from '../types/ENSResolver/ENSResolver'
 
@@ -20,10 +14,10 @@ export function handleClaimSubdomain(event: ClaimSubdomain): void {
   let owner = event.params.owner
   let resolver = event.params.resolver
 
-  let subdomain = new ENSResolver()
+  let subdomain = new ENSResolver(id)
   subdomain.owner = owner
   subdomain.resolver = resolver
 
-  store.set("ENSResolver", id, subdomain)
+  subdomain.save()
 }
 

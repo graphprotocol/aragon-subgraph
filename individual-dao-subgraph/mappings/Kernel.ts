@@ -1,9 +1,5 @@
-import 'allocator/arena'
-
-export {allocate_memory}
-
 // Import APIs from graph-ts
-import {Bytes, store} from '@graphprotocol/graph-ts'
+import {Bytes} from '@graphprotocol/graph-ts'
 
 // Import event types from the registrar contract ABI
 import {SetApp, NewAppProxy} from '../types/Kernel/Kernel'
@@ -33,7 +29,6 @@ import {
   KERNEL_APP_BASES_NAMESPACE,
 } from './constants'
 
-
 export function handleSetApp(event: SetApp): void {
   let id = event.params.appId.toHex()
   let namespaceHash = event.params.namespace.toHex()
@@ -41,48 +36,48 @@ export function handleSetApp(event: SetApp): void {
   let kernelAddress = event.address.toHex()
 
   // one time instantiation of the kernel app, will run on the first time this event gets called
-  if (store.get("kernel", kernelAddress) == null){
-    let kernel = new Kernel()
+  if (Kernel.load(kernelAddress) == null){
+    let kernel = new Kernel(kernelAddress)
     kernel.appID = KERNEL_CORE_APP_ID
-    store.set("Kernel", kernelAddress, kernel)
+    kernel.save()
   }
 
   if (namespaceHash == KERNEL_APP_BASES_NAMESPACE) {
 
-    let baseApp = store.get("BaseApp", id) as BaseApp | null
+    let baseApp = BaseApp.load(id)
     if (baseApp == null) {
-      baseApp = new BaseApp()
+      baseApp = new BaseApp(id)
     }
     baseApp.baseAddress = event.params.app
-    store.set("BaseApp", id, baseApp as BaseApp)
+    baseApp.save()
 
     // Right now just notes that it has been stored in the mapping that indicates its a default app
     // Only Vault, ACL, and EVM get this
     // Always ran 3rd
   } else if (namespaceHash == KERNEL_APP_ADDR_NAMESPACE) {
     if (id == KERNEL_DEFAULT_VAULT_APP_ID) {
-      let vault = store.get("Vault", proxyAddressID) as Vault | null
+      let vault = Vault.load(proxyAddressID)
       if (vault == null) {
-        vault = new Vault()
+        vault = new Vault(proxyAddressID)
       }
       vault.defaultApp = true
-      store.set("Vault", proxyAddressID, vault as Vault)
+      vault.save()
     }
     else if (id == KERNEL_DEFAULT_ACL_APP_ID) {
-      let acl = store.get("ACL", proxyAddressID) as ACL | null
+      let acl = ACL.load(proxyAddressID)
       if (acl == null) {
-        acl = new ACL()
+        acl = new ACL(proxyAddressID)
       }
       acl.defaultApp = true
-      store.set("ACL", proxyAddressID, acl as ACL)
+      acl.save()
     }
     else {
-      let evmsr = store.get("EVMScriptRegistry", proxyAddressID) as EVMScriptRegistry | null
+      let evmsr = EVMScriptRegistry.load(proxyAddressID)
       if (evmsr == null) {
-        evmsr = new EVMScriptRegistry()
+        evmsr = new EVMScriptRegistry(proxyAddressID)
       }
       evmsr.defaultApp = true
-      store.set("EVMScriptRegistry", proxyAddressID, evmsr as EVMScriptRegistry)
+      evmsr.save()
     }
   }
 }
@@ -95,84 +90,84 @@ export function handleSetApp(event: SetApp): void {
     // Some reason a switch case statement was giving AS errors, string to u32 requires implicit cast
     // so I went with the ugly if else chain
     if (appID == KERNEL_DEFAULT_VAULT_APP_ID) {
-      let vault = store.get("Vault", id) as Vault | null
+      let vault = Vault.load(id)
       if (vault == null) {
-        vault = new Vault()
+        vault = new Vault(id)
       }
       vault.appID = event.params.appId
       vault.upgradeable = event.params.isUpgradeable
 
-      let baseVault = store.get("BaseApp", appID) as BaseApp
+      let baseVault = BaseApp.load(appID)
       vault.baseAddress = baseVault.baseAddress
 
-      store.set("Vault", id, vault as Vault)
+      vault.save()
 
     } else if (appID == KERNEL_DEFAULT_ACL_APP_ID) {
-      let acl = store.get("ACL", id) as ACL | null
+      let acl = ACL.load(id)
       if (acl == null) {
-        acl = new ACL()
+        acl = new ACL(id)
       }
       acl.appID = event.params.appId
       acl.upgradeable = event.params.isUpgradeable
 
-      let baseAcl = store.get("BaseApp", appID) as BaseApp
+      let baseAcl = BaseApp.load(appID)
       acl.baseAddress = baseAcl.baseAddress
 
-      store.set("ACL", id, acl as ACL)
+      acl.save()
 
     } else if (appID == KERNEL_DEFAULT_EVM_SCRIPT_REGISTRY_ID) {
-      let evmsr = store.get("EVMScriptRegistry", id) as EVMScriptRegistry | null
+      let evmsr = EVMScriptRegistry.load(id)
       if (evmsr == null) {
-        evmsr = new EVMScriptRegistry()
+        evmsr = new EVMScriptRegistry(id)
         evmsr.executors = new Array<Bytes>()
       }
 
       evmsr.appID = event.params.appId
       evmsr.upgradeable = event.params.isUpgradeable
 
-      let baseEvmsr = store.get("BaseApp", appID) as BaseApp
+      let baseEvmsr = BaseApp.load(appID)
       evmsr.baseAddress = baseEvmsr.baseAddress
 
-      store.set("EVMScriptRegistry", id, evmsr as EVMScriptRegistry)
+      evmsr.save()
 
     } else if (appID == APP_DEFAULT_TOKENMANGER_APP_ID) {
-      let tm = store.get("TokenManager", id) as TokenManager | null
+      let tm = TokenManager.load(id)
       if (tm == null) {
-        tm = new TokenManager()
+        tm = new TokenManager(id)
       }
       tm.appID = event.params.appId
       tm.upgradeable = event.params.isUpgradeable
 
-      let baseTM = store.get("BaseApp", appID) as BaseApp
+      let baseTM = BaseApp.load(appID)
       tm.baseAddress = baseTM.baseAddress
 
-      store.set("TokenManager", id, tm as TokenManager)
+      tm.save()
 
     } else if (appID == APP_DEFAULT_VOTING_APP_ID) {
-      let voting = store.get("Voting", id) as Voting | null
+      let voting = Voting.load(id)
       if (voting == null) {
-        voting = new Voting()
+        voting = new Voting(id)
       }
       voting.appID = event.params.appId
       voting.upgradeable = event.params.isUpgradeable
 
-      let baseVoting = store.get("BaseApp", appID) as BaseApp
+      let baseVoting = BaseApp.load(appID)
       voting.baseAddress = baseVoting.baseAddress
 
-      store.set("Voting", id, voting as Voting)
+      voting.save()
 
     } else if (appID == APP_DEFAULT_FINANCE_APP_ID) {
-      let finance = store.get("Finance", id) as Finance | null
+      let finance = Finance.load(id)
       if (finance == null) {
-        finance = new Finance()
+        finance = new Finance(id)
       }
       finance.appID = event.params.appId
       finance.upgradeable = event.params.isUpgradeable
 
-      let baseFinance = store.get("BaseApp", appID) as BaseApp
+      let baseFinance = BaseApp.load(appID)
       finance.baseAddress = baseFinance.baseAddress
 
-      store.set("Finance", id, finance as Finance)
+      finance.save()
 
     }
   }

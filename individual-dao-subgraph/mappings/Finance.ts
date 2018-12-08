@@ -1,9 +1,3 @@
-import 'allocator/arena'
-export { allocate_memory }
-
-// Import APIs from graph-ts
-import { store } from '@graphprotocol/graph-ts'
-
 // Import event types from the registrar contract ABI
 import {NewPeriod, SetBudget, NewPayment, NewTransaction, ChangePaymentState, PaymentFailure} from '../types/Finance/Finance'
 
@@ -17,12 +11,12 @@ export function handleNewPeriod(event: NewPeriod): void {
   let start = event.params.periodStarts
   let end = event.params.periodEnds
 
-  let period = new FinancePeriod()
+  let period = new FinancePeriod(id)
   period.starts = start
   period.ends = end
   period.appAddress = event.address
 
-  store.set("FinancePeriod", id, period)
+  period.save()
 }
 
 export function handleSetBudget(event: SetBudget): void {
@@ -40,14 +34,14 @@ export function handleNewTransaction(event: NewTransaction): void {
   let entity = event.params.entity
   let reference = event.params.reference
 
-  let tx = new FinanceTransaction()
+  let tx = new FinanceTransaction(id)
   tx.incoming = incoming
   tx.amount = amount
   tx.entity = entity
   tx.appAddress = event.address
   tx.reference = reference
 
-  store.set("FinanceTransaction", id, tx)
+  tx.save()
 }
 
 export function handleChangePaymentState(event: ChangePaymentState): void {

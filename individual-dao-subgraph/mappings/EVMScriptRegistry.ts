@@ -1,9 +1,5 @@
-import 'allocator/arena'
-
-export {allocate_memory}
-
 // Import APIs from graph-ts
-import {store, Bytes} from '@graphprotocol/graph-ts'
+import {Bytes} from '@graphprotocol/graph-ts'
 
 // Import event types from the registrar contract ABI
 import {EnableExecutor, DisableExecutor} from '../types/EVMScriptRegistry/EVMScriptRegistry'
@@ -19,32 +15,28 @@ export function handleEnable(event: EnableExecutor): void {
   let id = event.address.toHex()
   let executor = event.params.executorAddress
 
-  let evmsr = store.get("EVMScriptRegistry", id) as EVMScriptRegistry | null
+  let evmsr = EVMScriptRegistry.load(id)
 
   if (evmsr == null) {
-    evmsr = new EVMScriptRegistry()
+    evmsr = new EVMScriptRegistry(id)
     evmsr.executors = new Array<Bytes>()
   }
 
   let executors = evmsr.executors
   executors.push(executor)
   evmsr.executors = executors
-  store.set("EVMScriptRegistry", id, evmsr as EVMScriptRegistry)
-
+  evmsr.save()
 }
 
 // NOTE - untested, because I can't use it in the dapp
 export function handleDisable(event: DisableExecutor): void {
   let id = event.address.toHex()
   let executor = event.params.executorAddress
-  let evmsr = store.get("EVMScriptRegistry", id) as EVMScriptRegistry
+  let evmsr = EVMScriptRegistry.load(id)
 
   let executors = evmsr.executors
   let i = executors.indexOf(executor)
   executors.splice(i, 1)
   evmsr.executors = executors
-  store.set("EVMScriptRegistry", id, evmsr as EVMScriptRegistry)
-
-
-
+  evmsr.save()
 }
