@@ -8,7 +8,7 @@
     "build": "graph build subgraph.yaml",
     "build-ipfs": "graph build --ipfs /ip4/127.0.0.1/tcp/5001 subgraph.yaml",
     "build-wast": "graph build -t wast subgraph.yaml",
-    "deploy": "graph deploy subgraph.yaml --ipfs /ip4/127.0.0.1/tcp/5001 --node http://127.0.0.1:8020 --subgraph-name Aragon-subgraph"
+    "deploy": "graph deploy subgraph.yaml --ipfs /ip4/35.239.68.192/tcp/80 --node http://35.202.232.77:5000 --subgraph-name aragon-network"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.5.0",
