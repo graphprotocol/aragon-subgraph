@@ -4,6 +4,7 @@ schema:
 dataSources:
 - kind: ethereum/contract
   name: ACL
+  network: mainnet
   source:
     address: "0x1B6131Ae95629E7e5Dbf0a3a8a17E3fEa648aF46" # NOTE - ALL THESE ADDRESSES ARE RINKEBY
     abi: ACL
@@ -28,6 +29,7 @@ dataSources:
     file: ./mappings/ACL.ts
 - kind: ethereum/contract
   name: EVMScriptRegistry
+  network: mainnet
   source:
     address: "0x4185Eb63D77218b7C464f91e8E95Fa390685f784"
     abi: EVMScriptRegistry
@@ -48,6 +50,7 @@ dataSources:
     file: ./mappings/EVMScriptRegistry.ts
 - kind: ethereum/contract
   name: Kernel
+  network: mainnet
   source:
     address: "0x18F5BD39Af2932feF6780eF6da38D93061663035"
     abi: Kernel
@@ -68,6 +71,7 @@ dataSources:
     file: ./mappings/Kernel.ts
 - kind: ethereum/contract
   name: TokenManager
+  network: mainnet
   source:
     address: "0x9294b6165da858e3c9576a9b49050e02eb0ec365"
     abi: TokenManager
@@ -88,6 +92,7 @@ dataSources:
     file: ./mappings/TokenManager.ts
 - kind: ethereum/contract
   name: Voting
+  network: mainnet
   source:
     address: "0x0102D977bF368F53220b3b43C35d3c4C08e43973"
     abi: Voting
@@ -114,6 +119,7 @@ dataSources:
     file: ./mappings/Voting.ts
 - kind: ethereum/contract
   name: Finance
+  network: mainnet
   source:
     address: "0x975B0Cfae22490A9912f9A1F603C599a30a8f4Ca"
     abi: Finance
@@ -142,6 +148,7 @@ dataSources:
     file: ./mappings/Finance.ts
 - kind: ethereum/contract
   name: Vault
+  network: mainnet
   source:
     address: "0x36246f43551D0b3898f861F0b7bbc5B5710c53D7"
     abi: Vault
