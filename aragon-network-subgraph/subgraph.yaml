@@ -1,9 +1,12 @@
 specVersion: 0.0.1
+description: Aragon is a decentralized app (dApp) on the Ethereum blockchain that allows anyone to create and manage a decentralized organization. This subgraph explores the top level Aragon protocol data. 
+repository: https://github.com/graphprotocol/aragon-subgraph/tree/master/aragon-network-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
 - kind: ethereum/contract
   name: DAOFactory
+  network: mainnet
   source:
     address: "0x2298d27a9b847c681d2b2c2828ab9d79013f5f1d" # Mainnet: 0x595B34C93aA2c2ba0A38daEEdE629a0DfBDcc559 # Rinkeby: 0x2298d27a9b847c681d2b2c2828ab9d79013f5f1d
     abi: DAOFactory
