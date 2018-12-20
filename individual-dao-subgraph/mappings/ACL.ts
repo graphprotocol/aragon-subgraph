@@ -53,9 +53,9 @@ export function handleSetPermission(event: SetPermission): void {
 
   // Vault
   if (Vault.load(id) != null) {
-    let vp = VaultPermission.load(id)
+    let vp = VaultPermission.load(role)
     if (vp == null) {
-      vp = new VaultPermission(id)
+      vp = new VaultPermission(role)
       vp.entities = new Array<string>()
       vp.appAddress = id
     }
@@ -63,10 +63,13 @@ export function handleSetPermission(event: SetPermission): void {
       let roleName = roleLookupTable.get(role) as string
       vp.role = roleName
       let entities = vp.entities
-      entities.push(entity)
-      vp.entities = entities
-      vp.save()
-    } else  if (event.params.allowed == false){
+      let i = entities.indexOf(entity)
+      if (i == -1) {
+        entities.push(entity)
+        vp.entities = entities
+        vp.save()
+      }
+    } else if (event.params.allowed == false) {
       let entities = vp.entities
       let i = entities.indexOf(entity)
       entities.splice(i, 1)
@@ -77,9 +80,9 @@ export function handleSetPermission(event: SetPermission): void {
 
   // Token Manager
   else if (TokenManager.load(id) != null) {
-    let tmp = TokenManagerPermission.load(id)
+    let tmp = TokenManagerPermission.load(role)
     if (tmp == null) {
-      tmp = new TokenManagerPermission(id)
+      tmp = new TokenManagerPermission(role)
       tmp.entities = new Array<string>()
       tmp.appAddress = id
     }
@@ -87,9 +90,12 @@ export function handleSetPermission(event: SetPermission): void {
       let roleName = roleLookupTable.get(role) as string
       tmp.role = roleName
       let entities = tmp.entities
-      entities.push(entity)
-      tmp.entities = entities
-      tmp.save()
+      let i = entities.indexOf(entity)
+      if (i == -1) {
+        entities.push(entity)
+        tmp.entities = entities
+        tmp.save()
+      }
     } else if (event.params.allowed == false) {
       let entities = tmp.entities
       let i = entities.indexOf(entity)
@@ -101,33 +107,37 @@ export function handleSetPermission(event: SetPermission): void {
 
   // Finance
   else if (Finance.load(id) != null) {
-    let fp = FinancePermission.load(id)
+    let fp = FinancePermission.load(role)
     if (fp == null) {
-      fp = new FinancePermission(id)
+      fp = new FinancePermission(role)
       fp.entities = new Array<string>()
       fp.appAddress = id
-      if (event.params.allowed == true) {
-        let roleName = roleLookupTable.get(role) as string
-        fp.role = roleName
-        let entities = fp.entities
+    }
+    if (event.params.allowed == true) {
+      let roleName = roleLookupTable.get(role) as string
+      fp.role = roleName
+      let entities = fp.entities
+      let i = entities.indexOf(entity)
+      if (i == -1) {
         entities.push(entity)
         fp.entities = entities
         fp.save()
-      } else if (event.params.allowed == false) {
-        let entities = fp.entities
-        let i = entities.indexOf(entity)
-        entities.splice(i, 1)
-        fp.entities = entities
-        fp.save()
       }
+    } else if (event.params.allowed == false) {
+      let entities = fp.entities
+      let i = entities.indexOf(entity)
+      entities.splice(i, 1)
+      fp.entities = entities
+      fp.save()
     }
   }
 
+
   // Voting
   else if (Voting.load(id) != null) {
-    let vp = VotingPermission.load(id)
+    let vp = VotingPermission.load(role)
     if (vp == null) {
-      vp = new VotingPermission(id)
+      vp = new VotingPermission(role)
       vp.entities = new Array<string>()
       vp.appAddress = id
     }
@@ -135,9 +145,12 @@ export function handleSetPermission(event: SetPermission): void {
       let roleName = roleLookupTable.get(role) as string
       vp.role = roleName
       let entities = vp.entities
-      entities.push(entity)
-      vp.entities = entities
-      vp.save()
+      let i = entities.indexOf(entity)
+      if (i == -1) {
+        entities.push(entity)
+        vp.entities = entities
+        vp.save()
+      }
     } else if (event.params.allowed == false) {
       let entities = vp.entities
       let i = entities.indexOf(entity)
@@ -149,9 +162,9 @@ export function handleSetPermission(event: SetPermission): void {
 
   // EVMScriptRegistry
   else if (EVMScriptRegistry.load(id) != null) {
-    let evmsr = EVMScriptRegistryPermission.load(id)
+    let evmsr = EVMScriptRegistryPermission.load(role)
     if (evmsr == null) {
-      evmsr = new EVMScriptRegistryPermission(id)
+      evmsr = new EVMScriptRegistryPermission(role)
       evmsr.entities = new Array<string>()
       evmsr.appAddress = id
     }
@@ -159,9 +172,12 @@ export function handleSetPermission(event: SetPermission): void {
       let roleName = roleLookupTable.get(role) as string
       evmsr.role = roleName
       let entities = evmsr.entities
-      entities.push(entity)
-      evmsr.entities = entities
-      evmsr.save()
+      let i = entities.indexOf(entity)
+      if (i == -1) {
+        entities.push(entity)
+        evmsr.entities = entities
+        evmsr.save()
+      }
     } else if (event.params.allowed == false) {
       let entities = evmsr.entities
       let i = entities.indexOf(entity)
@@ -173,9 +189,9 @@ export function handleSetPermission(event: SetPermission): void {
 
   // ACL
   else if (ACL.load(id) != null) {
-    let aclp = ACLPermission.load(id)
+    let aclp = ACLPermission.load(role)
     if (aclp == null) {
-      aclp = new ACLPermission(id)
+      aclp = new ACLPermission(role)
       aclp.entities = new Array<string>()
       aclp.appAddress = id
     }
@@ -183,9 +199,12 @@ export function handleSetPermission(event: SetPermission): void {
       let roleName = roleLookupTable.get(role) as string
       aclp.role = roleName
       let entities = aclp.entities
-      entities.push(entity)
-      aclp.entities = entities
-      aclp.save()
+      let i = entities.indexOf(entity)
+      if (i == -1) {
+        entities.push(entity)
+        aclp.entities = entities
+        aclp.save()
+      }
     } else if (event.params.allowed == false) {
       let entities = aclp.entities
       let i = entities.indexOf(entity)
@@ -197,9 +216,9 @@ export function handleSetPermission(event: SetPermission): void {
 
   // Kernel
   else if (Kernel.load(id) != null) {
-    let kp = KernelPermission.load(id)
+    let kp = KernelPermission.load(role)
     if (kp == null) {
-      kp = new KernelPermission(id)
+      kp = new KernelPermission(role)
       kp.entities = new Array<string>()
       kp.appAddress = id
     }
@@ -207,9 +226,12 @@ export function handleSetPermission(event: SetPermission): void {
       let roleName = roleLookupTable.get(role) as string
       kp.role = roleName
       let entities = kp.entities
-      entities.push(entity)
-      kp.entities = entities
-      kp.save()
+      let i = entities.indexOf(entity)
+      if (i == -1) {
+        entities.push(entity)
+        kp.entities = entities
+        kp.save()
+      }
     } else if (event.params.allowed == false) {
       let entities = kp.entities
       let i = entities.indexOf(entity)

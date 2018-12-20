@@ -6,7 +6,7 @@ schema:
 dataSources:
 - kind: ethereum/contract
   name: ACL
-  network: mainnet
+  network: rinkeby
   source:
     address: "0x1B6131Ae95629E7e5Dbf0a3a8a17E3fEa648aF46" # NOTE - ALL THESE ADDRESSES ARE RINKEBY
     abi: ACL
@@ -31,6 +31,7 @@ dataSources:
     file: ./mappings/ACL.ts
 - kind: ethereum/contract
   name: EVMScriptRegistry
+  network: rinkeby
   source:
     address: "0x4185Eb63D77218b7C464f91e8E95Fa390685f784"
     abi: EVMScriptRegistry
@@ -51,6 +52,7 @@ dataSources:
     file: ./mappings/EVMScriptRegistry.ts
 - kind: ethereum/contract
   name: Kernel
+  network: rinkeby
   source:
     address: "0x18F5BD39Af2932feF6780eF6da38D93061663035"
     abi: Kernel
@@ -69,28 +71,30 @@ dataSources:
     - event: NewAppProxy(address,bool,bytes32)
       handler: handleNewProxyApp
     file: ./mappings/Kernel.ts
-- kind: ethereum/contract
-  name: TokenManager
-  source:
-    address: "0x9294b6165da858e3c9576a9b49050e02eb0ec365"
-    abi: TokenManager
-  mapping:
-    kind: ethereum/events
-    apiVersion: 0.0.1
-    language: wasm/assemblyscript
-    entities:
-    - TokenManager
-    abis:
-    - name: TokenManager
-      file: ./abis/TokenManager.json
-    eventHandlers:
-    - event: NewVesting(address,uint256,uint256)
-      handler: handleNewVesting
-    - event: RevokeVesting(address,uint256,uint256)
-      handler: handleRevokeVesting
-    file: ./mappings/TokenManager.ts
+#- kind: ethereum/contract
+#  name: TokenManager
+#  network: rinkeby
+#  source:
+#    address: "0x9294b6165da858e3c9576a9b49050e02eb0ec365"
+#    abi: TokenManager
+#  mapping:
+#    kind: ethereum/events
+#    apiVersion: 0.0.1
+#    language: wasm/assemblyscript
+#    entities:
+#    - TokenManager
+#    abis:
+#    - name: TokenManager
+#      file: ./abis/TokenManager.json
+#    eventHandlers:
+#    - event: NewVesting(address,uint256,uint256)
+#      handler: handleNewVesting
+#    - event: RevokeVesting(address,uint256,uint256)
+#      handler: handleRevokeVesting
+#    file: ./mappings/TokenManager.ts
 - kind: ethereum/contract
   name: Voting
+  network: rinkeby
   source:
     address: "0x0102D977bF368F53220b3b43C35d3c4C08e43973"
     abi: Voting
@@ -117,6 +121,7 @@ dataSources:
     file: ./mappings/Voting.ts
 - kind: ethereum/contract
   name: Finance
+  network: rinkeby
   source:
     address: "0x975B0Cfae22490A9912f9A1F603C599a30a8f4Ca"
     abi: Finance
@@ -145,6 +150,7 @@ dataSources:
     file: ./mappings/Finance.ts
 - kind: ethereum/contract
   name: Vault
+  network: rinkeby
   source:
     address: "0x36246f43551D0b3898f861F0b7bbc5B5710c53D7"
     abi: Vault
