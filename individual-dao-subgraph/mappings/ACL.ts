@@ -45,7 +45,6 @@ import {
   roleLookupTable
 } from './constants'
 
-// TODO: - getting some weird results with splice here, on random instance (see the queries.  it seems to me like there is an error with how it is written. Because i use it the same way 5 times, and in this instance it deletes the wrong element, and then replaces it with a duplicate of a different element.
 export function handleSetPermission(event: SetPermission): void {
   let id = event.params.app.toHex()
   let role = event.params.role.toHex()

@@ -6,6 +6,7 @@ import {EnableExecutor, DisableExecutor} from '../types/EVMScriptRegistry/EVMScr
 
 // Import entity types from the schema
 import {EVMScriptRegistry, EVMScriptRegistryPermission} from '../types/schema'
+import {roleLookupTable} from "./constants";
 
 
 // In order to get the ids of the executor, and make them each into their own entity, we would need to grab the
@@ -14,7 +15,6 @@ import {EVMScriptRegistry, EVMScriptRegistryPermission} from '../types/schema'
 export function handleEnable(event: EnableExecutor): void {
   let id = event.address.toHex()
   let executor = event.params.executorAddress
-
   let evmsr = EVMScriptRegistry.load(id)
 
   if (evmsr == null) {
@@ -23,9 +23,12 @@ export function handleEnable(event: EnableExecutor): void {
   }
 
   let executors = evmsr.executors
-  executors.push(executor)
-  evmsr.executors = executors
-  evmsr.save()
+  let i = executors.indexOf(executor)
+  if (i == -1) {
+    executors.push(executor)
+    evmsr.executors = executors
+    evmsr.save()
+  }
 }
 
 // NOTE - untested, because I can't use it in the dapp
@@ -39,4 +42,7 @@ export function handleDisable(event: DisableExecutor): void {
   executors.splice(i, 1)
   evmsr.executors = executors
   evmsr.save()
+
 }
+
+
