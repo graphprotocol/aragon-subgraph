@@ -55,9 +55,9 @@ First you must choose your type of subgraph, individual or network. The steps be
 ```
   6. c) Or Infura Rinkeby_
 ```
-    cargo run -p graph-node --release --   
-    --postgres-url postgresql://USERNAME:[PASSWORD]@localhost:5432/graph-node-testnet 
-    --ipfs 127.0.0.1:5001
+    cargo run -p graph-node --release --   \
+    --postgres-url postgresql://USERNAME:[PASSWORD]@localhost:5432/graph-node-testnet \
+    --ipfs 127.0.0.1:5001 \
     --ethereum-rpc rinkeby-infura:https://Rinkeby.infura.io 
 
 ```
