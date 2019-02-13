@@ -1,18 +1,18 @@
 {
-  "name": "Aragon-subgraph",
+  "name": "graphprotocol/aragon-dao",
   "version": "1.0.0",
-  "repository": "https://github.com/graphprotocol/Aragon-subgraph",
+  "repository": "https://github.com/graphprotocol/aragon-dao",
   "license": "MIT",
   "scripts": {
-    "codegen": "graph codegen --output-dir types/ subgraph.yaml",
-    "build": "graph build subgraph.yaml",
-    "build-ipfs": "graph build --ipfs /ip4/127.0.0.1/tcp/5001 subgraph.yaml",
-    "build-wast": "graph build -t wast subgraph.yaml",
-    "deploy": "graph deploy subgraph.yaml --ipfs /ip4/127.0.0.1/tcp/5001 --node http://127.0.0.1:8020 --subgraph-name single-dao-subgraph"
+    "codegen": "graph codegen --output-dir types/",
+    "create-local": "graph create graphprotocol/aragon-dao --node http://127.0.0.1:8020",
+    "build": "graph build",
+    "deploy-local": "graph deploy graphprotocol/aragon-dao --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+    "deploy": "graph deploy --debug graphprotocol/aragon-dao --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "watch-local": "graph deploy graphprotocol/aragon-dao --watch --debug --node http://127.0.0.1:8020/ --ipfs http://localhost:5001"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.5.0",
-    "@graphprotocol/graph-ts": "^0.5.0"
-  },
-  "author": "David Kajpust <kajpustd@gmail.com>"
+    "@graphprotocol/graph-cli": "^0.7.1",
+    "@graphprotocol/graph-ts": "^0.5.1"
+  }
 }

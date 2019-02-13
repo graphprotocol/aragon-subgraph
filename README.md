@@ -25,14 +25,14 @@ The bulk of the work is in the individual subgraphs. The mappings written for th
 
 The ABIs for the subgraphs were received from downloading the Aragon repositories, and using truffle to compile within the repo. This is because the `build` docs are not uploaded to github, so you must locally build to get the ABIs for the contract, which are used to create a subgraph. 
 
-## Steps to get the Aragon-Subgraph Running 
+## Steps to Deploy The Aragon Subgraph Locally 
 
 > IMPORTANT NOTE: The file individual-dao-subgraph/types/ACL/ACL.ts will cause errors because The Graph Node creates duplicate types for overloaded Solidity function. The temporary fix is to just name the functions differently after they are produced by `yarn codegen`. Follow the issue here https://github.com/graphprotocol/graph-cli/issues/168, which we are fixing soon. 
 
 First you must choose your type of subgraph, individual or network. The steps below will work for both cases. But you must change the contract addresses you are sourcing in the `subgraph.yaml`. You can use the same postgres db, as a new db will be created for each different subgraph, which is created upon uploading the subgraph files to IPFS. 
 
   1. Install IPFS and run `ipfs init` followed by `ipfs daemon`
-  2. Install PostgreSQL and run `initdb -D .postgres` followed by `pg_ctl -D .postgres start` and `createdb Aragon-subgraph-mainnet` (note this db name is used in the commands below for the mainnet examples)
+  2. Install PostgreSQL and run `initdb -D .postgres` followed by `pg_ctl -D .postgres start` and `createdb graph-node--mainnet` (note this db name is used in the commands below for the mainnet examples)
   3. If using Ubuntu, you may need to install additional packages: `sudo apt-get install -y clang libpq-dev libssl-dev pkg-config`
   4. Clone this repository, and run the following:
      * `yarn`
@@ -42,38 +42,32 @@ First you must choose your type of subgraph, individual or network. The steps be
 
 ```
   cargo run -p graph-node --release -- \
-  --postgres-url postgresql://USERNAME:[PASSWORD]@localhost:5432/Aragon-mainnet \
+  --postgres-url postgresql://USERNAME:[PASSWORD]@localhost:5432/graph-node-mainnet \
   --ipfs 127.0.0.1:5001 \
   --ethereum-rpc mainnet-infura:https://mainnet.infura.io --debug
 ```
-  6. b) Or Mainnet Local:
+  6. b) Or Mainnet with a Local Ethereum node. This is very common if you are working with brand new contracts, and you have deployed them to a testnet environment like *ganache* (note that ganache commonly uses port 9545 rather than 8545):
 ```
   cargo run -p graph-node --release -- \
-  --postgres-url postgresql://USERNAME:[PASSWORD]@localhost:5432/Aragon-mainnet \
+  --postgres-url postgresql://USERNAME:[PASSWORD]@localhost:5432/graph-node-mainnet \
   --ipfs 127.0.0.1:5001 \
   --ethereum-rpc mainnet-local:http://127.0.0.1:8545 
 ```
   6. c) Or Infura Rinkeby_
 ```
     cargo run -p graph-node --release --   
-    --postgres-url postgresql://USERNAME:[PASSWORD]@localhost:5432/Aragon-rinkeby 
+    --postgres-url postgresql://USERNAME:[PASSWORD]@localhost:5432/graph-node-testnet 
     --ipfs 127.0.0.1:5001
     --ethereum-rpc rinkeby-infura:https://Rinkeby.infura.io 
 
 ```
- 6. d) Or a Rinkeby local node:
- 
- ```
-   cargo run -p graph-node --release -- \
-   --postgres-url postgresql://USERNAME:[PASSWORD]@localhost:5432/Aragon-rinkeby \
-   --ipfs 127.0.0.1:5001 \
-   --ethereum-rpc rinkeby-local:http://127.0.0.1:8545
- 
- ```
-  
- 7. Now deploy the Aragon-Subgraph to The Graph Node with `yarn deploy --verbosity debug`. You should see a lot of blocks being skipped in the `graph-node` terminal, and then it will start ingesting events from the moment the contracts were uploaded to the network. 
+
+ 7. Now deploy the Aragon-Subgraph to The Graph Node with `yarn deploy --debug`. You should see a lot of blocks being skipped in the `graph-node` terminal, and then it will start ingesting events from the moment the contracts were uploaded to the network. 
 
 Now that you have subgraph is running you may open a [Graphiql](https://github.com/graphql/graphiql) browser at `127.0.0.1:8000` and get started with querying.
+
+## Viewing the Subgraph on the Graph Hosted Service
+This subgraph is not yet on [The Graph Explorer](https://thegraph.com/explorer/). To understand how deploying to the hosted service works, check out the [Deploying Instructions](https://thegraph.com/docs/deploy-a-subgraph) in the official documentation. The most important part of deploying to the hosted service is ensuring that the npm script for `deploy` is updated to the correct name that you want to deploy with. 
 
 ## Getting started with Querying 
 
