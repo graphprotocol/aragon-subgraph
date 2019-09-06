@@ -1,0 +1,159 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - name: APM
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: APMRegistryFactory
+      address: '0xce5c6811bd801aa0cf72760534604f833cbcc0b9'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/apm.ts
+      abis:
+        - name: APMRegistryFactory
+          file: ./abis/factory/APMRegistryFactory.json
+      entities:
+        - PackageRegistry
+      eventHandlers:
+        - event: DeployAPM(indexed bytes32,address)
+          handler: handleDeployAPM
+
+  - name: DAOs
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: DAOFactory
+      address: '0xc29f0599df12eb4cbe1a34354c4bac6d944071d1'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/dao.ts
+      entities:
+        - DAO
+        - EVMScriptRegistry
+      abis:
+        - name: DAOFactory
+          file: ./abis/factory/DAOFactory.json
+      eventHandlers:
+        - event: DeployDAO(address)
+          handler: handleDeployDAO
+        - event: DeployEVMScriptRegistry(address)
+          handler: handleDeployEVMScriptRegistry
+
+  #
+  # Apps
+  #
+
+  # Token Manager 2.x
+  - name: token-manager-2.x
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: TokenManager
+      address: '0xde3a93028f2283cc28756b3674bd657eafb992f4'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/apps/token-manager.ts
+      entities:
+        - Vesting
+      abis:
+        - name: TokenManager
+          file: ./abis/apps/TokenManager.json
+      eventHandlers:
+        - event: NewVesting(indexed address,uint256,uint256)
+          handler: handleNewVesting
+        - event: RevokeVesting(indexed address,uint256,uint256)
+          handler: handleRevokeVesting
+        - event: ScriptResult(indexed address,bytes,bytes,bytes)
+          handler: handleScriptResult
+        - event: RecoverToVault(indexed address,indexed address,uint256)
+          handler: handleRecoverToVault
+
+templates:
+  - name: ACL
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: ACL
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/acl.ts
+      abis:
+        - name: ACL
+          file: ./abis/acl/ACL.json
+      entities:
+        - Permission
+      eventHandlers:
+        - event: SetPermission(indexed address,indexed address,indexed bytes32,bool)
+          handler: handleSetPermission
+        - event: SetPermissionParams(indexed address,indexed address,indexed bytes32,bytes32)
+          handler: handleSetPermissionParams
+        - event: ChangePermissionManager(indexed address,indexed bytes32,indexed address)
+          handler: handleChangePermissionManager
+  - name: APMRegistry
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: APMRegistry
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/apm.ts
+      entities:
+        - Package
+      abis:
+        - name: APMRegistry
+          file: ./abis/apm/APMRegistry.json
+      eventHandlers:
+        - event: NewRepo(bytes32,string,address)
+          handler: handleNewRepo
+  - name: Repo
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: Repo
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/apm.ts
+      entities:
+        - PackageVersion
+      abis:
+        - name: Repo
+          file: ./abis/apm/Repo.json
+      eventHandlers:
+        - event: NewVersion(uint256,uint16[3])
+          handler: handleNewVersion
+  - name: Kernel
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: KernelProxy
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/kernel.ts
+      entities:
+        - AppInstance
+      abis:
+        - name: Kernel
+          file: ./abis/kernel/Kernel.json
+        - name: KernelProxy
+          file: ./abis/kernel/KernelProxy.json
+      eventHandlers:
+        - event: ProxyDeposit(address,uint256)
+          handler: handleProxyDeposit
+        - event: SetApp(indexed bytes32,indexed bytes32,address)
+          handler: handleSetApp

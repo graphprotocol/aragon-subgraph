@@ -1,0 +1,71 @@
+type AragonOS @entity {
+  id: ID! # equals to AragonOS version
+  lastBlock: BigInt
+
+  daoCount: BigInt!
+  daos: [DAO!]! @derivedFrom(field: "osVersion")
+}
+
+type DAO @entity {
+  id: ID! # DAO address
+  osVersion: AragonOS!
+
+  created: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTransaction: Bytes!
+}
+
+type EVMScriptRegistry @entity {
+  id: ID! # contract address
+  created: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTransaction: Bytes!
+}
+
+#
+# APM
+#
+
+type PackageRegistry @entity {
+  id: ID!
+  address: Bytes!
+  node: Bytes!
+
+  created: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTransaction: Bytes!
+}
+
+type Package @entity {
+  id: ID!
+  address: Bytes!
+  name: String!
+  registry: PackageRegistry!
+  versions: [PackageVersion!]! @derivedFrom(field: "pkg")
+
+  created: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTransaction: Bytes!
+}
+
+type PackageVersion @entity {
+  id: ID!
+  pkg: Package!
+  version: String!
+  contract: Bytes!
+  contentURI: String!
+
+  created: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTransaction: Bytes!
+}
+
+#
+# Token Manager
+#
+
+type Vesting @entity {
+  id: ID!
+  receiver: Bytes!
+  vestingId: BigInt!
+}
