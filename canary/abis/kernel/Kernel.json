@@ -51,7 +51,10 @@
   },
   {
     "constant": true,
-    "inputs": [{ "name": "", "type": "bytes32" }, { "name": "", "type": "bytes32" }],
+    "inputs": [
+      { "name": "", "type": "bytes32" },
+      { "name": "", "type": "bytes32" }
+    ],
     "name": "apps",
     "outputs": [{ "name": "", "type": "address" }],
     "payable": false,
@@ -90,7 +93,10 @@
   },
   {
     "constant": false,
-    "inputs": [{ "name": "_appId", "type": "bytes32" }, { "name": "_appBase", "type": "address" }],
+    "inputs": [
+      { "name": "_appId", "type": "bytes32" },
+      { "name": "_appBase", "type": "address" }
+    ],
     "name": "newAppInstance",
     "outputs": [{ "name": "appProxy", "type": "address" }],
     "payable": false,
@@ -135,7 +141,10 @@
   },
   {
     "constant": false,
-    "inputs": [{ "name": "_appId", "type": "bytes32" }, { "name": "_appBase", "type": "address" }],
+    "inputs": [
+      { "name": "_appId", "type": "bytes32" },
+      { "name": "_appBase", "type": "address" }
+    ],
     "name": "newPinnedAppInstance",
     "outputs": [{ "name": "appProxy", "type": "address" }],
     "payable": false,
@@ -232,7 +241,10 @@
   },
   {
     "constant": false,
-    "inputs": [{ "name": "_kernel", "type": "address" }, { "name": "_appId", "type": "bytes32" }],
+    "inputs": [
+      { "name": "_kernel", "type": "address" },
+      { "name": "_appId", "type": "bytes32" }
+    ],
     "name": "newAppProxy",
     "outputs": [{ "name": "", "type": "address" }],
     "payable": false,
@@ -277,7 +289,10 @@
   },
   {
     "constant": false,
-    "inputs": [{ "name": "_kernel", "type": "address" }, { "name": "_appId", "type": "bytes32" }],
+    "inputs": [
+      { "name": "_kernel", "type": "address" },
+      { "name": "_appId", "type": "bytes32" }
+    ],
     "name": "newAppProxyPinned",
     "outputs": [{ "name": "", "type": "address" }],
     "payable": false,

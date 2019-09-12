@@ -10,7 +10,10 @@
   },
   {
     "constant": true,
-    "inputs": [{ "name": "", "type": "bytes32" }, { "name": "", "type": "bytes32" }],
+    "inputs": [
+      { "name": "", "type": "bytes32" },
+      { "name": "", "type": "bytes32" }
+    ],
     "name": "apps",
     "outputs": [{ "name": "", "type": "address" }],
     "payable": false,

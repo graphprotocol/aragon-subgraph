@@ -10,7 +10,10 @@
   },
   {
     "constant": false,
-    "inputs": [{ "name": "_app", "type": "address" }, { "name": "_role", "type": "bytes32" }],
+    "inputs": [
+      { "name": "_app", "type": "address" },
+      { "name": "_role", "type": "bytes32" }
+    ],
     "name": "createBurnedPermission",
     "outputs": [],
     "payable": false,
@@ -19,7 +22,10 @@
   },
   {
     "constant": false,
-    "inputs": [{ "name": "_app", "type": "address" }, { "name": "_role", "type": "bytes32" }],
+    "inputs": [
+      { "name": "_app", "type": "address" },
+      { "name": "_role", "type": "bytes32" }
+    ],
     "name": "burnPermissionManager",
     "outputs": [],
     "payable": false,
@@ -230,7 +236,10 @@
   },
   {
     "constant": false,
-    "inputs": [{ "name": "_app", "type": "address" }, { "name": "_role", "type": "bytes32" }],
+    "inputs": [
+      { "name": "_app", "type": "address" },
+      { "name": "_role", "type": "bytes32" }
+    ],
     "name": "removePermissionManager",
     "outputs": [],
     "payable": false,
@@ -252,7 +261,10 @@
   },
   {
     "constant": true,
-    "inputs": [{ "name": "_app", "type": "address" }, { "name": "_role", "type": "bytes32" }],
+    "inputs": [
+      { "name": "_app", "type": "address" },
+      { "name": "_role", "type": "bytes32" }
+    ],
     "name": "getPermissionManager",
     "outputs": [{ "name": "", "type": "address" }],
     "payable": false,

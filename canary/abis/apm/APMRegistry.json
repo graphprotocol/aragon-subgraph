@@ -128,7 +128,10 @@
   },
   {
     "constant": false,
-    "inputs": [{ "name": "_name", "type": "string" }, { "name": "_dev", "type": "address" }],
+    "inputs": [
+      { "name": "_name", "type": "string" },
+      { "name": "_dev", "type": "address" }
+    ],
     "name": "newRepo",
     "outputs": [{ "name": "", "type": "address" }],
     "payable": false,
@@ -177,7 +180,10 @@
   },
   {
     "constant": false,
-    "inputs": [{ "name": "_kernel", "type": "address" }, { "name": "_appId", "type": "bytes32" }],
+    "inputs": [
+      { "name": "_kernel", "type": "address" },
+      { "name": "_appId", "type": "bytes32" }
+    ],
     "name": "newAppProxy",
     "outputs": [{ "name": "", "type": "address" }],
     "payable": false,
@@ -199,7 +205,10 @@
   },
   {
     "constant": false,
-    "inputs": [{ "name": "_kernel", "type": "address" }, { "name": "_appId", "type": "bytes32" }],
+    "inputs": [
+      { "name": "_kernel", "type": "address" },
+      { "name": "_appId", "type": "bytes32" }
+    ],
     "name": "newAppProxyPinned",
     "outputs": [{ "name": "", "type": "address" }],
     "payable": false,

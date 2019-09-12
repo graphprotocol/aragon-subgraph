@@ -105,7 +105,10 @@
   },
   {
     "constant": true,
-    "inputs": [{ "name": "_holder", "type": "address" }, { "name": "_time", "type": "uint256" }],
+    "inputs": [
+      { "name": "_holder", "type": "address" },
+      { "name": "_time", "type": "uint256" }
+    ],
     "name": "transferableBalance",
     "outputs": [{ "name": "", "type": "uint256" }],
     "payable": false,
@@ -168,7 +171,10 @@
   },
   {
     "constant": false,
-    "inputs": [{ "name": "_holder", "type": "address" }, { "name": "_amount", "type": "uint256" }],
+    "inputs": [
+      { "name": "_holder", "type": "address" },
+      { "name": "_amount", "type": "uint256" }
+    ],
     "name": "burn",
     "outputs": [],
     "payable": false,
@@ -229,7 +235,10 @@
   },
   {
     "constant": true,
-    "inputs": [{ "name": "_sender", "type": "address" }, { "name": "", "type": "bytes" }],
+    "inputs": [
+      { "name": "_sender", "type": "address" },
+      { "name": "", "type": "bytes" }
+    ],
     "name": "canForward",
     "outputs": [{ "name": "", "type": "bool" }],
     "payable": false,

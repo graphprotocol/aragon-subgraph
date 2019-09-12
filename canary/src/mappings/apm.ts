@@ -1,9 +1,6 @@
 import { DeployAPM as DeployAPMEvent } from '../../generated/APM/APMRegistryFactory'
 import { NewRepo as NewRepoEvent } from '../../generated/templates/APMRegistry/APMRegistry'
-import {
-  NewVersion as NewVersionEvent,
-  Repo as RepoContract,
-} from '../../generated/templates/Repo/Repo'
+import { NewVersion as NewVersionEvent, Repo as RepoContract } from '../../generated/templates/Repo/Repo'
 
 import * as templates from '../../generated/templates'
 

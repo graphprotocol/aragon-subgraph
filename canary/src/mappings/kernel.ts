@@ -1,9 +1,6 @@
 import { log } from '@graphprotocol/graph-ts'
 
-import {
-  ProxyDeposit as ProxyDepositEvent,
-  SetApp as SetAppEvent,
-} from '../../generated/templates/Kernel/KernelProxy'
+import { ProxyDeposit as ProxyDepositEvent, SetApp as SetAppEvent } from '../../generated/templates/Kernel/KernelProxy'
 
 export function handleProxyDeposit(event: ProxyDepositEvent): void {
   log.warning('[Kernel][ProxyDeposit] sender={}, value={}', [
