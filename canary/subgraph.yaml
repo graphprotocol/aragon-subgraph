@@ -45,6 +45,26 @@ dataSources:
         - event: DeployEVMScriptRegistry(address)
           handler: handleDeployEVMScriptRegistry
 
+  - name: ENS
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: FIFSResolvingRegistrar
+      address: '0x546aa2eae2514494eeadb7bbb35243348983c59d'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/ens.ts
+      entities:
+        - ENSResolver
+      abis:
+        - name: FIFSResolvingRegistrar
+          file: ./abis/ens/FIFSResolvingRegistrar.json
+      eventHandlers:
+        - event: ClaimSubdomain(indexed bytes32,indexed address,indexed address)
+          handler: handleClaimSubdomain
+
   #
   # Apps
   #

@@ -61,6 +61,20 @@ type PackageVersion @entity {
 }
 
 #
+# ENS
+#
+
+type ENSResolver @entity {
+  id: ID! # subnode
+  owner: Bytes!
+  resolver: Bytes!
+
+  created: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTransaction: Bytes!
+}
+
+#
 # Token Manager
 #
 
