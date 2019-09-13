@@ -2,7 +2,7 @@ import { BigInt, DataSourceTemplate } from '@graphprotocol/graph-ts'
 
 import { Unknown } from '../../generated/DAO/AuxiliaryContract'
 import { DeployDAO, DeployEVMScriptRegistry } from '../../generated/templates/DAOFactory/DAOFactory'
-import { AragonVersion, DAO, EVMScriptRegistry } from '../../generated/schema'
+import { AragonVersion, EVMScriptRegistry, Organization as DAO } from '../../generated/schema'
 
 const DAO_FACTORY_0_6 = '0x595b34c93aa2c2ba0a38daeede629a0dfbdcc559'
 const DAO_FACTORY_0_7 = '0xc29f0599df12eb4cbe1a34354c4bac6d944071d1'
@@ -29,6 +29,7 @@ export function handleDeployDAO(event: DeployDAO): void {
 
   // Persist information about the new DAO
   let dao = new DAO(daoAddress)
+  dao.address = event.params.dao
   dao.version = aragonVersion.id
   dao.created = event.block.timestamp
   dao.createdAtBlock = event.block.number
