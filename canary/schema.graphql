@@ -1,18 +1,32 @@
-type AragonOS @entity {
-  id: ID! # equals to AragonOS version
-  lastBlock: BigInt
+type AragonVersion @entity {
+  id: ID!
+  lastUpdatedBlock: BigInt
 
   daoCount: BigInt!
-  daos: [DAO!]! @derivedFrom(field: "osVersion")
+  daoFactoryAddress: Bytes!
+  daos: [DAO!]! @derivedFrom(field: "version")
 }
 
 type DAO @entity {
   id: ID! # DAO address
-  osVersion: AragonOS!
+  address: Bytes!
+  version: AragonVersion!
 
   created: BigInt!
   createdAtBlock: BigInt!
   createdAtTransaction: Bytes!
+}
+
+enum DaoTemplate {
+  # Aragon 0.7 and prior
+  DEMOCRACY
+  MULTISIG
+
+  # Aragon 0.8
+  COMPANY
+  COMPANY_BOARD
+  MEMBERSHIP
+  REPUTATION
 }
 
 type EVMScriptRegistry @entity {

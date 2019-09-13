@@ -22,29 +22,6 @@ dataSources:
         - event: DeployAPM(indexed bytes32,address)
           handler: handleDeployAPM
 
-  - name: DAOs
-    kind: ethereum/contract
-    network: mainnet
-    source:
-      abi: DAOFactory
-      address: '0xc29f0599df12eb4cbe1a34354c4bac6d944071d1'
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.3
-      language: wasm/assemblyscript
-      file: ./src/mappings/dao.ts
-      entities:
-        - DAO
-        - EVMScriptRegistry
-      abis:
-        - name: DAOFactory
-          file: ./abis/factory/DAOFactory.json
-      eventHandlers:
-        - event: DeployDAO(address)
-          handler: handleDeployDAO
-        - event: DeployEVMScriptRegistry(address)
-          handler: handleDeployEVMScriptRegistry
-
   - name: ENS
     kind: ethereum/contract
     network: mainnet
@@ -64,6 +41,27 @@ dataSources:
       eventHandlers:
         - event: ClaimSubdomain(indexed bytes32,indexed address,indexed address)
           handler: handleClaimSubdomain
+
+  - name: DAO
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: AuxiliaryContract
+      address: '0x7f751820be4b1e44464268c425af6095995e045a'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/dao.ts
+      entities:
+        - DAO
+      abis:
+        - name: AuxiliaryContract
+          file: ./abis/AuxiliaryContract.json
+      eventHandlers:
+        - event: 'Unknown(indexed bytes,indexed bytes)'
+          topic0: '0xa9e319c3b10db96c5cee4bc3ebffa9c5581f222f14a4deb0df7ec2088ccd0974'
+          handler: registerDAOFactories
 
   #
   # Apps
@@ -137,24 +135,27 @@ templates:
       eventHandlers:
         - event: NewRepo(bytes32,string,address)
           handler: handleNewRepo
-  - name: Repo
+  - name: DAOFactory
     kind: ethereum/contract
     network: mainnet
     source:
-      abi: Repo
+      abi: DAOFactory
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      file: ./src/mappings/apm.ts
+      file: ./src/mappings/dao.ts
       entities:
-        - PackageVersion
+        - DAO
+        - EVMScriptRegistry
       abis:
-        - name: Repo
-          file: ./abis/apm/Repo.json
+        - name: DAOFactory
+          file: ./abis/factory/DAOFactory.json
       eventHandlers:
-        - event: NewVersion(uint256,uint16[3])
-          handler: handleNewVersion
+        - event: DeployDAO(address)
+          handler: handleDeployDAO
+        - event: DeployEVMScriptRegistry(address)
+          handler: handleDeployEVMScriptRegistry
   - name: Kernel
     kind: ethereum/contract
     network: mainnet
@@ -177,3 +178,21 @@ templates:
           handler: handleProxyDeposit
         - event: SetApp(indexed bytes32,indexed bytes32,address)
           handler: handleSetApp
+  - name: Repo
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: Repo
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/apm.ts
+      entities:
+        - PackageVersion
+      abis:
+        - name: Repo
+          file: ./abis/apm/Repo.json
+      eventHandlers:
+        - event: NewVersion(uint256,uint16[3])
+          handler: handleNewVersion
