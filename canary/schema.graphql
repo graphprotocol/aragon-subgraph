@@ -10,6 +10,8 @@ type AragonVersion @entity {
 type DAO @entity {
   id: ID! # DAO address
   address: Bytes!
+  template: DaoTemplate
+  token: Bytes
   version: AragonVersion!
 
   created: BigInt!

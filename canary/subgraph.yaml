@@ -64,6 +64,136 @@ dataSources:
           handler: registerDAOFactories
 
   #
+  # Templates
+  #
+
+  # democracy-kit-2.x
+  - name: DemocracyKit
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: DemocracyKit
+      address: '0x7f3ed10366826a1227025445D4f4e3e14BBfc91d'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/templates.ts
+      entities:
+        - DAO
+      abis:
+        - name: DemocracyKit
+          file: ./abis/kits/DemocracyKit.json
+      eventHandlers:
+        - event: DeployInstance(address,indexed address)
+          handler: handleDeployDemocracyDao
+
+  # multisig-kit-2.x
+  - name: MultisigKit
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: MultisigKit
+      address: '0x87aa2980dde7d2D4e57191f16BB57cF80bf6E5A6'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/templates.ts
+      entities:
+        - DAO
+      abis:
+        - name: MultisigKit
+          file: ./abis/kits/MultisigKit.json
+      eventHandlers:
+        - event: DeployInstance(address,indexed address)
+          handler: handleDeployMultisigDao
+
+  # company-template-1.x
+  - name: CompanyTemplate
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: BaseTemplate
+      address: '0xd737632caC4d039C9B0EEcc94C12267407a271b5'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/templates.ts
+      entities:
+        - DAO
+      abis:
+        - name: BaseTemplate
+          file: ./abis/templates/BaseTemplate.json
+      eventHandlers:
+        - event: DeployDao(address)
+          handler: handleDeployCompanyDao
+
+  # company-board-template-1.x
+  - name: CompanyBoardTemplate
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: BaseTemplate
+      address: '0x4d1A892f42c947fa952b57bc6939b27A96215CfA'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/templates.ts
+      entities:
+        - DAO
+      abis:
+        - name: BaseTemplate
+          file: ./abis/templates/BaseTemplate.json
+      eventHandlers:
+        - event: DeployDao(address)
+          handler: handleDeployCompanyBoardDao
+
+  # membership-template-2.x
+  - name: MembershipTemplate
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: BaseTemplate
+      address: '0x67430642C0c3B5E6538049B9E9eE719f2a4BeE7c'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/templates.ts
+      entities:
+        - DAO
+      abis:
+        - name: BaseTemplate
+          file: ./abis/templates/BaseTemplate.json
+      eventHandlers:
+        - event: DeployDao(address)
+          handler: handleDeployMembershipDao
+
+  # reputation-template-1.x
+  - name: ReputationTemplate
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: BaseTemplate
+      address: '0x3a06A6544e48708142508D9042f94DDdA769d04F'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/templates.ts
+      entities:
+        - DAO
+      abis:
+        - name: BaseTemplate
+          file: ./abis/templates/BaseTemplate.json
+      eventHandlers:
+        - event: DeployDao(address)
+          handler: handleDeployReputationpDao
+
+  #
   # Apps
   #
 
