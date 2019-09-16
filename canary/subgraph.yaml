@@ -78,7 +78,7 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      file: ./src/mappings/templates.ts
+      file: ./src/mappings/dao-templates.ts
       entities:
         - Organization
       abis:
@@ -99,7 +99,7 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      file: ./src/mappings/templates.ts
+      file: ./src/mappings/dao-templates.ts
       entities:
         - Organization
       abis:
@@ -120,7 +120,7 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      file: ./src/mappings/templates.ts
+      file: ./src/mappings/dao-templates.ts
       entities:
         - Organization
       abis:
@@ -141,7 +141,7 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      file: ./src/mappings/templates.ts
+      file: ./src/mappings/dao-templates.ts
       entities:
         - Organization
       abis:
@@ -162,7 +162,7 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      file: ./src/mappings/templates.ts
+      file: ./src/mappings/dao-templates.ts
       entities:
         - Organization
       abis:
@@ -183,7 +183,7 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      file: ./src/mappings/templates.ts
+      file: ./src/mappings/dao-templates.ts
       entities:
         - Organization
       abis:
