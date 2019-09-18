@@ -7,7 +7,6 @@ import { DeployDao as DeployMembershipDaoEvent } from '../../generated/DAO/templ
 import { DeployDao as DeployReputationDaoEvent } from '../../generated/DAO/templates/ReputationTemplate/ReputationTemplate'
 
 import { Organization as DAO } from '../../generated/schema'
-import { Finance } from '../../generated/templates'
 
 export function handleDeployDemocracyDao(event: DeployDemocracyDaoEvent): void {
   let dao = new DAO(event.params.dao.toHex())

@@ -9,23 +9,23 @@ const DAO_FACTORY_0_7 = '0xc29f0599df12eb4cbe1a34354c4bac6d944071d1'
 const DAO_FACTORY_0_8 = '0xb9da44c051c6cc9e04b7e0f95e95d69c6a6d8031'
 
 export function handleDeployDAO(event: DeployDAO): void {
-  let daoAddress = event.params.dao.toHexString()
-  let aragonVersion = getOrRegisterVersion(event.address)
+  // Register DAO factory if not already exists
+  let factory = getOrRegisterDaoFactory(event.address)
+  factory.daoCount = factory.daoCount.plus(BigInt.fromI32(1))
+  factory.lastUpdatedBlock = event.block.number
+
+  factory.save()
 
   // Persist information about the new DAO
-  let dao = new DAO(daoAddress)
+  let dao = new DAO(event.params.dao.toHexString())
   dao.address = event.params.dao
-  dao.version = aragonVersion.id
+  dao.version = factory.id
 
   dao.created = event.block.timestamp
   dao.createdAtBlock = event.block.number
   dao.createdAtTransaction = event.transaction.hash
 
-  aragonVersion.daoCount = aragonVersion.daoCount.plus(BigInt.fromI32(1))
-  aragonVersion.lastUpdatedBlock = event.block.number
-
   dao.save()
-  aragonVersion.save()
 
   // Start indexing DAO kernel events
   Kernel.create(event.params.dao)
@@ -41,20 +41,18 @@ export function handleDeployEVMScriptRegistry(event: DeployEVMScriptRegistry): v
   registry.save()
 }
 
-function getOrRegisterVersion(daoFactory: Address): AragonVersion {
-  let daoFactoryAddress = daoFactory.toHexString()
-  let version = AragonVersion.load(daoFactoryAddress)
+function getOrRegisterDaoFactory(daoFactory: Address): AragonVersion {
+  let id = daoFactory.toHexString()
+  let entity = AragonVersion.load(id)
 
-  if (version == null) {
-    version = new AragonVersion(daoFactoryAddress)
-    version.daoCount = BigInt.fromI32(0)
-    version.daoFactoryAddress = daoFactory
-    version.name = detectVersion(daoFactoryAddress)
-
-    version.save()
+  if (entity == null) {
+    entity = new AragonVersion(id)
+    entity.daoCount = BigInt.fromI32(0)
+    entity.daoFactoryAddress = daoFactory
+    entity.name = detectVersion(id)
   }
 
-  return version as AragonVersion
+  return entity as AragonVersion
 }
 
 function detectVersion(daoFactoryAddress: string): string {

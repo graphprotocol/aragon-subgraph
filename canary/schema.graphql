@@ -94,11 +94,159 @@ type ENSResolver @entity {
 }
 
 #
-# Token Manager
+# Apps
 #
+
+interface AppInstance {
+  appAddress: Bytes!
+  appId: Bytes!
+}
+
+#
+# App: Finance
+#
+
+type FinanceApp implements AppInstance @entity {
+  id: ID! # app proxy address
+  appAddress: Bytes!
+  appId: Bytes!
+
+  budgets: [TokenBudget!]! @derivedFrom(field: "app")
+
+  payments: [Payment!]! @derivedFrom(field: "app")
+
+  periods: [Period!]! @derivedFrom(field: "app")
+
+  transactions: [Transaction!]! @derivedFrom(field: "app")
+  incomingTransactions: [IncomingTransaction!]! @derivedFrom(field: "app")
+  outgoingTransactions: [OutgoingTransaction!]! @derivedFrom(field: "app")
+}
+
+type Payment @entity {
+  id: ID!
+  app: FinanceApp
+  recipient: Bytes!
+  maxExecutions: BigInt!
+  reference: String
+
+  active: Boolean!
+
+  created: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTransaction: Bytes!
+}
+
+type Period @entity {
+  id: ID!
+  app: FinanceApp!
+  start: BigInt!
+  end: BigInt!
+}
+
+type TokenBudget @entity {
+  id: ID!
+  app: FinanceApp
+  token: Bytes!
+  amount: BigInt!
+}
+
+interface Transaction {
+  app: FinanceApp!
+  entity: Bytes!
+  amount: BigInt!
+  reference: String
+
+  created: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTransaction: Bytes!
+}
+
+type IncomingTransaction implements Transaction @entity {
+  id: ID!
+  app: FinanceApp!
+  entity: Bytes!
+  amount: BigInt!
+  reference: String
+
+  created: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTransaction: Bytes!
+}
+
+type OutgoingTransaction implements Transaction @entity {
+  id: ID!
+  app: FinanceApp!
+  entity: Bytes!
+  amount: BigInt!
+  reference: String
+
+  created: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTransaction: Bytes!
+}
+
+#
+# App: Token Manager
+#
+
+type TokenManagerApp implements AppInstance @entity {
+  id: ID! # app proxy address
+  appAddress: Bytes!
+  appId: Bytes!
+
+  vestings: [Vesting!]! @derivedFrom(field: "app")
+}
 
 type Vesting @entity {
   id: ID!
+  app: TokenManagerApp!
   receiver: Bytes!
   vestingId: BigInt!
+}
+
+#
+# App: Voting
+#
+
+type VotingApp implements AppInstance @entity {
+  id: ID! # app proxy address
+  appAddress: Bytes!
+  appId: Bytes!
+  minQuorumPercent: BigInt!
+  supportRequiredPercent: BigInt!
+
+  votes: [Vote!]! @derivedFrom(field: "app")
+}
+
+type Vote @entity {
+  id: ID!
+  app: VotingApp!
+  creator: Bytes!
+  metadata: String!
+  executed: Boolean!
+
+  supporters: [SupportVote!]! @derivedFrom(field: "voteId")
+  nonSupporters: [NonSupportVote!]! @derivedFrom(field: "voteId")
+
+  created: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTransaction: Bytes!
+
+  updated: BigInt!
+}
+
+type SupportVote @entity {
+  id: ID!
+  app: VotingApp!
+  voteId: Vote
+  voter: Bytes!
+  stake: BigInt!
+}
+
+type NonSupportVote @entity {
+  id: ID!
+  app: VotingApp!
+  voteId: Vote
+  voter: Bytes!
+  stake: BigInt!
 }

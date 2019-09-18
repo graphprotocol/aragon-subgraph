@@ -290,37 +290,6 @@ dataSources:
         - event: DeployDao(address)
           handler: handleDeployReputationpDao
 
-  #
-  # Apps
-  #
-
-  # Token Manager 2.x
-  - name: token-manager-2.x
-    kind: ethereum/contract
-    network: mainnet
-    source:
-      abi: TokenManager
-      address: '0xde3a93028f2283cc28756b3674bd657eafb992f4'
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.3
-      language: wasm/assemblyscript
-      file: ./src/mappings/apps/token-manager.ts
-      entities:
-        - Vesting
-      abis:
-        - name: TokenManager
-          file: ./abis/apps/TokenManager.json
-      eventHandlers:
-        - event: NewVesting(indexed address,uint256,uint256)
-          handler: handleNewVesting
-        - event: RevokeVesting(indexed address,uint256,uint256)
-          handler: handleRevokeVesting
-        - event: ScriptResult(indexed address,bytes,bytes,bytes)
-          handler: handleScriptResult
-        - event: RecoverToVault(indexed address,indexed address,uint256)
-          handler: handleRecoverToVault
-
 templates:
   - name: ACL
     kind: ethereum/contract
@@ -387,22 +356,28 @@ templates:
     kind: ethereum/contract
     network: mainnet
     source:
-      abi: KernelProxy
+      abi: Kernel
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
       file: ./src/mappings/kernel.ts
       entities:
-        - AppInstance
+        - FinanceApp
+        - TokenManagerApp
+        - VotingApp
       abis:
         - name: Kernel
           file: ./abis/kernel/Kernel.json
-        - name: KernelProxy
-          file: ./abis/kernel/KernelProxy.json
+        - name: Finance
+          file: ./abis/apps/Finance.json
+        - name: TokenManager
+          file: ./abis/apps/TokenManager.json
+        - name: Voting
+          file: ./abis/apps/Voting.json
       eventHandlers:
-        - event: ProxyDeposit(address,uint256)
-          handler: handleProxyDeposit
+        - event: NewAppProxy(address,bool,bytes32)
+          handler: handleNewAppProxy
         - event: SetApp(indexed bytes32,indexed bytes32,address)
           handler: handleSetApp
   - name: Repo
@@ -423,3 +398,97 @@ templates:
       eventHandlers:
         - event: NewVersion(uint256,uint16[3])
           handler: handleNewVersion
+  - name: Finance
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: Finance
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/apps/finance.ts
+      entities:
+        - Payment
+        - Period
+        - TokenBudget
+        - IncomingTransaction
+        - OutgoingTransaction
+      abis:
+        - name: Finance
+          file: ./abis/apps/Finance.json
+      eventHandlers:
+        - event: NewPeriod(indexed uint64,uint64,uint64)
+          handler: handleNewPeriod
+        - event: SetBudget(indexed address,uint256,bool)
+          handler: handleSetBudget
+        - event: NewPayment(indexed uint256,indexed address,uint64,string)
+          handler: handleNewPayment
+        - event: NewTransaction(indexed uint256,bool,indexed address,uint256,string)
+          handler: handleNewTransaction
+        - event: ChangePaymentState(indexed uint256,bool)
+          handler: handleChangePaymentState
+        - event: ChangePeriodDuration(uint64)
+          handler: handleChangePeriodDuration
+        - event: PaymentFailure(uint256)
+          handler: handlePaymentFailure
+        - event: ScriptResult(indexed address,bytes,bytes,bytes)
+          handler: handleScriptResult
+        - event: RecoverToVault(indexed address,indexed address,uint256)
+          handler: handleRecoverToVault
+  - name: TokenManager
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: TokenManager
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/apps/token-manager.ts
+      entities:
+        - Vesting
+      abis:
+        - name: TokenManager
+          file: ./abis/apps/TokenManager.json
+      eventHandlers:
+        - event: NewVesting(indexed address,uint256,uint256)
+          handler: handleNewVesting
+        - event: RevokeVesting(indexed address,uint256,uint256)
+          handler: handleRevokeVesting
+        - event: ScriptResult(indexed address,bytes,bytes,bytes)
+          handler: handleScriptResult
+        - event: RecoverToVault(indexed address,indexed address,uint256)
+          handler: handleRecoverToVault
+  - name: Voting
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: Voting
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/apps/voting.ts
+      entities:
+        - Vote
+        - SupportVote
+        - NonSupportVote
+      abis:
+        - name: Voting
+          file: ./abis/apps/Voting.json
+      eventHandlers:
+        - event: StartVote(indexed uint256,indexed address,string)
+          handler: handleStartVote
+        - event: CastVote(indexed uint256,indexed address,bool,uint256)
+          handler: handleCastVote
+        - event: ExecuteVote(indexed uint256)
+          handler: handleExecuteVote
+        - event: ChangeSupportRequired(uint64)
+          handler: handleChangeSupportRequired
+        - event: ChangeMinQuorum(uint64)
+          handler: handleChangeMinQuorum
+        - event: ScriptResult(indexed address,bytes,bytes,bytes)
+          handler: handleScriptResult
+        - event: RecoverToVault(indexed address,indexed address,uint256)
+          handler: handleRecoverToVault
