@@ -98,6 +98,7 @@ type ENSResolver @entity {
 #
 
 interface AppInstance {
+  id: ID!
   appAddress: Bytes!
   appId: Bytes!
 }
@@ -107,7 +108,7 @@ interface AppInstance {
 #
 
 type FinanceApp implements AppInstance @entity {
-  id: ID! # app proxy address
+  id: ID! # <appProxyAddress>
   appAddress: Bytes!
   appId: Bytes!
 
@@ -123,7 +124,7 @@ type FinanceApp implements AppInstance @entity {
 }
 
 type Payment @entity {
-  id: ID!
+  id: ID! # <appProxyAddress>-<paymentId>
   app: FinanceApp
   recipient: Bytes!
   maxExecutions: BigInt!
@@ -137,20 +138,21 @@ type Payment @entity {
 }
 
 type Period @entity {
-  id: ID!
+  id: ID! # <appProxyAddress>-<periodId>
   app: FinanceApp!
   start: BigInt!
   end: BigInt!
 }
 
 type TokenBudget @entity {
-  id: ID!
+  id: ID! # <appProxyAddress>-<tokenAddress>
   app: FinanceApp
   token: Bytes!
   amount: BigInt!
 }
 
 interface Transaction {
+  id: ID!
   app: FinanceApp!
   entity: Bytes!
   amount: BigInt!
@@ -162,7 +164,7 @@ interface Transaction {
 }
 
 type IncomingTransaction implements Transaction @entity {
-  id: ID!
+  id: ID! # <appProxyAddress>-INCOMING-<transactionId>
   app: FinanceApp!
   entity: Bytes!
   amount: BigInt!
@@ -174,7 +176,7 @@ type IncomingTransaction implements Transaction @entity {
 }
 
 type OutgoingTransaction implements Transaction @entity {
-  id: ID!
+  id: ID! # <appProxyAddress>-OUTGOING-<transactionId>
   app: FinanceApp!
   entity: Bytes!
   amount: BigInt!
@@ -190,7 +192,7 @@ type OutgoingTransaction implements Transaction @entity {
 #
 
 type TokenManagerApp implements AppInstance @entity {
-  id: ID! # app proxy address
+  id: ID! # <appProxyAddress>
   appAddress: Bytes!
   appId: Bytes!
 
@@ -198,7 +200,7 @@ type TokenManagerApp implements AppInstance @entity {
 }
 
 type Vesting @entity {
-  id: ID!
+  id: ID! # <appProxyAddress>-<vestingId>
   app: TokenManagerApp!
   receiver: Bytes!
   vestingId: BigInt!
@@ -209,7 +211,7 @@ type Vesting @entity {
 #
 
 type VotingApp implements AppInstance @entity {
-  id: ID! # app proxy address
+  id: ID! # <appProxyAddress>
   appAddress: Bytes!
   appId: Bytes!
   minQuorumPercent: BigInt!
@@ -219,7 +221,7 @@ type VotingApp implements AppInstance @entity {
 }
 
 type Vote @entity {
-  id: ID!
+  id: ID! # <appProxyAddress>-<voteId>
   app: VotingApp!
   creator: Bytes!
   metadata: String!
@@ -236,7 +238,7 @@ type Vote @entity {
 }
 
 type SupportVote @entity {
-  id: ID!
+  id: ID! # <appProxyAddress>-<voteId>-<voterAddress>-YES-<txHash>
   app: VotingApp!
   voteId: Vote
   voter: Bytes!
@@ -244,7 +246,7 @@ type SupportVote @entity {
 }
 
 type NonSupportVote @entity {
-  id: ID!
+  id: ID! # <appProxyAddress>-<voteId>-<voterAddress>-NO-<txHash>
   app: VotingApp!
   voteId: Vote
   voter: Bytes!

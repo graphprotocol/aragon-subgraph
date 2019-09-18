@@ -1,7 +1,6 @@
-import { Address, log, store } from '@graphprotocol/graph-ts'
+import { log, store } from '@graphprotocol/graph-ts'
 
 import {
-  Finance as FinanceContract,
   NewPeriod,
   SetBudget,
   NewPayment,
@@ -13,22 +12,13 @@ import {
   RecoverToVault,
 } from '../../../generated/templates/Finance/Finance'
 
-import {
-  FinanceApp,
-  Payment,
-  Period,
-  TokenBudget,
-  IncomingTransaction,
-  OutgoingTransaction,
-} from '../../../generated/schema'
-
-import { Finance } from '../../../generated/templates'
+import { Payment, Period, TokenBudget, IncomingTransaction, OutgoingTransaction } from '../../../generated/schema'
 
 export function handleNewPeriod(event: NewPeriod): void {
-  let app = registerFinanceApp(event.address)
+  let appAddress = event.address.toHexString()
 
-  let period = new Period(event.params.periodId.toString())
-  period.app = app.id
+  let period = new Period(appAddress + '-' + event.params.periodId.toString())
+  period.app = appAddress
   period.start = event.params.periodStarts
   period.end = event.params.periodEnds
 
@@ -36,27 +26,26 @@ export function handleNewPeriod(event: NewPeriod): void {
 }
 
 export function handleSetBudget(event: SetBudget): void {
-  let app = registerFinanceApp(event.address)
-
-  let id = event.address.toHexString() + '-' + event.params.token.toHexString()
+  let appAddress = event.address.toHexString()
+  let budgetId = appAddress + '-' + event.params.token.toHexString()
 
   if (event.params.hasBudget) {
-    let budget = new TokenBudget(id)
-    budget.app = app.id
+    let budget = new TokenBudget(budgetId)
+    budget.app = appAddress
     budget.token = event.params.token
     budget.amount = event.params.amount
 
     budget.save()
   } else {
-    store.remove('TokenBudget', id)
+    store.remove('TokenBudget', budgetId)
   }
 }
 
 export function handleNewPayment(event: NewPayment): void {
-  let app = registerFinanceApp(event.address)
+  let appAddress = event.address.toHexString()
 
-  let payment = new Payment(event.params.paymentId.toString())
-  payment.app = app.id
+  let payment = new Payment(appAddress + '-' + event.params.paymentId.toString())
+  payment.app = appAddress
   payment.recipient = event.params.recipient
   payment.maxExecutions = event.params.maxExecutions
   payment.reference = event.params.reference
@@ -71,11 +60,11 @@ export function handleNewPayment(event: NewPayment): void {
 }
 
 export function handleNewTransaction(event: NewTransaction): void {
-  let app = registerFinanceApp(event.address)
+  let appAddress = event.address.toHexString()
 
   if (event.params.incoming) {
-    let transaction = new IncomingTransaction(event.params.transactionId.toString())
-    transaction.app = app.id
+    let transaction = new IncomingTransaction(appAddress + '-INCOMING-' + event.params.transactionId.toString())
+    transaction.app = appAddress
     transaction.entity = event.params.entity
     transaction.amount = event.params.amount
     transaction.reference = event.params.reference
@@ -86,8 +75,8 @@ export function handleNewTransaction(event: NewTransaction): void {
 
     transaction.save()
   } else {
-    let transaction = new OutgoingTransaction(event.params.transactionId.toString())
-    transaction.app = app.id
+    let transaction = new OutgoingTransaction(appAddress + '-OUTGOING-' + event.params.transactionId.toString())
+    transaction.app = appAddress
     transaction.entity = event.params.entity
     transaction.amount = event.params.amount
     transaction.reference = event.params.reference
@@ -101,26 +90,33 @@ export function handleNewTransaction(event: NewTransaction): void {
 }
 
 export function handleChangePaymentState(event: ChangePaymentState): void {
-  let payment = new Payment(event.params.paymentId.toString())
+  let payment = new Payment(event.address.toHexString() + '-' + event.params.paymentId.toString())
   payment.active = event.params.active
 
   payment.save()
 }
 
 export function handleChangePeriodDuration(event: ChangePeriodDuration): void {
-  log.debug('[Finance][ChangePeriodDuration] newDuration={}}', [event.params.newDuration.toString()])
+  log.debug('[Finance][ChangePeriodDuration] appAddress={}, newDuration={}}', [
+    event.address.toHexString(),
+    event.params.newDuration.toString(),
+  ])
 
   // TODO
 }
 
 export function handlePaymentFailure(event: PaymentFailure): void {
-  log.debug('[Finance][PaymentFailure] paymentId={}}', [event.params.paymentId.toString()])
+  log.debug('[Finance][PaymentFailure] appAddress={}, paymentId={}}', [
+    event.address.toHexString(),
+    event.params.paymentId.toString(),
+  ])
 
   // TODO
 }
 
 export function handleScriptResult(event: ScriptResult): void {
-  log.debug('[Finance][ScriptResult] executor={}, script={}, input={}, returnData={}', [
+  log.debug('[Finance][ScriptResult] appAddress={}, executor={}, script={}, input={}, returnData={}', [
+    event.address.toHexString(),
     event.params.executor.toHex(),
     event.params.script.toHex(),
     event.params.input.toHex(),
@@ -131,33 +127,12 @@ export function handleScriptResult(event: ScriptResult): void {
 }
 
 export function handleRecoverToVault(event: RecoverToVault): void {
-  log.debug('[Finance][RecoverToVault] vault={}, token={}, amount={}', [
+  log.debug('[Finance][RecoverToVault] appAddress={}, vault={}, token={}, amount={}', [
+    event.address.toHexString(),
     event.params.vault.toHex(),
     event.params.token.toHex(),
     event.params.amount.toString(),
   ])
 
   // TODO
-}
-
-export function registerFinanceApp(appAddress: Address): FinanceApp {
-  let app = FinanceApp.load(appAddress.toHexString())
-
-  if (app == null) {
-    let instance = FinanceContract.bind(appAddress)
-
-    app = new FinanceApp(appAddress.toHexString())
-    app.appAddress = appAddress
-    app.appId = instance.appId()
-
-    // TODO: get other contract parameters
-
-    app.save()
-
-    // Start indexing app events
-    // Enable next line when https://github.com/graphprotocol/graph-node/issues/1105 is resolved.
-    /* Finance.create(appAddress) */
-  }
-
-  return app as FinanceApp
 }

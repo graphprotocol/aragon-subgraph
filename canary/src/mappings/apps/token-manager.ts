@@ -1,21 +1,19 @@
-import { Address, log } from '@graphprotocol/graph-ts'
+import { log } from '@graphprotocol/graph-ts'
 
 import {
-  TokenManager as TokenManagerContract,
   NewVesting,
   RecoverToVault,
   RevokeVesting,
   ScriptResult,
 } from '../../../generated/templates/TokenManager/TokenManager'
 
-import { TokenManagerApp, Vesting } from '../../../generated/schema'
-import { TokenManager } from '../../../generated/templates'
+import { Vesting } from '../../../generated/schema'
 
 export function handleNewVesting(event: NewVesting): void {
-  let app = registerTokenManagerApp(event.address)
+  let appAddress = event.address.toHexString()
 
-  let vesting = new Vesting(event.params.vestingId.toString())
-  vesting.app = app.id
+  let vesting = new Vesting(appAddress + '-' + event.params.vestingId.toString())
+  vesting.app = appAddress
   vesting.receiver = event.params.receiver
   vesting.vestingId = event.params.vestingId
 
@@ -23,7 +21,8 @@ export function handleNewVesting(event: NewVesting): void {
 }
 
 export function handleRevokeVesting(event: RevokeVesting): void {
-  log.debug('[TokenManager][RevokeVesting] receiver={}, vestingId={}, nonVestedAmount={}', [
+  log.debug('[TokenManager][RevokeVesting] appAddress={}, receiver={}, vestingId={}, nonVestedAmount={}', [
+    event.address.toHexString(),
     event.params.receiver.toHex(),
     event.params.vestingId.toString(),
     event.params.nonVestedAmount.toString(),
@@ -33,7 +32,8 @@ export function handleRevokeVesting(event: RevokeVesting): void {
 }
 
 export function handleScriptResult(event: ScriptResult): void {
-  log.debug('[TokenManager][ScriptResult] executor={}, script={}, input={}, returnData={}', [
+  log.debug('[TokenManager][ScriptResult] appAddress={}, executor={}, script={}, input={}, returnData={}', [
+    event.address.toHexString(),
     event.params.executor.toHex(),
     event.params.script.toHex(),
     event.params.input.toHex(),
@@ -44,33 +44,12 @@ export function handleScriptResult(event: ScriptResult): void {
 }
 
 export function handleRecoverToVault(event: RecoverToVault): void {
-  log.debug('[TokenManager][RecoverToVault] vault={}, token={}, amount={}', [
+  log.debug('[TokenManager][RecoverToVault] appAddress={}, vault={}, token={}, amount={}', [
+    event.address.toHexString(),
     event.params.vault.toHex(),
     event.params.token.toHex(),
     event.params.amount.toString(),
   ])
 
   // TODO
-}
-
-export function registerTokenManagerApp(appAddress: Address): TokenManagerApp {
-  let app = TokenManagerApp.load(appAddress.toHexString())
-
-  if (app == null) {
-    let instance = TokenManagerContract.bind(appAddress)
-
-    app = new TokenManagerApp(appAddress.toHexString())
-    app.appAddress = appAddress
-    app.appId = instance.appId()
-
-    // TODO: get other contract parameters
-
-    app.save()
-
-    // Start indexing app events
-    // Enable next line when https://github.com/graphprotocol/graph-node/issues/1105 is resolved.
-    /* TokenManager.create(appAddress) */
-  }
-
-  return app as TokenManagerApp
 }

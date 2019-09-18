@@ -1,7 +1,6 @@
-import { Address, log } from '@graphprotocol/graph-ts'
+import { log } from '@graphprotocol/graph-ts'
 
 import {
-  Voting as VotingContract,
   StartVote,
   CastVote,
   ExecuteVote,
@@ -11,14 +10,13 @@ import {
   ScriptResult,
 } from '../../../generated/templates/Voting/Voting'
 
-import { VotingApp, NonSupportVote, SupportVote, Vote } from '../../../generated/schema'
-import { Voting } from '../../../generated/templates'
+import { NonSupportVote, SupportVote, Vote, VotingApp } from '../../../generated/schema'
 
 export function handleStartVote(event: StartVote): void {
-  let app = registerVotingApp(event.address)
+  let appAddress = event.address.toHexString()
 
-  let vote = new Vote(event.params.voteId.toString())
-  vote.app = app.id
+  let vote = new Vote(appAddress + '-' + event.params.voteId.toString())
+  vote.app = appAddress
   vote.creator = event.params.creator
   vote.executed = false
   vote.metadata = event.params.metadata
@@ -33,23 +31,22 @@ export function handleStartVote(event: StartVote): void {
 }
 
 export function handleCastVote(event: CastVote): void {
-  let app = registerVotingApp(event.address)
-
+  let appAddress = event.address.toHexString()
   let voteId = event.params.voteId
   let voter = event.params.voter
 
   let txHash = event.transaction.hash.toHex()
 
   if (event.params.supports) {
-    let vote = new SupportVote(voteId.toString() + '-' + voter.toHexString() + '-YES' + '-' + txHash)
-    vote.app = app.id
+    let vote = new SupportVote(appAddress + '-' + voteId.toString() + '-' + voter.toHexString() + '-YES' + '-' + txHash)
+    vote.app = event.address.toHexString()
     vote.stake = event.params.stake
     vote.voter = event.params.voter
 
     vote.save()
   } else {
-    let vote = new NonSupportVote(voteId.toString() + '-' + voter.toHexString() + '-NO' + '-' + txHash)
-    vote.app = app.id
+    let vote = new NonSupportVote(appAddress + '-' + voteId.toString() + '-' + voter.toHexString() + '-NO' + '-' + txHash)
+    vote.app = event.address.toHexString()
     vote.stake = event.params.stake
     vote.voter = event.params.voter
 
@@ -58,7 +55,7 @@ export function handleCastVote(event: CastVote): void {
 }
 
 export function handleExecuteVote(event: ExecuteVote): void {
-  let vote = new Vote(event.params.voteId.toString())
+  let vote = new Vote(event.address.toHexString() + '-' + event.params.voteId.toString())
   vote.executed = true
   vote.updated = event.block.timestamp
 
@@ -66,21 +63,22 @@ export function handleExecuteVote(event: ExecuteVote): void {
 }
 
 export function handleChangeSupportRequired(event: ChangeSupportRequired): void {
-  let app = registerVotingApp(event.address)
+  let app = new VotingApp(event.address.toHexString())
   app.supportRequiredPercent = event.params.supportRequiredPct
 
   app.save()
 }
 
 export function handleChangeMinQuorum(event: ChangeMinQuorum): void {
-  let app = registerVotingApp(event.address)
+  let app = new VotingApp(event.address.toHexString())
   app.minQuorumPercent = event.params.minAcceptQuorumPct
 
   app.save()
 }
 
 export function handleScriptResult(event: ScriptResult): void {
-  log.debug('[Voting][ScriptResult] executor={}, script={}, input={}, returnData={}', [
+  log.debug('[Voting][ScriptResult] appAddress={}, executor={}, script={}, input={}, returnData={}', [
+    event.address.toHexString(),
     event.params.executor.toHex(),
     event.params.script.toHex(),
     event.params.input.toHex(),
@@ -91,34 +89,12 @@ export function handleScriptResult(event: ScriptResult): void {
 }
 
 export function handleRecoverToVault(event: RecoverToVault): void {
-  log.debug('[Voting][RecoverToVault] vault={}, token={}, amount={}', [
+  log.debug('[Voting][RecoverToVault] appAddress={}, vault={}, token={}, amount={}', [
+    event.address.toHexString(),
     event.params.vault.toHex(),
     event.params.token.toHex(),
     event.params.amount.toString(),
   ])
 
   // TODO
-}
-
-export function registerVotingApp(appAddress: Address): VotingApp {
-  let app = VotingApp.load(appAddress.toHexString())
-
-  if (app == null) {
-    let instance = VotingContract.bind(appAddress)
-
-    app = new VotingApp(appAddress.toHexString())
-    app.appAddress = appAddress
-    app.appId = instance.appId()
-
-    app.minQuorumPercent = instance.minAcceptQuorumPct()
-    app.supportRequiredPercent = instance.supportRequiredPct()
-
-    app.save()
-
-    // Start indexing app events
-    // Enable next line when https://github.com/graphprotocol/graph-node/issues/1105 is resolved.
-    /* Voting.create(appAddress) */
-  }
-
-  return app as VotingApp
 }
