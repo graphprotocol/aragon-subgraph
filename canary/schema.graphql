@@ -1,5 +1,6 @@
 type AragonVersion @entity {
   id: ID!
+  name: String!
   lastUpdatedBlock: BigInt
 
   daoCount: BigInt!
@@ -10,7 +11,9 @@ type AragonVersion @entity {
 type Organization @entity {
   id: ID! # DAO address
   address: Bytes!
+  name: String
   template: OrganizationTemplate
+  templateAddress: Bytes
   token: Bytes
   version: AragonVersion!
 

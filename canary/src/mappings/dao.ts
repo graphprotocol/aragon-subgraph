@@ -1,36 +1,22 @@
-import { BigInt, DataSourceTemplate } from '@graphprotocol/graph-ts'
+import { Address, BigInt } from '@graphprotocol/graph-ts'
 
-import { Unknown } from '../../generated/DAO/AuxiliaryContract'
-import { DeployDAO, DeployEVMScriptRegistry } from '../../generated/templates/DAOFactory/DAOFactory'
+import { DeployDAO, DeployEVMScriptRegistry } from '../../generated/DAOFactory/DAOFactory'
 import { AragonVersion, EVMScriptRegistry, Organization as DAO } from '../../generated/schema'
+import { Kernel } from '../../generated/templates'
 
 const DAO_FACTORY_0_6 = '0x595b34c93aa2c2ba0a38daeede629a0dfbdcc559'
 const DAO_FACTORY_0_7 = '0xc29f0599df12eb4cbe1a34354c4bac6d944071d1'
 const DAO_FACTORY_0_8 = '0xb9da44c051c6cc9e04b7e0f95e95d69c6a6d8031'
 
-export function registerDAOFactories(event: Unknown): void {
-  DataSourceTemplate.create('DAOFactory', [DAO_FACTORY_0_6])
-  DataSourceTemplate.create('DAOFactory', [DAO_FACTORY_0_7])
-  DataSourceTemplate.create('DAOFactory', [DAO_FACTORY_0_8])
-}
-
 export function handleDeployDAO(event: DeployDAO): void {
-  let daoAddress = event.params.dao.toHex()
-
-  // Detect AragonOS version
-  let versionId = detectAragonVersion(event.address.toHex())
-  let aragonVersion = AragonVersion.load(versionId)
-
-  if (aragonVersion == null) {
-    aragonVersion = new AragonVersion(versionId)
-    aragonVersion.daoCount = BigInt.fromI32(0)
-    aragonVersion.daoFactoryAddress = event.address
-  }
+  let daoAddress = event.params.dao.toHexString()
+  let aragonVersion = getOrRegisterVersion(event.address)
 
   // Persist information about the new DAO
   let dao = new DAO(daoAddress)
   dao.address = event.params.dao
   dao.version = aragonVersion.id
+
   dao.created = event.block.timestamp
   dao.createdAtBlock = event.block.number
   dao.createdAtTransaction = event.transaction.hash
@@ -42,11 +28,11 @@ export function handleDeployDAO(event: DeployDAO): void {
   aragonVersion.save()
 
   // Start indexing DAO kernel events
-  DataSourceTemplate.create('Kernel', [daoAddress])
+  Kernel.create(event.params.dao)
 }
 
 export function handleDeployEVMScriptRegistry(event: DeployEVMScriptRegistry): void {
-  let registry = new EVMScriptRegistry(event.params.reg.toHex())
+  let registry = new EVMScriptRegistry(event.params.reg.toHexString())
 
   registry.created = event.block.timestamp
   registry.createdAtBlock = event.block.number
@@ -55,7 +41,23 @@ export function handleDeployEVMScriptRegistry(event: DeployEVMScriptRegistry): v
   registry.save()
 }
 
-function detectAragonVersion(daoFactoryAddress: string): string {
+function getOrRegisterVersion(daoFactory: Address): AragonVersion {
+  let daoFactoryAddress = daoFactory.toHexString()
+  let version = AragonVersion.load(daoFactoryAddress)
+
+  if (version == null) {
+    version = new AragonVersion(daoFactoryAddress)
+    version.daoCount = BigInt.fromI32(0)
+    version.daoFactoryAddress = daoFactory
+    version.name = detectVersion(daoFactoryAddress)
+
+    version.save()
+  }
+
+  return version as AragonVersion
+}
+
+function detectVersion(daoFactoryAddress: string): string {
   if (daoFactoryAddress == DAO_FACTORY_0_6) {
     return '0.6'
   }
@@ -63,6 +65,7 @@ function detectAragonVersion(daoFactoryAddress: string): string {
   if (daoFactoryAddress == DAO_FACTORY_0_7) {
     return '0.7'
   }
+
   if (daoFactoryAddress == DAO_FACTORY_0_8) {
     return '0.8'
   }

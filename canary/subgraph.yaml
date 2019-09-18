@@ -42,12 +42,17 @@ dataSources:
         - event: ClaimSubdomain(indexed bytes32,indexed address,indexed address)
           handler: handleClaimSubdomain
 
-  - name: DAO
+  #
+  # DAO Factories
+  #
+
+  # Aragon 0.6
+  - name: DAOFactory-0.6
     kind: ethereum/contract
     network: mainnet
     source:
-      abi: AuxiliaryContract
-      address: '0x7f751820be4b1e44464268c425af6095995e045a'
+      abi: DAOFactory
+      address: '0x595b34c93aa2c2ba0a38daeede629a0dfbdcc559'
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -55,20 +60,91 @@ dataSources:
       file: ./src/mappings/dao.ts
       entities:
         - Organization
+        - EVMScriptRegistry
       abis:
-        - name: AuxiliaryContract
-          file: ./abis/AuxiliaryContract.json
+        - name: DAOFactory
+          file: ./abis/factory/DAOFactory.json
       eventHandlers:
-        - event: 'Unknown(indexed bytes,indexed bytes)'
-          topic0: '0xa9e319c3b10db96c5cee4bc3ebffa9c5581f222f14a4deb0df7ec2088ccd0974'
-          handler: registerDAOFactories
+        - event: DeployDAO(address)
+          handler: handleDeployDAO
+        - event: DeployEVMScriptRegistry(address)
+          handler: handleDeployEVMScriptRegistry
+
+  # Aragon 0.7
+  - name: DAOFactory-0.7
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: DAOFactory
+      address: '0xc29f0599df12eb4cbe1a34354c4bac6d944071d1'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/dao.ts
+      entities:
+        - Organization
+        - EVMScriptRegistry
+      abis:
+        - name: DAOFactory
+          file: ./abis/factory/DAOFactory.json
+      eventHandlers:
+        - event: DeployDAO(address)
+          handler: handleDeployDAO
+        - event: DeployEVMScriptRegistry(address)
+          handler: handleDeployEVMScriptRegistry
+
+  # Aragon 0.8
+  - name: DAOFactory
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: DAOFactory
+      address: '0xb9da44c051c6cc9e04b7e0f95e95d69c6a6d8031'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/dao.ts
+      entities:
+        - Organization
+        - EVMScriptRegistry
+      abis:
+        - name: DAOFactory
+          file: ./abis/factory/DAOFactory.json
+      eventHandlers:
+        - event: DeployDAO(address)
+          handler: handleDeployDAO
+        - event: DeployEVMScriptRegistry(address)
+          handler: handleDeployEVMScriptRegistry
 
   #
-  # Templates
+  # DAO Templates
   #
 
-  # democracy-kit-2.x
-  - name: DemocracyKit
+  # democracy-kit-1.0.0  (Aragon 0.6)
+  - name: DAO/templates/DemocracyKit-1.0.0
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: DemocracyKit
+      address: '0x705Cd9a00b87Bb019a87beEB9a50334219aC4444'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/dao-templates.ts
+      entities:
+        - Organization
+      abis:
+        - name: DemocracyKit
+          file: ./abis/kits/DemocracyKit-1.0.0.json
+      eventHandlers:
+        - event: DeployInstance(address,indexed address)
+          handler: handleDeployDemocracyDao
+
+  # democracy-kit-2.0.0 (Aragon 0.7)
+  - name: DAO/templates/DemocracyKit
     kind: ethereum/contract
     network: mainnet
     source:
@@ -83,13 +159,34 @@ dataSources:
         - Organization
       abis:
         - name: DemocracyKit
-          file: ./abis/kits/DemocracyKit.json
+          file: ./abis/kits/DemocracyKit-2.0.0.json
       eventHandlers:
         - event: DeployInstance(address,indexed address)
           handler: handleDeployDemocracyDao
 
-  # multisig-kit-2.x
-  - name: MultisigKit
+  # multisig-kit-1.0.0 (Aragon 0.6)
+  - name: DAO/templates/MultisigKit-1.0.0
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: MultisigKit
+      address: '0x41bbaf498226b68415f1C78ED541c45A18fd7696'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/dao-templates.ts
+      entities:
+        - Organization
+      abis:
+        - name: MultisigKit
+          file: ./abis/kits/MultisigKit-1.0.0.json
+      eventHandlers:
+        - event: DeployInstance(address,indexed address)
+          handler: handleDeployMultisigDao
+
+  # multisig-kit-2.0.0 (Aragon 0.7)
+  - name: DAO/templates/MultisigKit
     kind: ethereum/contract
     network: mainnet
     source:
@@ -104,17 +201,17 @@ dataSources:
         - Organization
       abis:
         - name: MultisigKit
-          file: ./abis/kits/MultisigKit.json
+          file: ./abis/kits/MultisigKit-2.0.0.json
       eventHandlers:
         - event: DeployInstance(address,indexed address)
           handler: handleDeployMultisigDao
 
-  # company-template-1.x
-  - name: CompanyTemplate
+  # company-template-1.0.0 (Aragon 0.8)
+  - name: DAO/templates/CompanyTemplate
     kind: ethereum/contract
     network: mainnet
     source:
-      abi: BaseTemplate
+      abi: CompanyTemplate
       address: '0xd737632caC4d039C9B0EEcc94C12267407a271b5'
     mapping:
       kind: ethereum/events
@@ -124,18 +221,18 @@ dataSources:
       entities:
         - Organization
       abis:
-        - name: BaseTemplate
-          file: ./abis/templates/BaseTemplate.json
+        - name: CompanyTemplate
+          file: ./abis/templates/CompanyTemplate.json
       eventHandlers:
         - event: DeployDao(address)
           handler: handleDeployCompanyDao
 
-  # company-board-template-1.x
-  - name: CompanyBoardTemplate
+  # company-board-template-1.0.0 (Aragon 0.8)
+  - name: DAO/templates/CompanyBoardTemplate
     kind: ethereum/contract
     network: mainnet
     source:
-      abi: BaseTemplate
+      abi: CompanyBoardTemplate
       address: '0x4d1A892f42c947fa952b57bc6939b27A96215CfA'
     mapping:
       kind: ethereum/events
@@ -145,18 +242,18 @@ dataSources:
       entities:
         - Organization
       abis:
-        - name: BaseTemplate
-          file: ./abis/templates/BaseTemplate.json
+        - name: CompanyBoardTemplate
+          file: ./abis/templates/CompanyBoardTemplate.json
       eventHandlers:
         - event: DeployDao(address)
           handler: handleDeployCompanyBoardDao
 
-  # membership-template-2.x
-  - name: MembershipTemplate
+  # membership-template-2.0.0 (Aragon 0.8)
+  - name: DAO/templates/MembershipTemplate
     kind: ethereum/contract
     network: mainnet
     source:
-      abi: BaseTemplate
+      abi: MembershipTemplate
       address: '0x67430642C0c3B5E6538049B9E9eE719f2a4BeE7c'
     mapping:
       kind: ethereum/events
@@ -166,18 +263,18 @@ dataSources:
       entities:
         - Organization
       abis:
-        - name: BaseTemplate
-          file: ./abis/templates/BaseTemplate.json
+        - name: MembershipTemplate
+          file: ./abis/templates/MembershipTemplate.json
       eventHandlers:
         - event: DeployDao(address)
           handler: handleDeployMembershipDao
 
-  # reputation-template-1.x
-  - name: ReputationTemplate
+  # reputation-template-1.0.0 (Aragon 0.8)
+  - name: DAO/templates/ReputationTemplate
     kind: ethereum/contract
     network: mainnet
     source:
-      abi: BaseTemplate
+      abi: ReputationTemplate
       address: '0x3a06A6544e48708142508D9042f94DDdA769d04F'
     mapping:
       kind: ethereum/events
@@ -187,8 +284,8 @@ dataSources:
       entities:
         - Organization
       abis:
-        - name: BaseTemplate
-          file: ./abis/templates/BaseTemplate.json
+        - name: ReputationTemplate
+          file: ./abis/templates/ReputationTemplate.json
       eventHandlers:
         - event: DeployDao(address)
           handler: handleDeployReputationpDao
