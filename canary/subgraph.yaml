@@ -22,7 +22,7 @@ dataSources:
         - event: DeployAPM(indexed bytes32,address)
           handler: handleDeployAPM
 
-  - name: ENS
+  - name: AragonID
     kind: ethereum/contract
     network: mainnet
     source:
@@ -34,7 +34,8 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/ens.ts
       entities:
-        - ENSResolver
+        - Organization
+        - OrganizationTemplateInstance
       abis:
         - name: FIFSResolvingRegistrar
           file: ./abis/ens/FIFSResolvingRegistrar.json
@@ -133,12 +134,12 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      file: ./src/mappings/dao-templates.ts
+      file: ./src/mappings/dao-kits.ts
       entities:
         - Organization
       abis:
         - name: DemocracyKit
-          file: ./abis/kits/DemocracyKit-1.0.0.json
+          file: ./abis/dao-kits/DemocracyKit-1.0.0.json
       eventHandlers:
         - event: DeployInstance(address,indexed address)
           handler: handleDeployDemocracyDao
@@ -154,12 +155,12 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      file: ./src/mappings/dao-templates.ts
+      file: ./src/mappings/dao-kits.ts
       entities:
         - Organization
       abis:
         - name: DemocracyKit
-          file: ./abis/kits/DemocracyKit-2.0.0.json
+          file: ./abis/dao-kits/DemocracyKit-2.0.0.json
       eventHandlers:
         - event: DeployInstance(address,indexed address)
           handler: handleDeployDemocracyDao
@@ -175,12 +176,12 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      file: ./src/mappings/dao-templates.ts
+      file: ./src/mappings/dao-kits.ts
       entities:
         - Organization
       abis:
         - name: MultisigKit
-          file: ./abis/kits/MultisigKit-1.0.0.json
+          file: ./abis/dao-kits/MultisigKit-1.0.0.json
       eventHandlers:
         - event: DeployInstance(address,indexed address)
           handler: handleDeployMultisigDao
@@ -196,18 +197,18 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      file: ./src/mappings/dao-templates.ts
+      file: ./src/mappings/dao-kits.ts
       entities:
         - Organization
       abis:
         - name: MultisigKit
-          file: ./abis/kits/MultisigKit-2.0.0.json
+          file: ./abis/dao-kits/MultisigKit-2.0.0.json
       eventHandlers:
         - event: DeployInstance(address,indexed address)
           handler: handleDeployMultisigDao
 
   # company-template-1.0.0 (Aragon 0.8)
-  - name: DAO/templates/CompanyTemplate
+  - name: DAO/templates/company
     kind: ethereum/contract
     network: mainnet
     source:
@@ -216,19 +217,19 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
+      file: ./src/mappings/dao-templates/company.ts
       language: wasm/assemblyscript
-      file: ./src/mappings/dao-templates.ts
       entities:
-        - Organization
+        - OrganizationTemplateInstance
       abis:
         - name: CompanyTemplate
-          file: ./abis/templates/CompanyTemplate.json
-      eventHandlers:
-        - event: DeployDao(address)
-          handler: handleDeployCompanyDao
+          file: ./abis/dao-templates/CompanyTemplate.json
+      callHandlers:
+        - function: newTokenAndInstance(string,string,string,address[],uint256[],uint64[3],uint64,bool)
+          handler: handleNewCompanyDao
 
   # company-board-template-1.0.0 (Aragon 0.8)
-  - name: DAO/templates/CompanyBoardTemplate
+  - name: DAO/templates/company-board
     kind: ethereum/contract
     network: mainnet
     source:
@@ -237,19 +238,19 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
+      file: ./src/mappings/dao-templates/company-board.ts
       language: wasm/assemblyscript
-      file: ./src/mappings/dao-templates.ts
       entities:
-        - Organization
+        - OrganizationTemplateInstance
       abis:
         - name: CompanyBoardTemplate
-          file: ./abis/templates/CompanyBoardTemplate.json
-      eventHandlers:
-        - event: DeployDao(address)
-          handler: handleDeployCompanyBoardDao
+          file: ./abis/dao-templates/CompanyBoardTemplate.json
+      callHandlers:
+        - function: finalizeInstance(string,address[],uint256[],address[],uint64,bool)
+          handler: handleNewCompanyBoardDao
 
   # membership-template-2.0.0 (Aragon 0.8)
-  - name: DAO/templates/MembershipTemplate
+  - name: DAO/templates/membership
     kind: ethereum/contract
     network: mainnet
     source:
@@ -258,19 +259,19 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
+      file: ./src/mappings/dao-templates/membership.ts
       language: wasm/assemblyscript
-      file: ./src/mappings/dao-templates.ts
       entities:
-        - Organization
+        - OrganizationTemplateInstance
       abis:
         - name: MembershipTemplate
-          file: ./abis/templates/MembershipTemplate.json
-      eventHandlers:
-        - event: DeployDao(address)
-          handler: handleDeployMembershipDao
+          file: ./abis/dao-templates/MembershipTemplate.json
+      callHandlers:
+        - function: newTokenAndInstance(string,string,string,address[],uint64[3],uint64,bool)
+          handler: handleNewMembershipDao
 
   # reputation-template-1.0.0 (Aragon 0.8)
-  - name: DAO/templates/ReputationTemplate
+  - name: DAO/templates/reputation
     kind: ethereum/contract
     network: mainnet
     source:
@@ -279,16 +280,16 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
+      file: ./src/mappings/dao-templates/reputation.ts
       language: wasm/assemblyscript
-      file: ./src/mappings/dao-templates.ts
       entities:
-        - Organization
+        - OrganizationTemplateInstance
       abis:
         - name: ReputationTemplate
-          file: ./abis/templates/ReputationTemplate.json
-      eventHandlers:
-        - event: DeployDao(address)
-          handler: handleDeployReputationpDao
+          file: ./abis/dao-templates/ReputationTemplate.json
+      callHandlers:
+        - function: newTokenAndInstance(string,string,string,address[],uint256[],uint64[3],uint64,bool)
+          handler: handleNewReputationDao
 
 templates:
   - name: ACL

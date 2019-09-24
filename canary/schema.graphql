@@ -13,8 +13,6 @@ type Organization @entity {
   address: Bytes!
   name: String
   template: OrganizationTemplate
-  templateAddress: Bytes
-  token: Bytes
   version: AragonVersion!
 
   created: BigInt!
@@ -32,6 +30,25 @@ enum OrganizationTemplate {
   COMPANY_BOARD
   MEMBERSHIP
   REPUTATION
+}
+
+type OrganizationTemplateInstance @entity {
+  id: ID!
+  dao: Organization
+  name: String!
+
+  ensResolver: Bytes
+
+  template: OrganizationTemplate!
+  templateAddress: Bytes!
+
+  token: Bytes
+  tokenName: String
+  tokenSymbol: String
+
+  created: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTransaction: Bytes!
 }
 
 type EVMScriptRegistry @entity {
@@ -73,20 +90,6 @@ type PackageVersion @entity {
   version: String!
   contract: Bytes!
   contentURI: String!
-
-  created: BigInt!
-  createdAtBlock: BigInt!
-  createdAtTransaction: Bytes!
-}
-
-#
-# ENS
-#
-
-type ENSResolver @entity {
-  id: ID! # subnode
-  owner: Bytes!
-  resolver: Bytes!
 
   created: BigInt!
   createdAtBlock: BigInt!
