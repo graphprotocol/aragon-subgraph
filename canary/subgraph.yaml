@@ -146,9 +146,9 @@ dataSources:
           handler: handleDeployInstance
       callHandlers:
         - function: newInstance(string,address[],uint256[],uint64,uint64,uint64)
-          handler: handleNewInstanceCall
+          handler: handleNewInstance
         - function: newTokenAndInstance(string,string,address[],uint256[],uint64,uint64,uint64)
-          handler: handleNewTokenAndInstanceCall
+          handler: handleNewTokenAndInstance
 
   # democracy-kit-2.0.0 (Aragon 0.7)
   - name: DAO/kits/democracy-2
@@ -173,9 +173,9 @@ dataSources:
           handler: handleDeployInstance
       callHandlers:
         - function: newInstance(string,address[],uint256[],uint64,uint64,uint64)
-          handler: handleNewInstanceCall
+          handler: handleNewInstance
         - function: newTokenAndInstance(string,string,string,address[],uint256[],uint64,uint64,uint64)
-          handler: handleNewTokenAndInstanceCall
+          handler: handleNewTokenAndInstance
 
   # multisig-kit-1.0.0 (Aragon 0.6)
   - name: DAO/kits/multisig-1
@@ -200,9 +200,9 @@ dataSources:
           handler: handleDeployInstance
       callHandlers:
         - function: newInstance(string,address[],uint256)
-          handler: handleNewInstanceCall
+          handler: handleNewInstance
         - function: newTokenAndInstance(string,string,address[],uint256)
-          handler: handleNewTokenAndInstanceCall
+          handler: handleNewTokenAndInstance
 
   # multisig-kit-2.0.0 (Aragon 0.7)
   - name: DAO/kits/multisig-2
@@ -227,9 +227,9 @@ dataSources:
           handler: handleDeployInstance
       callHandlers:
         - function: newInstance(string,address[],uint256)
-          handler: handleNewInstanceCall
+          handler: handleNewInstance
         - function: newTokenAndInstance(string,string,string,address[],uint256)
-          handler: handleNewTokenAndInstanceCall
+          handler: handleNewTokenAndInstance
 
   # company-template-1.0.0 (Aragon 0.8)
   - name: DAO/templates/company

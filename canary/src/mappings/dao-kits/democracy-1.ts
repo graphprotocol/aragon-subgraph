@@ -18,7 +18,7 @@ export function handleDeployInstance(event: DeployInstance): void {
   dao.save()
 }
 
-export function handleNewInstanceCall(call: NewInstanceCall): void {
+export function handleNewInstance(call: NewInstanceCall): void {
   let name = bytes.fromString(call.inputs.name)
 
   let instance = new DaoTemplateInstance(crypto.keccak256(name).toHexString())
@@ -33,7 +33,7 @@ export function handleNewInstanceCall(call: NewInstanceCall): void {
   instance.save()
 }
 
-export function handleNewTokenAndInstanceCall(call: NewTokenAndInstanceCall): void {
+export function handleNewTokenAndInstance(call: NewTokenAndInstanceCall): void {
   let name = bytes.fromString(call.inputs.name)
 
   let instance = new DaoTemplateInstance(crypto.keccak256(name).toHexString())
