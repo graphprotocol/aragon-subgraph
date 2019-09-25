@@ -1,24 +1,41 @@
-import { crypto } from '@graphprotocol/graph-ts'
+import { crypto, EthereumCall } from '@graphprotocol/graph-ts'
 
-import { NewTokenAndInstanceCall as NewMembershipCall } from '../../../generated/DAO/templates/membership/MembershipTemplate'
+import {
+  NewInstanceCall,
+  NewInstance1Call,
+  NewTokenAndInstanceCall,
+} from '../../../generated/DAO/templates/membership/MembershipTemplate'
+
 import { OrganizationTemplateInstance as DaoTemplateInstance } from '../../../generated/schema'
 
 import * as bytes from '../../helpers/bytes'
 
-export function handleNewMembershipDao(call: NewMembershipCall): void {
-  let name = bytes.fromString(call.inputs._id)
+export function handleNewInstance(call: NewInstance1Call): void {
+  createMembershipInstance(call.inputs._id, call)
+}
+
+export function handleNewInstanceWithPayroll(call: NewInstanceCall): void {
+  createMembershipInstance(call.inputs._id, call)
+}
+
+export function handleNewTokenAndInstance(call: NewTokenAndInstanceCall): void {
+  createMembershipInstance(call.inputs._id, call)
+}
+
+function createMembershipInstance(aragonId: string, call: EthereumCall): DaoTemplateInstance {
+  let name = bytes.fromString(aragonId)
   let id = crypto.keccak256(name)
 
   let instance = new DaoTemplateInstance(id.toHexString())
-  instance.name = call.inputs._id
+  instance.name = aragonId
   instance.template = 'MEMBERSHIP'
   instance.templateAddress = call.to
-  instance.tokenName = call.inputs._tokenName
-  instance.tokenSymbol = call.inputs._tokenSymbol
 
   instance.created = call.block.timestamp
   instance.createdAtBlock = call.block.number
   instance.createdAtTransaction = call.transaction.hash
 
   instance.save()
+
+  return instance
 }

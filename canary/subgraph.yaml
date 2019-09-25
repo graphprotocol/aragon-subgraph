@@ -249,8 +249,12 @@ dataSources:
         - name: CompanyTemplate
           file: ./abis/dao-templates/CompanyTemplate.json
       callHandlers:
+        - function: newInstance(string,address[],uint256[],uint64[3],uint64,bool)
+          handler: handleNewInstance
+        - function: newInstance(string,address[],uint256[],uint64[3],uint64,bool,uint256[4])
+          handler: handleNewInstanceWithPayroll
         - function: newTokenAndInstance(string,string,string,address[],uint256[],uint64[3],uint64,bool)
-          handler: handleNewCompanyDao
+          handler: handleNewTokenAndInstance
 
   # company-board-template-1.0.0 (Aragon 0.8)
   - name: DAO/templates/company-board
@@ -271,7 +275,9 @@ dataSources:
           file: ./abis/dao-templates/CompanyBoardTemplate.json
       callHandlers:
         - function: finalizeInstance(string,address[],uint256[],address[],uint64,bool)
-          handler: handleNewCompanyBoardDao
+          handler: handleFinalizeInstance
+        - function: finalizeInstance(string,address[],uint256[],address[],uint64,bool,uint256[4])
+          handler: handleFinalizeInstanceWithPayroll
 
   # membership-template-2.0.0 (Aragon 0.8)
   - name: DAO/templates/membership
@@ -291,8 +297,12 @@ dataSources:
         - name: MembershipTemplate
           file: ./abis/dao-templates/MembershipTemplate.json
       callHandlers:
+        - function: newInstance(string,address[],uint64[3],uint64,bool)
+          handler: handleNewInstance
+        - function: newInstance(string,address[],uint64[3],uint64,bool,uint256[4])
+          handler: handleNewInstanceWithPayroll
         - function: newTokenAndInstance(string,string,string,address[],uint64[3],uint64,bool)
-          handler: handleNewMembershipDao
+          handler: handleNewTokenAndInstance
 
   # reputation-template-1.0.0 (Aragon 0.8)
   - name: DAO/templates/reputation
@@ -312,8 +322,12 @@ dataSources:
         - name: ReputationTemplate
           file: ./abis/dao-templates/ReputationTemplate.json
       callHandlers:
+        - function: newInstance(string,address[],uint256[],uint64[3],uint64,bool)
+          handler: handleNewInstance
+        - function: newInstance(string,address[],uint256[],uint64[3],uint64,bool,uint256[4])
+          handler: handleNewInstanceWithPayroll
         - function: newTokenAndInstance(string,string,string,address[],uint256[],uint64[3],uint64,bool)
-          handler: handleNewReputationDao
+          handler: handleNewTokenAndInstance
 
 templates:
   - name: ACL

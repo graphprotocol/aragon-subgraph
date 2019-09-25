@@ -1,24 +1,36 @@
-import { crypto } from '@graphprotocol/graph-ts'
+import { crypto, EthereumCall } from '@graphprotocol/graph-ts'
 
-import { FinalizeInstance1Call as NewCompanyBoardCall } from '../../../generated/DAO/templates/company-board/CompanyBoardTemplate'
+import {
+  FinalizeInstanceCall,
+  FinalizeInstance1Call,
+} from '../../../generated/DAO/templates/company-board/CompanyBoardTemplate'
+
 import { OrganizationTemplateInstance as DaoTemplateInstance } from '../../../generated/schema'
 
 import * as bytes from '../../helpers/bytes'
 
-export function handleNewCompanyBoardDao(call: NewCompanyBoardCall): void {
-  let name = bytes.fromString(call.inputs._id)
+export function handleFinalizeInstance(call: FinalizeInstance1Call): void {
+  createCompanyBoardInstance(call.inputs._id, call)
+}
+
+export function handleFinalizeInstanceWithPayroll(call: FinalizeInstanceCall): void {
+  createCompanyBoardInstance(call.inputs._id, call)
+}
+
+function createCompanyBoardInstance(aragonId: string, call: EthereumCall): DaoTemplateInstance {
+  let name = bytes.fromString(aragonId)
   let id = crypto.keccak256(name)
 
   let instance = new DaoTemplateInstance(id.toHexString())
-  instance.name = call.inputs._id
+  instance.name = aragonId
   instance.template = 'COMPANY_BOARD'
   instance.templateAddress = call.to
-  // TODO: settings.tokenName = call.inputs._tokenName
-  // TODO: settings.tokenSymbol = call.inputs._tokenSymbol
 
   instance.created = call.block.timestamp
   instance.createdAtBlock = call.block.number
   instance.createdAtTransaction = call.transaction.hash
 
   instance.save()
+
+  return instance
 }

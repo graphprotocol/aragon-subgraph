@@ -1,24 +1,41 @@
-import { crypto } from '@graphprotocol/graph-ts'
+import { crypto, EthereumCall } from '@graphprotocol/graph-ts'
 
-import { NewTokenAndInstanceCall as NewReputationCall } from '../../../generated/DAO/templates/reputation/ReputationTemplate'
+import {
+  NewInstanceCall,
+  NewInstance1Call,
+  NewTokenAndInstanceCall,
+} from '../../../generated/DAO/templates/reputation/ReputationTemplate'
+
 import { OrganizationTemplateInstance as DaoTemplateInstance } from '../../../generated/schema'
 
 import * as bytes from '../../helpers/bytes'
 
-export function handleNewReputationDao(call: NewReputationCall): void {
-  let name = bytes.fromString(call.inputs._id)
+export function handleNewInstance(call: NewInstanceCall): void {
+  createReputationInstance(call.inputs._id, call)
+}
+
+export function handleNewInstanceWithPayroll(call: NewInstance1Call): void {
+  createReputationInstance(call.inputs._id, call)
+}
+
+export function handleNewTokenAndInstance(call: NewTokenAndInstanceCall): void {
+  createReputationInstance(call.inputs._id, call)
+}
+
+function createReputationInstance(aragonId: string, call: EthereumCall): DaoTemplateInstance {
+  let name = bytes.fromString(aragonId)
   let id = crypto.keccak256(name)
 
   let instance = new DaoTemplateInstance(id.toHexString())
-  instance.name = call.inputs._id
+  instance.name = aragonId
   instance.template = 'REPUTATION'
   instance.templateAddress = call.to
-  instance.tokenName = call.inputs._tokenName
-  instance.tokenSymbol = call.inputs._tokenSymbol
 
   instance.created = call.block.timestamp
   instance.createdAtBlock = call.block.number
   instance.createdAtTransaction = call.transaction.hash
 
   instance.save()
+
+  return instance
 }
