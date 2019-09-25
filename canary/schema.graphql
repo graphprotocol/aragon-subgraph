@@ -13,6 +13,7 @@ type Organization @entity {
   address: Bytes!
   name: String
   template: OrganizationTemplate
+  token: Bytes
   version: AragonVersion!
 
   created: BigInt!
@@ -41,10 +42,6 @@ type OrganizationTemplateInstance @entity {
 
   template: OrganizationTemplate!
   templateAddress: Bytes!
-
-  token: Bytes
-  tokenName: String
-  tokenSymbol: String
 
   created: BigInt!
   createdAtBlock: BigInt!

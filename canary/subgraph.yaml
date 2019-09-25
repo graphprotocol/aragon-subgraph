@@ -120,11 +120,11 @@ dataSources:
           handler: handleDeployEVMScriptRegistry
 
   #
-  # DAO Templates
+  # DAO Templates/Kits
   #
 
   # democracy-kit-1.0.0  (Aragon 0.6)
-  - name: DAO/templates/DemocracyKit-1.0.0
+  - name: DAO/kits/democracy-1
     kind: ethereum/contract
     network: mainnet
     source:
@@ -133,19 +133,25 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
+      file: ./src/mappings/dao-kits/democracy-1.ts
       language: wasm/assemblyscript
-      file: ./src/mappings/dao-kits.ts
       entities:
         - Organization
+        - OrganizationTemplateInstance
       abis:
         - name: DemocracyKit
-          file: ./abis/dao-kits/DemocracyKit-1.0.0.json
+          file: ./abis/dao-kits/DemocracyKit-1.json
       eventHandlers:
         - event: DeployInstance(address,indexed address)
-          handler: handleDeployDemocracyDao
+          handler: handleDeployInstance
+      callHandlers:
+        - function: newInstance(string,address[],uint256[],uint64,uint64,uint64)
+          handler: handleNewInstanceCall
+        - function: newTokenAndInstance(string,string,address[],uint256[],uint64,uint64,uint64)
+          handler: handleNewTokenAndInstanceCall
 
   # democracy-kit-2.0.0 (Aragon 0.7)
-  - name: DAO/templates/DemocracyKit
+  - name: DAO/kits/democracy-2
     kind: ethereum/contract
     network: mainnet
     source:
@@ -154,19 +160,25 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
+      file: ./src/mappings/dao-kits/democracy-2.ts
       language: wasm/assemblyscript
-      file: ./src/mappings/dao-kits.ts
       entities:
         - Organization
+        - OrganizationTemplateInstance
       abis:
         - name: DemocracyKit
-          file: ./abis/dao-kits/DemocracyKit-2.0.0.json
+          file: ./abis/dao-kits/DemocracyKit-2.json
       eventHandlers:
         - event: DeployInstance(address,indexed address)
-          handler: handleDeployDemocracyDao
+          handler: handleDeployInstance
+      callHandlers:
+        - function: newInstance(string,address[],uint256[],uint64,uint64,uint64)
+          handler: handleNewInstanceCall
+        - function: newTokenAndInstance(string,string,string,address[],uint256[],uint64,uint64,uint64)
+          handler: handleNewTokenAndInstanceCall
 
   # multisig-kit-1.0.0 (Aragon 0.6)
-  - name: DAO/templates/MultisigKit-1.0.0
+  - name: DAO/kits/multisig-1
     kind: ethereum/contract
     network: mainnet
     source:
@@ -175,19 +187,25 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
+      file: ./src/mappings/dao-kits/multisig-1.ts
       language: wasm/assemblyscript
-      file: ./src/mappings/dao-kits.ts
       entities:
         - Organization
+        - OrganizationTemplateInstance
       abis:
         - name: MultisigKit
-          file: ./abis/dao-kits/MultisigKit-1.0.0.json
+          file: ./abis/dao-kits/MultisigKit-1.json
       eventHandlers:
         - event: DeployInstance(address,indexed address)
-          handler: handleDeployMultisigDao
+          handler: handleDeployInstance
+      callHandlers:
+        - function: newInstance(string,address[],uint256)
+          handler: handleNewInstanceCall
+        - function: newTokenAndInstance(string,string,address[],uint256)
+          handler: handleNewTokenAndInstanceCall
 
   # multisig-kit-2.0.0 (Aragon 0.7)
-  - name: DAO/templates/MultisigKit
+  - name: DAO/kits/multisig-2
     kind: ethereum/contract
     network: mainnet
     source:
@@ -196,16 +214,22 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
+      file: ./src/mappings/dao-kits/multisig-2.ts
       language: wasm/assemblyscript
-      file: ./src/mappings/dao-kits.ts
       entities:
         - Organization
+        - OrganizationTemplateInstance
       abis:
         - name: MultisigKit
-          file: ./abis/dao-kits/MultisigKit-2.0.0.json
+          file: ./abis/dao-kits/MultisigKit-2.json
       eventHandlers:
         - event: DeployInstance(address,indexed address)
-          handler: handleDeployMultisigDao
+          handler: handleDeployInstance
+      callHandlers:
+        - function: newInstance(string,address[],uint256)
+          handler: handleNewInstanceCall
+        - function: newTokenAndInstance(string,string,string,address[],uint256)
+          handler: handleNewTokenAndInstanceCall
 
   # company-template-1.0.0 (Aragon 0.8)
   - name: DAO/templates/company
