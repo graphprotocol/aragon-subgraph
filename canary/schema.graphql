@@ -1,10 +1,10 @@
 type AragonVersion @entity {
   id: ID!
-  name: String!
-  lastUpdatedBlock: BigInt
-
   daoCount: BigInt!
   daoFactoryAddress: Bytes!
+
+  lastUpdatedBlock: BigInt
+
   daos: [Dao!]! @derivedFrom(field: "version")
 }
 
@@ -43,13 +43,6 @@ type DaoTemplateInstance @entity {
   template: DaoTemplateType!
   templateAddress: Bytes!
 
-  created: BigInt!
-  createdAtBlock: BigInt!
-  createdAtTransaction: Bytes!
-}
-
-type EVMScriptRegistry @entity {
-  id: ID! # contract address
   created: BigInt!
   createdAtBlock: BigInt!
   createdAtTransaction: Bytes!

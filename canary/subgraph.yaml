@@ -48,7 +48,7 @@ dataSources:
   #
 
   # Aragon 0.6
-  - name: DAOFactory-0.6
+  - name: DAO/factories/0.6
     kind: ethereum/contract
     network: mainnet
     source:
@@ -58,21 +58,18 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      file: ./src/mappings/dao.ts
+      file: ./src/mappings/dao/factory.ts
       entities:
         - Dao
-        - EVMScriptRegistry
       abis:
         - name: DAOFactory
           file: ./abis/factory/DAOFactory.json
       eventHandlers:
         - event: DeployDAO(address)
-          handler: handleDeployDAO
-        - event: DeployEVMScriptRegistry(address)
-          handler: handleDeployEVMScriptRegistry
+          handler: handleDeployDAO_0_6
 
   # Aragon 0.7
-  - name: DAOFactory-0.7
+  - name: DAO/factories/0.7
     kind: ethereum/contract
     network: mainnet
     source:
@@ -82,21 +79,18 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      file: ./src/mappings/dao.ts
+      file: ./src/mappings/dao/factory.ts
       entities:
         - Dao
-        - EVMScriptRegistry
       abis:
         - name: DAOFactory
           file: ./abis/factory/DAOFactory.json
       eventHandlers:
         - event: DeployDAO(address)
-          handler: handleDeployDAO
-        - event: DeployEVMScriptRegistry(address)
-          handler: handleDeployEVMScriptRegistry
+          handler: handleDeployDAO_0_7
 
   # Aragon 0.8
-  - name: DAOFactory
+  - name: DAO/factories/0.8
     kind: ethereum/contract
     network: mainnet
     source:
@@ -106,25 +100,22 @@ dataSources:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      file: ./src/mappings/dao.ts
+      file: ./src/mappings/dao/factory.ts
       entities:
         - Dao
-        - EVMScriptRegistry
       abis:
         - name: DAOFactory
           file: ./abis/factory/DAOFactory.json
       eventHandlers:
         - event: DeployDAO(address)
-          handler: handleDeployDAO
-        - event: DeployEVMScriptRegistry(address)
-          handler: handleDeployEVMScriptRegistry
+          handler: handleDeployDAO_0_8
 
   #
   # DAO Templates/Kits
   #
 
   # democracy-kit-1.0.0  (Aragon 0.6)
-  - name: DAO/kits/democracy-1
+  - name: DAO/templates/democracy-1
     kind: ethereum/contract
     network: mainnet
     source:
@@ -133,7 +124,7 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
-      file: ./src/mappings/dao-kits/democracy-1.ts
+      file: ./src/mappings/dao/templates/democracy-1.ts
       language: wasm/assemblyscript
       entities:
         - Dao
@@ -151,7 +142,7 @@ dataSources:
           handler: handleNewTokenAndInstance
 
   # democracy-kit-2.0.0 (Aragon 0.7)
-  - name: DAO/kits/democracy-2
+  - name: DAO/templates/democracy-2
     kind: ethereum/contract
     network: mainnet
     source:
@@ -160,7 +151,7 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
-      file: ./src/mappings/dao-kits/democracy-2.ts
+      file: ./src/mappings/dao/templates/democracy-2.ts
       language: wasm/assemblyscript
       entities:
         - Dao
@@ -178,7 +169,7 @@ dataSources:
           handler: handleNewTokenAndInstance
 
   # multisig-kit-1.0.0 (Aragon 0.6)
-  - name: DAO/kits/multisig-1
+  - name: DAO/templates/multisig-1
     kind: ethereum/contract
     network: mainnet
     source:
@@ -187,7 +178,7 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
-      file: ./src/mappings/dao-kits/multisig-1.ts
+      file: ./src/mappings/dao/templates/multisig-1.ts
       language: wasm/assemblyscript
       entities:
         - Dao
@@ -205,7 +196,7 @@ dataSources:
           handler: handleNewTokenAndInstance
 
   # multisig-kit-2.0.0 (Aragon 0.7)
-  - name: DAO/kits/multisig-2
+  - name: DAO/templates/multisig-2
     kind: ethereum/contract
     network: mainnet
     source:
@@ -214,7 +205,7 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
-      file: ./src/mappings/dao-kits/multisig-2.ts
+      file: ./src/mappings/dao/templates/multisig-2.ts
       language: wasm/assemblyscript
       entities:
         - Dao
@@ -241,7 +232,7 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
-      file: ./src/mappings/dao-templates/company.ts
+      file: ./src/mappings/dao/templates/company.ts
       language: wasm/assemblyscript
       entities:
         - DaoTemplateInstance
@@ -266,7 +257,7 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
-      file: ./src/mappings/dao-templates/company-board.ts
+      file: ./src/mappings/dao/templates/company-board.ts
       language: wasm/assemblyscript
       entities:
         - DaoTemplateInstance
@@ -289,7 +280,7 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
-      file: ./src/mappings/dao-templates/membership.ts
+      file: ./src/mappings/dao/templates/membership.ts
       language: wasm/assemblyscript
       entities:
         - DaoTemplateInstance
@@ -314,7 +305,7 @@ dataSources:
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
-      file: ./src/mappings/dao-templates/reputation.ts
+      file: ./src/mappings/dao/templates/reputation.ts
       language: wasm/assemblyscript
       entities:
         - DaoTemplateInstance
@@ -370,27 +361,6 @@ templates:
       eventHandlers:
         - event: NewRepo(bytes32,string,address)
           handler: handleNewRepo
-  - name: DAOFactory
-    kind: ethereum/contract
-    network: mainnet
-    source:
-      abi: DAOFactory
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.3
-      language: wasm/assemblyscript
-      file: ./src/mappings/dao.ts
-      entities:
-        - Dao
-        - EVMScriptRegistry
-      abis:
-        - name: DAOFactory
-          file: ./abis/factory/DAOFactory.json
-      eventHandlers:
-        - event: DeployDAO(address)
-          handler: handleDeployDAO
-        - event: DeployEVMScriptRegistry(address)
-          handler: handleDeployEVMScriptRegistry
   - name: Kernel
     kind: ethereum/contract
     network: mainnet
