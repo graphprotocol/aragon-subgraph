@@ -6,12 +6,12 @@ import {
   NewTokenAndInstanceCall,
 } from '../../../generated/DAO/kits/multisig-2/MultisigKit'
 
-import { Organization as DAO, OrganizationTemplateInstance as DaoTemplateInstance } from '../../../generated/schema'
+import { Dao, DaoTemplateInstance } from '../../../generated/schema'
 
 import * as bytes from '../../helpers/bytes'
 
 export function handleDeployInstance(event: DeployInstance): void {
-  let dao = new DAO(event.params.dao.toHex())
+  let dao = new Dao(event.params.dao.toHex())
   dao.template = 'MULTISIG'
   dao.token = event.params.token
 

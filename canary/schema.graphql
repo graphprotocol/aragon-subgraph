@@ -5,14 +5,14 @@ type AragonVersion @entity {
 
   daoCount: BigInt!
   daoFactoryAddress: Bytes!
-  daos: [Organization!]! @derivedFrom(field: "version")
+  daos: [Dao!]! @derivedFrom(field: "version")
 }
 
-type Organization @entity {
+type Dao @entity {
   id: ID! # DAO address
   address: Bytes!
   name: String
-  template: OrganizationTemplate
+  template: DaoTemplateType
   token: Bytes
   version: AragonVersion!
 
@@ -21,7 +21,7 @@ type Organization @entity {
   createdAtTransaction: Bytes!
 }
 
-enum OrganizationTemplate {
+enum DaoTemplateType {
   # Aragon 0.7 and prior
   DEMOCRACY
   MULTISIG
@@ -33,14 +33,14 @@ enum OrganizationTemplate {
   REPUTATION
 }
 
-type OrganizationTemplateInstance @entity {
+type DaoTemplateInstance @entity {
   id: ID!
-  dao: Organization
+  dao: Dao
   name: String!
 
   ensResolver: Bytes
 
-  template: OrganizationTemplate!
+  template: DaoTemplateType!
   templateAddress: Bytes!
 
   created: BigInt!

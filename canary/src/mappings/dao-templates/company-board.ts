@@ -5,7 +5,7 @@ import {
   FinalizeInstance1Call,
 } from '../../../generated/DAO/templates/company-board/CompanyBoardTemplate'
 
-import { OrganizationTemplateInstance as DaoTemplateInstance } from '../../../generated/schema'
+import { DaoTemplateInstance } from '../../../generated/schema'
 
 import * as bytes from '../../helpers/bytes'
 

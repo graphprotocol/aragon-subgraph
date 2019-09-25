@@ -1,7 +1,7 @@
 import { Address, BigInt } from '@graphprotocol/graph-ts'
 
 import { DeployDAO, DeployEVMScriptRegistry } from '../../generated/DAOFactory/DAOFactory'
-import { AragonVersion, EVMScriptRegistry, Organization as DAO } from '../../generated/schema'
+import { AragonVersion, Dao, EVMScriptRegistry } from '../../generated/schema'
 import { Kernel } from '../../generated/templates'
 
 const DAO_FACTORY_0_6 = '0x595b34c93aa2c2ba0a38daeede629a0dfbdcc559'
@@ -17,7 +17,7 @@ export function handleDeployDAO(event: DeployDAO): void {
   factory.save()
 
   // Persist information about the new DAO
-  let dao = new DAO(event.params.dao.toHexString())
+  let dao = new Dao(event.params.dao.toHexString())
   dao.address = event.params.dao
   dao.version = factory.id
 

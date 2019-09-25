@@ -34,8 +34,8 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/ens.ts
       entities:
-        - Organization
-        - OrganizationTemplateInstance
+        - Dao
+        - DaoTemplateInstance
       abis:
         - name: FIFSResolvingRegistrar
           file: ./abis/ens/FIFSResolvingRegistrar.json
@@ -60,7 +60,7 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/dao.ts
       entities:
-        - Organization
+        - Dao
         - EVMScriptRegistry
       abis:
         - name: DAOFactory
@@ -84,7 +84,7 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/dao.ts
       entities:
-        - Organization
+        - Dao
         - EVMScriptRegistry
       abis:
         - name: DAOFactory
@@ -108,7 +108,7 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/dao.ts
       entities:
-        - Organization
+        - Dao
         - EVMScriptRegistry
       abis:
         - name: DAOFactory
@@ -136,8 +136,8 @@ dataSources:
       file: ./src/mappings/dao-kits/democracy-1.ts
       language: wasm/assemblyscript
       entities:
-        - Organization
-        - OrganizationTemplateInstance
+        - Dao
+        - DaoTemplateInstance
       abis:
         - name: DemocracyKit
           file: ./abis/dao-kits/DemocracyKit-1.json
@@ -163,8 +163,8 @@ dataSources:
       file: ./src/mappings/dao-kits/democracy-2.ts
       language: wasm/assemblyscript
       entities:
-        - Organization
-        - OrganizationTemplateInstance
+        - Dao
+        - DaoTemplateInstance
       abis:
         - name: DemocracyKit
           file: ./abis/dao-kits/DemocracyKit-2.json
@@ -190,8 +190,8 @@ dataSources:
       file: ./src/mappings/dao-kits/multisig-1.ts
       language: wasm/assemblyscript
       entities:
-        - Organization
-        - OrganizationTemplateInstance
+        - Dao
+        - DaoTemplateInstance
       abis:
         - name: MultisigKit
           file: ./abis/dao-kits/MultisigKit-1.json
@@ -217,8 +217,8 @@ dataSources:
       file: ./src/mappings/dao-kits/multisig-2.ts
       language: wasm/assemblyscript
       entities:
-        - Organization
-        - OrganizationTemplateInstance
+        - Dao
+        - DaoTemplateInstance
       abis:
         - name: MultisigKit
           file: ./abis/dao-kits/MultisigKit-2.json
@@ -244,7 +244,7 @@ dataSources:
       file: ./src/mappings/dao-templates/company.ts
       language: wasm/assemblyscript
       entities:
-        - OrganizationTemplateInstance
+        - DaoTemplateInstance
       abis:
         - name: CompanyTemplate
           file: ./abis/dao-templates/CompanyTemplate.json
@@ -269,7 +269,7 @@ dataSources:
       file: ./src/mappings/dao-templates/company-board.ts
       language: wasm/assemblyscript
       entities:
-        - OrganizationTemplateInstance
+        - DaoTemplateInstance
       abis:
         - name: CompanyBoardTemplate
           file: ./abis/dao-templates/CompanyBoardTemplate.json
@@ -292,7 +292,7 @@ dataSources:
       file: ./src/mappings/dao-templates/membership.ts
       language: wasm/assemblyscript
       entities:
-        - OrganizationTemplateInstance
+        - DaoTemplateInstance
       abis:
         - name: MembershipTemplate
           file: ./abis/dao-templates/MembershipTemplate.json
@@ -317,7 +317,7 @@ dataSources:
       file: ./src/mappings/dao-templates/reputation.ts
       language: wasm/assemblyscript
       entities:
-        - OrganizationTemplateInstance
+        - DaoTemplateInstance
       abis:
         - name: ReputationTemplate
           file: ./abis/dao-templates/ReputationTemplate.json
@@ -381,7 +381,7 @@ templates:
       language: wasm/assemblyscript
       file: ./src/mappings/dao.ts
       entities:
-        - Organization
+        - Dao
         - EVMScriptRegistry
       abis:
         - name: DAOFactory

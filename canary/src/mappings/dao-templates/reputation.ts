@@ -6,7 +6,7 @@ import {
   NewTokenAndInstanceCall,
 } from '../../../generated/DAO/templates/reputation/ReputationTemplate'
 
-import { OrganizationTemplateInstance as DaoTemplateInstance } from '../../../generated/schema'
+import { DaoTemplateInstance } from '../../../generated/schema'
 
 import * as bytes from '../../helpers/bytes'
 
