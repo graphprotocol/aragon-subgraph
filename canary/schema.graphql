@@ -1,24 +1,32 @@
-type AragonVersion @entity {
+type AragonIdentity @entity {
   id: ID!
-  daoCount: BigInt!
-  daoFactoryAddress: Bytes!
-
-  lastUpdatedBlock: BigInt
-
-  daos: [Dao!]! @derivedFrom(field: "version")
+  ensResolver: Bytes!
+  entity: Bytes!
 }
 
 type Dao @entity {
   id: ID! # DAO address
   address: Bytes!
+  factory: DaoFactory!
   name: String
   template: DaoTemplateType
+  templateAddress: Bytes
   token: Bytes
-  version: AragonVersion!
 
   created: BigInt!
   createdAtBlock: BigInt!
   createdAtTransaction: Bytes!
+}
+
+type DaoFactory @entity {
+  id: ID! # DAOFactory address
+  address: Bytes!
+  name: String
+  daoCount: BigInt!
+
+  lastUpdatedBlock: BigInt
+
+  daos: [Dao!]! @derivedFrom(field: "factory")
 }
 
 enum DaoTemplateType {
@@ -31,21 +39,6 @@ enum DaoTemplateType {
   COMPANY_BOARD
   MEMBERSHIP
   REPUTATION
-}
-
-type DaoTemplateInstance @entity {
-  id: ID!
-  dao: Dao
-  name: String!
-
-  ensResolver: Bytes
-
-  template: DaoTemplateType!
-  templateAddress: Bytes!
-
-  created: BigInt!
-  createdAtBlock: BigInt!
-  createdAtTransaction: Bytes!
 }
 
 #

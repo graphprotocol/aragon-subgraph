@@ -6,7 +6,7 @@ import {
 
 import { Dao } from '../../../../generated/schema'
 
-import { createDemocracyInstance } from './helpers'
+import { handleNewTemplateInstance } from './helpers'
 
 export function handleDeployInstance(event: DeployInstance): void {
   let dao = new Dao(event.params.dao.toHex())
@@ -17,9 +17,9 @@ export function handleDeployInstance(event: DeployInstance): void {
 }
 
 export function handleNewInstance(call: NewInstanceCall): void {
-  createDemocracyInstance(call.inputs.name, call)
+  handleNewTemplateInstance('DEMOCRACY', call.inputs.name, call)
 }
 
 export function handleNewTokenAndInstance(call: NewTokenAndInstanceCall): void {
-  createDemocracyInstance(call.inputs.name, call)
+  handleNewTemplateInstance('DEMOCRACY', call.inputs.name, call)
 }

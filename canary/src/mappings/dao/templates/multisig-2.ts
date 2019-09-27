@@ -6,7 +6,7 @@ import {
 
 import { Dao } from '../../../../generated/schema'
 
-import { createMultisigInstance } from './helpers'
+import { handleNewTemplateInstance } from './helpers'
 
 export function handleDeployInstance(event: DeployInstance): void {
   let dao = new Dao(event.params.dao.toHex())
@@ -17,9 +17,9 @@ export function handleDeployInstance(event: DeployInstance): void {
 }
 
 export function handleNewInstance(call: NewInstanceCall): void {
-  createMultisigInstance(call.inputs.aragonId, call)
+  handleNewTemplateInstance('MULTISIG', call.inputs.aragonId, call)
 }
 
 export function handleNewTokenAndInstance(call: NewTokenAndInstanceCall): void {
-  createMultisigInstance(call.inputs.aragonId, call)
+  handleNewTemplateInstance('MULTISIG', call.inputs.aragonId, call)
 }

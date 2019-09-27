@@ -1,24 +1,11 @@
 import { ClaimSubdomain } from '../../generated/AragonID/FIFSResolvingRegistrar'
 
-import { Dao, DaoTemplateInstance } from '../../generated/schema'
+import { AragonIdentity } from '../../generated/schema'
 
 export function handleClaimSubdomain(event: ClaimSubdomain): void {
-  let daoAddress = event.params.owner.toHexString()
+  let identity = new AragonIdentity(event.params.subnode.toHex())
+  identity.ensResolver = event.params.resolver
+  identity.entity = event.params.owner
 
-  let dao = Dao.load(daoAddress)
-
-  if (dao != null) {
-    let instance = DaoTemplateInstance.load(event.params.subnode.toHex())
-
-    if (instance != null) {
-      dao.name = instance.name
-      dao.template = instance.template
-
-      instance.dao = dao.id
-      instance.ensResolver = event.params.resolver
-
-      dao.save()
-      instance.save()
-    }
-  }
+  identity.save()
 }

@@ -34,8 +34,7 @@ dataSources:
       language: wasm/assemblyscript
       file: ./src/mappings/ens.ts
       entities:
-        - Dao
-        - DaoTemplateInstance
+        - AragonIdentity
       abis:
         - name: FIFSResolvingRegistrar
           file: ./abis/ens/FIFSResolvingRegistrar.json
@@ -61,6 +60,7 @@ dataSources:
       file: ./src/mappings/dao/factory.ts
       entities:
         - Dao
+        - DaoFactory
       abis:
         - name: DAOFactory
           file: ./abis/factory/DAOFactory.json
@@ -82,6 +82,7 @@ dataSources:
       file: ./src/mappings/dao/factory.ts
       entities:
         - Dao
+        - DaoFactory
       abis:
         - name: DAOFactory
           file: ./abis/factory/DAOFactory.json
@@ -103,6 +104,7 @@ dataSources:
       file: ./src/mappings/dao/factory.ts
       entities:
         - Dao
+        - DaoFactory
       abis:
         - name: DAOFactory
           file: ./abis/factory/DAOFactory.json
@@ -127,8 +129,8 @@ dataSources:
       file: ./src/mappings/dao/templates/democracy-1.ts
       language: wasm/assemblyscript
       entities:
+        - AragonIdentity
         - Dao
-        - DaoTemplateInstance
       abis:
         - name: DemocracyKit
           file: ./abis/dao-kits/DemocracyKit-1.json
@@ -154,8 +156,8 @@ dataSources:
       file: ./src/mappings/dao/templates/democracy-2.ts
       language: wasm/assemblyscript
       entities:
+        - AragonIdentity
         - Dao
-        - DaoTemplateInstance
       abis:
         - name: DemocracyKit
           file: ./abis/dao-kits/DemocracyKit-2.json
@@ -181,8 +183,8 @@ dataSources:
       file: ./src/mappings/dao/templates/multisig-1.ts
       language: wasm/assemblyscript
       entities:
+        - AragonIdentity
         - Dao
-        - DaoTemplateInstance
       abis:
         - name: MultisigKit
           file: ./abis/dao-kits/MultisigKit-1.json
@@ -208,8 +210,8 @@ dataSources:
       file: ./src/mappings/dao/templates/multisig-2.ts
       language: wasm/assemblyscript
       entities:
+        - AragonIdentity
         - Dao
-        - DaoTemplateInstance
       abis:
         - name: MultisigKit
           file: ./abis/dao-kits/MultisigKit-2.json
@@ -235,7 +237,8 @@ dataSources:
       file: ./src/mappings/dao/templates/company.ts
       language: wasm/assemblyscript
       entities:
-        - DaoTemplateInstance
+        - AragonIdentity
+        - Dao
       abis:
         - name: CompanyTemplate
           file: ./abis/dao-templates/CompanyTemplate.json
@@ -260,7 +263,8 @@ dataSources:
       file: ./src/mappings/dao/templates/company-board.ts
       language: wasm/assemblyscript
       entities:
-        - DaoTemplateInstance
+        - AragonIdentity
+        - Dao
       abis:
         - name: CompanyBoardTemplate
           file: ./abis/dao-templates/CompanyBoardTemplate.json
@@ -283,7 +287,8 @@ dataSources:
       file: ./src/mappings/dao/templates/membership.ts
       language: wasm/assemblyscript
       entities:
-        - DaoTemplateInstance
+        - AragonIdentity
+        - Dao
       abis:
         - name: MembershipTemplate
           file: ./abis/dao-templates/MembershipTemplate.json
@@ -308,7 +313,8 @@ dataSources:
       file: ./src/mappings/dao/templates/reputation.ts
       language: wasm/assemblyscript
       entities:
-        - DaoTemplateInstance
+        - AragonIdentity
+        - Dao
       abis:
         - name: ReputationTemplate
           file: ./abis/dao-templates/ReputationTemplate.json
