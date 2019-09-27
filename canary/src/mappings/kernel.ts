@@ -60,8 +60,7 @@ function registerFinanceApp(appAddress: Address): FinanceApp {
     app.save()
 
     // Start indexing app events
-    // Enable next line when https://github.com/graphprotocol/graph-node/issues/1105 is resolved.
-    /* Finance.create(appAddress) */
+    Finance.create(appAddress)
   }
 
   return app as FinanceApp
@@ -82,8 +81,7 @@ function registerTokenManagerApp(appAddress: Address): TokenManagerApp {
     app.save()
 
     // Start indexing app events
-    // Enable next line when https://github.com/graphprotocol/graph-node/issues/1105 is resolved.
-    /* TokenManager.create(appAddress) */
+    TokenManager.create(appAddress)
   }
 
   return app as TokenManagerApp
@@ -105,8 +103,7 @@ function registerVotingApp(appAddress: Address): VotingApp {
     app.save()
 
     // Start indexing app events
-    // Enable next line when https://github.com/graphprotocol/graph-node/issues/1105 is resolved.
-    /* Voting.create(appAddress) */
+    Voting.create(appAddress)
   }
 
   return app as VotingApp

@@ -2,7 +2,7 @@ import { DeployAPM as DeployAPMEvent } from '../../generated/APM/APMRegistryFact
 import { NewRepo as NewRepoEvent } from '../../generated/templates/APMRegistry/APMRegistry'
 import { NewVersion as NewVersionEvent, Repo as RepoContract } from '../../generated/templates/Repo/Repo'
 
-import * as templates from '../../generated/templates'
+import { APMRegistry, Repo } from '../../generated/templates'
 
 import * as schema from '../../generated/schema'
 
@@ -17,7 +17,7 @@ export function handleDeployAPM(event: DeployAPMEvent): void {
 
   apm.save()
 
-  templates.APMRegistry.create(event.params.apm)
+  APMRegistry.create(event.params.apm)
 }
 
 export function handleNewRepo(event: NewRepoEvent): void {
@@ -33,10 +33,7 @@ export function handleNewRepo(event: NewRepoEvent): void {
   repo.save()
 
   // Right now the following line produce this error: "Subgraph instance failed to run: A dynamic data source, in the
-  // same block that it was created, attempted to create another dynamic data source. To let us know that you are
-  // affected by this bug, please comment in https://github.com/graphprotocol/graph-node/issues/1105 [...]".
-  // Enable next line when that ticket is resolved.
-  /* templates.Repo.create(event.params.repo) */
+  Repo.create(event.params.repo)
 }
 
 export function handleNewVersion(event: NewVersionEvent): void {
