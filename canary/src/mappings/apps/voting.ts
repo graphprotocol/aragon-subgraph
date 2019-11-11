@@ -35,18 +35,18 @@ export function handleCastVote(event: CastVote): void {
   let voteId = event.params.voteId
   let voter = event.params.voter
 
-  let txHash = event.transaction.hash.toHex()
-  let idPrefix = [appAddress, voteId.toString(), voter.toHexString()]
+  let txHash = event.transaction.hash.toHexString()
+  let idPrefix = appAddress + '-' + voteId.toString() + '-' + voter.toHexString()
 
   if (event.params.supports) {
-    let vote = new SupportVote([...idPrefix, 'YES', txHash].join('-'))
+    let vote = new SupportVote(idPrefix + '-YES-' + txHash)
     vote.app = event.address.toHexString()
     vote.stake = event.params.stake
     vote.voter = event.params.voter
 
     vote.save()
   } else {
-    let vote = new NonSupportVote([...idPrefix, 'NO', txHash].join('-'))
+    let vote = new NonSupportVote(idPrefix + '-NO-' + txHash)
     vote.app = event.address.toHexString()
     vote.stake = event.params.stake
     vote.voter = event.params.voter
@@ -86,10 +86,10 @@ export function handleChangeMinQuorum(event: ChangeMinQuorum): void {
 export function handleScriptResult(event: ScriptResult): void {
   log.debug('[Voting][ScriptResult] appAddress={}, executor={}, script={}, input={}, returnData={}', [
     event.address.toHexString(),
-    event.params.executor.toHex(),
-    event.params.script.toHex(),
-    event.params.input.toHex(),
-    event.params.returnData.toHex(),
+    event.params.executor.toHexString(),
+    event.params.script.toHexString(),
+    event.params.input.toHexString(),
+    event.params.returnData.toHexString(),
   ])
 
   // TODO
@@ -98,8 +98,8 @@ export function handleScriptResult(event: ScriptResult): void {
 export function handleRecoverToVault(event: RecoverToVault): void {
   log.debug('[Voting][RecoverToVault] appAddress={}, vault={}, token={}, amount={}', [
     event.address.toHexString(),
-    event.params.vault.toHex(),
-    event.params.token.toHex(),
+    event.params.vault.toHexString(),
+    event.params.token.toHexString(),
     event.params.amount.toString(),
   ])
 
