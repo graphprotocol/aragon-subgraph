@@ -83,20 +83,30 @@ type PackageVersion @entity {
 # Apps
 #
 
-interface AppInstance {
+interface AppProxy {
   id: ID!
-  appAddress: Bytes!
   appId: Bytes!
+  proxyAddress: Bytes!
+}
+
+#
+# App: Agent
+#
+
+type AgentAppProxy implements AppProxy @entity {
+  id: ID! # <appProxyAddress>
+  appId: Bytes!
+  proxyAddress: Bytes!
 }
 
 #
 # App: Finance
 #
 
-type FinanceApp implements AppInstance @entity {
+type FinanceAppProxy implements AppProxy @entity {
   id: ID! # <appProxyAddress>
-  appAddress: Bytes!
   appId: Bytes!
+  proxyAddress: Bytes!
 
   budgets: [TokenBudget!]! @derivedFrom(field: "app")
 
@@ -111,7 +121,7 @@ type FinanceApp implements AppInstance @entity {
 
 type Payment @entity {
   id: ID! # <appProxyAddress>-<paymentId>
-  app: FinanceApp
+  app: FinanceAppProxy
   recipient: Bytes!
   maxExecutions: BigInt!
   reference: String
@@ -125,21 +135,21 @@ type Payment @entity {
 
 type Period @entity {
   id: ID! # <appProxyAddress>-<periodId>
-  app: FinanceApp!
+  app: FinanceAppProxy!
   start: BigInt!
   end: BigInt!
 }
 
 type TokenBudget @entity {
   id: ID! # <appProxyAddress>-<tokenAddress>
-  app: FinanceApp
+  app: FinanceAppProxy
   token: Bytes!
   amount: BigInt!
 }
 
 interface Transaction {
   id: ID!
-  app: FinanceApp!
+  app: FinanceAppProxy!
   entity: Bytes!
   amount: BigInt!
   reference: String
@@ -151,7 +161,7 @@ interface Transaction {
 
 type IncomingTransaction implements Transaction @entity {
   id: ID! # <appProxyAddress>-INCOMING-<transactionId>
-  app: FinanceApp!
+  app: FinanceAppProxy!
   entity: Bytes!
   amount: BigInt!
   reference: String
@@ -163,7 +173,7 @@ type IncomingTransaction implements Transaction @entity {
 
 type OutgoingTransaction implements Transaction @entity {
   id: ID! # <appProxyAddress>-OUTGOING-<transactionId>
-  app: FinanceApp!
+  app: FinanceAppProxy!
   entity: Bytes!
   amount: BigInt!
   reference: String
@@ -174,32 +184,76 @@ type OutgoingTransaction implements Transaction @entity {
 }
 
 #
+# App: Payroll
+#
+
+type PayrollAppProxy implements AppProxy @entity {
+  id: ID! # <appProxyAddress>
+  appId: Bytes!
+  proxyAddress: Bytes!
+}
+
+#
+# App: Survey
+#
+
+type SurveyAppProxy implements AppProxy @entity {
+  id: ID! # <appProxyAddress>
+  appId: Bytes!
+  proxyAddress: Bytes!
+}
+
+type Survey @entity {
+  id: ID!
+  app: SurveyAppProxy!
+  creator: Bytes!
+  metadata: String!
+
+  created: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTransaction: Bytes!
+
+  updated: BigInt!
+}
+
+#
 # App: Token Manager
 #
 
-type TokenManagerApp implements AppInstance @entity {
+type TokenManagerAppProxy implements AppProxy @entity {
   id: ID! # <appProxyAddress>
-  appAddress: Bytes!
   appId: Bytes!
+  proxyAddress: Bytes!
 
   vestings: [Vesting!]! @derivedFrom(field: "app")
 }
 
 type Vesting @entity {
   id: ID! # <appProxyAddress>-<vestingId>
-  app: TokenManagerApp!
+  app: TokenManagerAppProxy!
   receiver: Bytes!
   vestingId: BigInt!
+}
+
+#
+# App: Vault
+#
+
+type VaultAppProxy implements AppProxy @entity {
+  id: ID! # <appProxyAddress>
+  appId: Bytes!
+  proxyAddress: Bytes!
 }
 
 #
 # App: Voting
 #
 
-type VotingApp implements AppInstance @entity {
+type VotingAppProxy implements AppProxy @entity {
   id: ID! # <appProxyAddress>
-  appAddress: Bytes!
   appId: Bytes!
+  proxyAddress: Bytes!
+
   minQuorumPercent: BigInt!
   supportRequiredPercent: BigInt!
 
@@ -208,7 +262,7 @@ type VotingApp implements AppInstance @entity {
 
 type Vote @entity {
   id: ID! # <appProxyAddress>-<voteId>
-  app: VotingApp!
+  app: VotingAppProxy!
   creator: Bytes!
   metadata: String!
   executed: Boolean!
@@ -225,7 +279,7 @@ type Vote @entity {
 
 type SupportVote @entity {
   id: ID! # <appProxyAddress>-<voteId>-<voterAddress>-YES-<txHash>
-  app: VotingApp!
+  app: VotingAppProxy!
   voteId: Vote
   voter: Bytes!
   stake: BigInt!
@@ -233,7 +287,7 @@ type SupportVote @entity {
 
 type NonSupportVote @entity {
   id: ID! # <appProxyAddress>-<voteId>-<voterAddress>-NO-<txHash>
-  app: VotingApp!
+  app: VotingAppProxy!
   voteId: Vote
   voter: Bytes!
   stake: BigInt!

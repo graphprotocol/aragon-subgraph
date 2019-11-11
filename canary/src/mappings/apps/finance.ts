@@ -97,7 +97,7 @@ export function handleChangePaymentState(event: ChangePaymentState): void {
 }
 
 export function handleChangePeriodDuration(event: ChangePeriodDuration): void {
-  log.debug('[Finance][ChangePeriodDuration] appAddress={}, newDuration={}}', [
+  log.warning('[Finance][ChangePeriodDuration] proxyAddress={}, newDuration={}}', [
     event.address.toHexString(),
     event.params.newDuration.toString(),
   ])
@@ -106,7 +106,7 @@ export function handleChangePeriodDuration(event: ChangePeriodDuration): void {
 }
 
 export function handlePaymentFailure(event: PaymentFailure): void {
-  log.debug('[Finance][PaymentFailure] appAddress={}, paymentId={}}', [
+  log.warning('[Finance][PaymentFailure] proxyAddress={}, paymentId={}}', [
     event.address.toHexString(),
     event.params.paymentId.toString(),
   ])
@@ -115,7 +115,7 @@ export function handlePaymentFailure(event: PaymentFailure): void {
 }
 
 export function handleScriptResult(event: ScriptResult): void {
-  log.debug('[Finance][ScriptResult] appAddress={}, executor={}, script={}, input={}, returnData={}', [
+  log.warning('[Finance][ScriptResult] proxyAddress={}, executor={}, script={}, input={}, returnData={}', [
     event.address.toHexString(),
     event.params.executor.toHex(),
     event.params.script.toHex(),
@@ -127,7 +127,7 @@ export function handleScriptResult(event: ScriptResult): void {
 }
 
 export function handleRecoverToVault(event: RecoverToVault): void {
-  log.debug('[Finance][RecoverToVault] appAddress={}, vault={}, token={}, amount={}', [
+  log.warning('[Finance][RecoverToVault] proxyAddress={}, vault={}, token={}, amount={}', [
     event.address.toHexString(),
     event.params.vault.toHex(),
     event.params.token.toHex(),

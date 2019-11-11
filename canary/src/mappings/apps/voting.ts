@@ -10,7 +10,7 @@ import {
   ScriptResult,
 } from '../../../generated/templates/Voting/Voting'
 
-import { NonSupportVote, SupportVote, Vote, VotingApp } from '../../../generated/schema'
+import { NonSupportVote, SupportVote, Vote, VotingAppProxy } from '../../../generated/schema'
 
 export function handleStartVote(event: StartVote): void {
   let appAddress = event.address.toHexString()
@@ -36,16 +36,17 @@ export function handleCastVote(event: CastVote): void {
   let voter = event.params.voter
 
   let txHash = event.transaction.hash.toHex()
+  let idPrefix = [appAddress, voteId.toString(), voter.toHexString()]
 
   if (event.params.supports) {
-    let vote = new SupportVote(appAddress + '-' + voteId.toString() + '-' + voter.toHexString() + '-YES' + '-' + txHash)
+    let vote = new SupportVote([...idPrefix, 'YES', txHash].join('-'))
     vote.app = event.address.toHexString()
     vote.stake = event.params.stake
     vote.voter = event.params.voter
 
     vote.save()
   } else {
-    let vote = new NonSupportVote(appAddress + '-' + voteId.toString() + '-' + voter.toHexString() + '-NO' + '-' + txHash)
+    let vote = new NonSupportVote([...idPrefix, 'NO', txHash].join('-'))
     vote.app = event.address.toHexString()
     vote.stake = event.params.stake
     vote.voter = event.params.voter
@@ -63,17 +64,23 @@ export function handleExecuteVote(event: ExecuteVote): void {
 }
 
 export function handleChangeSupportRequired(event: ChangeSupportRequired): void {
-  let app = new VotingApp(event.address.toHexString())
-  app.supportRequiredPercent = event.params.supportRequiredPct
+  let app = VotingAppProxy.load(event.address.toHexString())
 
-  app.save()
+  if (app != null) {
+    app.supportRequiredPercent = event.params.supportRequiredPct
+
+    app.save()
+  }
 }
 
 export function handleChangeMinQuorum(event: ChangeMinQuorum): void {
-  let app = new VotingApp(event.address.toHexString())
-  app.minQuorumPercent = event.params.minAcceptQuorumPct
+  let app = VotingAppProxy.load(event.address.toHexString())
 
-  app.save()
+  if (app != null) {
+    app.minQuorumPercent = event.params.minAcceptQuorumPct
+
+    app.save()
+  }
 }
 
 export function handleScriptResult(event: ScriptResult): void {

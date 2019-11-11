@@ -378,16 +378,28 @@ templates:
       language: wasm/assemblyscript
       file: ./src/mappings/kernel.ts
       entities:
-        - FinanceApp
+        - AgentAppProxy
+        - FinanceAppProxy
+        - PayrollAppProxy
+        - SurveyAppProxy
         - TokenManagerApp
+        - VaultAppProxy
         - VotingApp
       abis:
         - name: Kernel
           file: ./abis/kernel/Kernel.json
+        - name: Agent
+          file: ./abis/apps/Agent.json
         - name: Finance
           file: ./abis/apps/Finance.json
+        - name: Payroll
+          file: ./abis/apps/Payroll.json
+        - name: Survey
+          file: ./abis/apps/Survey.json
         - name: TokenManager
           file: ./abis/apps/TokenManager.json
+        - name: Vault
+          file: ./abis/apps/Vault.json
         - name: Voting
           file: ./abis/apps/Voting.json
       eventHandlers:
@@ -413,6 +425,47 @@ templates:
       eventHandlers:
         - event: NewVersion(uint256,uint16[3])
           handler: handleNewVersion
+
+  #
+  # Apps
+  #
+
+  - name: Agent
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: Agent
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/apps/agent.ts
+      entities:
+        - Agent
+      abis:
+        - name: Agent
+          file: ./abis/apps/Agent.json
+      eventHandlers:
+        - event: SafeExecute(indexed address,indexed address,bytes)
+          handler: handleSafeExecute
+        - event: Execute(indexed address,indexed address,uint256,bytes)
+          handler: handleExecute
+        - event: AddProtectedToken(indexed address)
+          handler: handleAddProtectedToken
+        - event: RemoveProtectedToken(indexed address)
+          handler: handleRemoveProtectedToken
+        - event: PresignHash(indexed address,indexed bytes32)
+          handler: handlePresignHash
+        - event: SetDesignatedSigner(indexed address,indexed address,indexed address)
+          handler: handleSetDesignatedSigner
+        - event: VaultTransfer(indexed address,indexed address,uint256)
+          handler: handleVaultTransfer
+        - event: VaultDeposit(indexed address,indexed address,uint256)
+          handler: handleVaultDeposit
+        - event: ScriptResult(indexed address,bytes,bytes,bytes)
+          handler: handleScriptResult
+        - event: RecoverToVault(indexed address,indexed address,uint256)
+          handler: handleRecoverToVault
   - name: Finance
     kind: ethereum/contract
     network: mainnet
@@ -451,6 +504,55 @@ templates:
           handler: handleScriptResult
         - event: RecoverToVault(indexed address,indexed address,uint256)
           handler: handleRecoverToVault
+  - name: Payroll
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: Payroll
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/apps/payroll.ts
+      entities:
+        - Payroll
+      abis:
+        - name: Payroll
+          file: ./abis/apps/Payroll.json
+      eventHandlers:
+        - event: ScriptResult(indexed address,bytes,bytes,bytes)
+          handler: handleScriptResult
+        - event: RecoverToVault(indexed address,indexed address,uint256)
+          handler: handleRecoverToVault
+  - name: Survey
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: Survey
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/apps/survey.ts
+      entities:
+        - Survey
+        - Vote
+      abis:
+        - name: Survey
+          file: ./abis/apps/Survey.json
+      eventHandlers:
+        - event: StartSurvey(indexed uint256,indexed address,string)
+          handler: handleStartSurvey
+        - event: CastVote(indexed uint256,indexed address,uint256,uint256,uint256)
+          handler: handleCastVote
+        - event: ResetVote(indexed uint256,indexed address,uint256,uint256,uint256)
+          handler: handleResetVote
+        - event: ChangeMinParticipation(uint64)
+          handler: handleChangeMinParticipation
+        - event: ScriptResult(indexed address,bytes,bytes,bytes)
+          handler: handleScriptResult
+        - event: RecoverToVault(indexed address,indexed address,uint256)
+          handler: handleRecoverToVault
   - name: TokenManager
     kind: ethereum/contract
     network: mainnet
@@ -471,6 +573,31 @@ templates:
           handler: handleNewVesting
         - event: RevokeVesting(indexed address,uint256,uint256)
           handler: handleRevokeVesting
+        - event: ScriptResult(indexed address,bytes,bytes,bytes)
+          handler: handleScriptResult
+        - event: RecoverToVault(indexed address,indexed address,uint256)
+          handler: handleRecoverToVault
+  - name: Vault
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: Vault
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      file: ./src/mappings/apps/vault.ts
+      entities:
+        - VaultTransfer
+        - VaultDeposit
+      abis:
+        - name: Vault
+          file: ./abis/apps/Vault.json
+      eventHandlers:
+        - event: VaultTransfer(indexed address,indexed address,uint256)
+          handler: handleVaultTransfer
+        - event: VaultDeposit(indexed address,indexed address,uint256)
+          handler: handleVaultDeposit
         - event: ScriptResult(indexed address,bytes,bytes,bytes)
           handler: handleScriptResult
         - event: RecoverToVault(indexed address,indexed address,uint256)
