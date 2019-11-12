@@ -56,11 +56,14 @@ export function handleCastVote(event: CastVote): void {
 }
 
 export function handleExecuteVote(event: ExecuteVote): void {
-  let vote = new Vote(event.address.toHexString() + '-' + event.params.voteId.toString())
-  vote.executed = true
-  vote.updated = event.block.timestamp
+  let vote = Vote.load(event.address.toHexString() + '-' + event.params.voteId.toString())
 
-  vote.save()
+  if (vote != null) {
+    vote.executed = true
+    vote.updated = event.block.timestamp
+
+    vote.save()
+  }
 }
 
 export function handleChangeSupportRequired(event: ChangeSupportRequired): void {
